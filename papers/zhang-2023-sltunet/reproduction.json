@@ -61,8 +61,9 @@
       "source_id": "released-checkpoints",
       "kind": "weights",
       "url": "https://data.statmt.org/bzhang/iclr2023_sltunet/",
-      "revision_or_sha256": "unretrieved",
-      "role": "Authors' released trained models for PHOENIX and CSL-Daily (phoenix.tar.gz, csldaily.tar.gz, csldaily2.tar.gz, dgs3-t.tar.gz), announced in the repository README on 2023-07-09. Directory listing confirmed reachable on 2026-09-13 but no archive has been downloaded or hashed yet, so this source is not pinned. Intended use is an evaluation-path preflight and a check of the decoding/metric pipeline before any training run; a score obtained from the authors' own weights verifies the artifact and is not by itself a reproduction of their training."
+      "revision_or_sha256": "phoenix.tar.gz sha256 b0e708b7abe5689475905ad11ac578abb02eb0f9bf00b207bbd6d4342afe5152",
+      "role": "Authors' released trained models. phoenix.tar.gz was downloaded and verified on 2026-09-13 (1,014,073,705 bytes, gzip integrity OK, sha256 b0e708b7abe5689475905ad11ac578abb02eb0f9bf00b207bbd6d4342afe5152). It contains more than weights: signemb_ckpt/average.pt (519 MB) is the pretrained SMKD sign-embedding model, sltunet_ckpt/average-0.* (589 MB) is the checkpoint-averaged trained SLTUNET model, and it also ships the exact runtime configuration (sltunet_ckpt/param.json, infer.sh, signemb.sh, sltunet.sh, baseline.yaml, configs/phoenix14.yaml), the joint vocabulary (vocab.zero.drop), the BPE model (ende.bpe), and the MT test data (test.bpe.en/de). The csldaily, csldaily2, and dgs3-t archives are reachable but have not been downloaded. Note the range request was ignored by the server, so the whole 1 GB archive was fetched rather than a header slice.",
+      "config_corroboration": "sltunet_ckpt/param.json independently confirms the target configuration read from the paper: hidden_size 256, embed_size 256, num_heads 4, filter_size 4096, num_encoder_layer 6, num_decoder_layer 6, beam_size 8, decode_alpha 1.0, remove_bpe true, img_feature_size 1024, max_img_len 512. This matches system 15 of Table 2 (d=256, h=4, dff=4096, N^P_enc=1 + N^S_enc=5 = 6 encoder layers, N_dec=6) and Appendix A.1 (beam size 8)."
     },
     {
       "source_id": "smkd-upstream",
@@ -258,7 +259,10 @@
           "files": []
         }
       ],
-      "acquisition_note": "Checked 2026-09-13. The official distribution channel is gone: mustc.fbk.eu returns NXDOMAIN, and ict.fbk.eu/must-c (the URL cited by the published repository's example/README.md) now 301-redirects to a generic FBK research-centres page. MuST-C is no longer listed on the FBK MT unit resources page at mt.fbk.eu/resources/. Third-party Hugging Face re-uploads exist for German but carry contradictory licence metadata (afl-3.0 and apache-2.0 on a corpus released as CC BY-NC-ND 4.0) and are CSV conversions rather than the original release, so their identity and licence basis cannot be established without a reference copy to compare against."
+      "acquisition_note": "Checked 2026-09-13. The official distribution channel is gone: mustc.fbk.eu returns NXDOMAIN, and ict.fbk.eu/must-c (the URL cited by the published repository's example/README.md) now 301-redirects to a generic FBK research-centres page. MuST-C is no longer listed on the FBK MT unit resources page at mt.fbk.eu/resources/. Third-party Hugging Face re-uploads exist for German but carry contradictory licence metadata (afl-3.0 and apache-2.0 on a corpus released as CC BY-NC-ND 4.0) and are CSV conversions rather than the original release, so their identity and licence basis cannot be established without a reference copy to compare against. Archive check 2026-09-13: the last live snapshot of the FBK page (2023-05-28) already showed the download section as '(available soon...)', so the corpus had no working public download even while the page was up. The only external links on that page were two Google Drive README documents for v3.0 and v2.0, both now HTTP 404. No direct data URL was ever archived.",
+      "release_history": "MuST-C release history, recovered 2026-09-13 from the Internet Archive snapshot of https://ict.fbk.eu/must-c/ dated 2023-05-28 (the last snapshot returning HTTP 200): v1.0 covers 8 directions, English into Dutch, French, German, Italian, Portuguese, Romanian, Russian, Spanish; v1.1 is an IWSLT-2019 special release adding English-Czech, text only; v1.2 covers 14 directions and is the first release containing Chinese; v2.0 covers English into German, Chinese, and Japanese; v3.0 covers English-German only.",
+      "needed_for": "Training only. The MT task is part of the Equation 4 training objective; inference from a trained checkpoint does not require MuST-C, as the authors' infer.sh confirms.",
+      "identity_fingerprint": "Di Gangi et al. (2019) Table 2 gives the En-De section as 2,093 talks and 234K sentences. The paper under reproduction reports 229K En-De training samples, consistent with v1.0 minus the held-out dev (1.4K) and test (2.5K) segments described in section 3.4. Any candidate copy should be checked against these counts before use."
     },
     {
       "dataset_id": "must-c-en-zh",
@@ -279,7 +283,10 @@
           "files": []
         }
       ],
-      "acquisition_note": "Checked 2026-09-13. Same dead official channel as En-De. Additionally, the requested version is ambiguous: MuST-C v1.0 (Di Gangi et al., 2019) covers English into eight languages only (Dutch, French, German, Italian, Portuguese, Romanian, Russian, Spanish) and does not include Chinese, which appears in a later release. The published repository pins v1.0 for En-De only; neither the paper nor the repository states which release supplied the 185K En-Zh samples."
+      "acquisition_note": "Checked 2026-09-13. Same dead official channel as En-De. Additionally, the requested version is ambiguous: MuST-C v1.0 (Di Gangi et al., 2019) covers English into eight languages only (Dutch, French, German, Italian, Portuguese, Romanian, Russian, Spanish) and does not include Chinese, which appears in a later release. The published repository pins v1.0 for En-De only; neither the paper nor the repository states which release supplied the 185K En-Zh samples. Archive check 2026-09-13: the last live snapshot of the FBK page (2023-05-28) already showed the download section as '(available soon...)', so the corpus had no working public download even while the page was up. The only external links on that page were two Google Drive README documents for v3.0 and v2.0, both now HTTP 404. No direct data URL was ever archived.",
+      "release_history": "MuST-C release history, recovered 2026-09-13 from the Internet Archive snapshot of https://ict.fbk.eu/must-c/ dated 2023-05-28 (the last snapshot returning HTTP 200): v1.0 covers 8 directions, English into Dutch, French, German, Italian, Portuguese, Romanian, Russian, Spanish; v1.1 is an IWSLT-2019 special release adding English-Czech, text only; v1.2 covers 14 directions and is the first release containing Chinese; v2.0 covers English into German, Chinese, and Japanese; v3.0 covers English-German only.",
+      "needed_for": "Training only. The MT task is part of the Equation 4 training objective; inference from a trained checkpoint does not require MuST-C, as the authors' infer.sh confirms.",
+      "identity_fingerprint": "No fingerprint is available from Di Gangi et al. (2019), because that paper's corpus has no Chinese section. The only available check is the 185K sample count reported in the paper under reproduction, which should discriminate between the v1.2 and v2.0 Chinese portions."
     }
   ],
   "metric_definitions": [
@@ -1347,33 +1354,39 @@
         "DNS check 2026-09-13: mustc.fbk.eu returns NXDOMAIN.",
         "HTTP check 2026-09-13: https://ict.fbk.eu/must-c/ returns 301 to https://www.fbk.eu/en/research-centers/.",
         "MuST-C is absent from the FBK MT resources listing at https://mt.fbk.eu/resources/ as of 2026-09-13.",
-        "Hugging Face mirrors found for de/fr/it/ru/es carry licence tags afl-3.0, apache-2.0, or other, conflicting with the corpus's stated CC BY-NC-ND 4.0; no Chinese mirror exists."
+        "Hugging Face mirrors found for de/fr/it/ru/es carry licence tags afl-3.0, apache-2.0, or other, conflicting with the corpus's stated CC BY-NC-ND 4.0; no Chinese mirror exists.",
+        "Internet Archive check 2026-09-13: the last HTTP 200 snapshot of https://ict.fbk.eu/must-c/ (2023-05-28) shows the 'How to obtain MuST-C' section reading '(available soon...)', with no data link; snapshots from 2024 onward return 301.",
+        "The only external links on that page were two Google Drive README files (v3.0 and v2.0 documentation), both now HTTP 404.",
+        "MuST-C is required for training only; the authors' released infer.sh performs Sign2Text inference without it."
       ]
     },
     {
       "gate_id": "smkd-pretraining-scope",
       "type": "compute",
       "status": "open",
-      "reason": "The targets require sign embeddings from the authors' retrained SMKD model with a 2D ResNet34 backbone, which must be pretrained from video per benchmark. The precomputed features already in the PHOENIX volume are the Camgoz et al. (2020b) embeddings, which the paper's own Table 2 row 1.1 shows produce a materially different score (21.21 versus 22.62 B@4 for the baseline, and the final SLTUNET number depends on the improved SMKD model). Substituting them would reproduce a different row. SMKD pretraining from video is the dominant cost in this reproduction and has not been estimated, because no preflight has run.",
-      "required_action": "Measure SMKD pretraining cost on a representative preflight once the environment exists, then apply the compute gate: proceed autonomously if the whole plan is single-GPU and under 24 hours, otherwise discuss in #repro-sign-team-r before launching. The estimate must cover SMKD pretraining plus SLTUNET training for both PHOENIX-2014T and CSL-Daily.",
+      "reason": "Materially changed by the released artifacts. The dominant cost was expected to be SMKD pretraining from video, but the authors' phoenix.tar.gz ships signemb_ckpt/average.pt, the pretrained SMKD sign-embedding model itself, alongside the checkpoint-averaged trained SLTUNET model. Three paths now exist and they answer different questions: (1) inference only from the released SLTUNET checkpoint, which verifies the authors' artifact and the evaluation pipeline but reproduces no training; (2) SLTUNET training from the released SMKD embeddings, which reproduces the paper's own training but inherits their sign encoder and still needs MuST-C; (3) full reproduction including SMKD pretraining from video, which is the only path that reproduces the whole pipeline. None has been costed, because no environment exists yet.",
+      "required_action": "Decide which of the three paths the study wants, then cost it from a representative preflight and apply the compute gate. Path 1 is cheap and unblocked by MuST-C and is the recommended first step regardless, because it validates the container, decoding, and metric implementation against published numbers before anything expensive runs. Paths 2 and 3 both require resolving MuST-C first. Whichever is chosen, the reused artifacts must be recorded as such: a score obtained from the authors' own weights is artifact verification, not a reproduction of their training, and cannot close a target as if it were.",
       "evidence": [
         "Paper section 5.1: the SMKD model is pretrained on each benchmark separately on the Sign2Gloss task.",
-        "Paper section 5.2: replacing Camgoz et al. (2020b) embeddings with the retrained SMKD model gives +1.41 BLEU, and the ResNet34 backbone change gives a further +0.31 BLEU into the final system 15.",
-        "Wrapper listing on 2026-09-13: the volume's PHOENIX features are phoenix14t.pami0.*, the Camgoz et al. (2020b) embeddings.",
-        "Repository example/README.md step 2 describes SMKD pretraining, checkpoint averaging, and feature extraction with --num-feature-aug 10 as prerequisites of SLTUNET training."
+        "Paper section 5.2: replacing Camgoz et al. (2020b) embeddings with the retrained SMKD model gives +1.41 BLEU, and the ResNet34 backbone change a further +0.31 BLEU.",
+        "Verified 2026-09-13: phoenix.tar.gz (sha256 b0e708b7abe5689475905ad11ac578abb02eb0f9bf00b207bbd6d4342afe5152) contains signemb_ckpt/average.pt at 519,383,847 bytes and sltunet_ckpt/average-0.data-00000-of-00001 at 588,890,248 bytes.",
+        "The released infer.sh wires these together directly: smkd_model_path=signemb_ckpt/average.pt with the SLTUNET checkpoint in output_dir=sltunet_ckpt, decoding eval_task='sign2text'.",
+        "Wrapper listing on 2026-09-13: the volume's PHOENIX features are phoenix14t.pami0.*, the Camgoz et al. (2020b) embeddings, which are not the ones behind the targets."
       ]
     },
     {
       "gate_id": "mustc-enzh-version",
       "type": "protocol",
       "status": "open",
-      "reason": "The MuST-C release supplying the En-Zh MT data for the CSL-Daily experiments is not identified. The paper cites Di Gangi et al. (2019) and reports 185K En-Zh samples, but MuST-C v1.0 from that paper covers only eight target languages and has no Chinese portion; Chinese appears in a later release. The published repository pins v1.0 for En-De only and says nothing about En-Zh. Choosing a release silently would be an invented protocol detail affecting all 18 CSL-Daily targets, whose training objective includes this MT data.",
-      "required_action": "Resolve which MuST-C release supplied the 185K En-Zh samples. Check the release whose En-Zh training portion actually contains about 185K segments and compare against the paper's figure; if no release matches, this becomes an author-contact question, which is gated until after an independent attempt. Until resolved, any CSL-Daily run using a guessed release is conditional evidence, not a produced target.",
+      "reason": "The MuST-C release supplying the En-Zh MT data for the CSL-Daily experiments is not identified, and the primary sources now rule out the cited one. Di Gangi et al. (2019) state MuST-C covers English into 8 languages and list them; Chinese is not among them. The FBK release history confirms Chinese first appears in v1.2. The paper under reproduction cites Di Gangi et al. (2019) for 185K En-Zh samples, and the published repository pins v1.0 for En-De only. The En-Zh data therefore came from v1.2 or v2.0, and nothing states which.",
+      "required_action": "Determine whether the v1.2 or the v2.0 English-Chinese training portion contains about 185K segments and use that to identify the release. If the counts do not discriminate, this becomes an author-contact question, which is gated until after an independent attempt. Until resolved, any CSL-Daily training run using a guessed release is conditional evidence, not a produced target. This gate does not block the PHOENIX-2014T targets.",
       "evidence": [
         "Paper section 5.1: 'We employ MuST-C English-German (En-De, 229K samples) and English-Chinese (En-Zh, 185K samples) (Di Gangi et al., 2019) as the augmented MT data for PHOENIX-2014T/DGS3-T and CSL-Daily, respectively.'",
         "Published repository example/README.md step 1: 'Get MuST-C En-De dataset from FBK; note we used the data in v1.0' — v1.0 is pinned for En-De only.",
         "Di Gangi et al. (2019) describes MuST-C as covering English into eight languages: Dutch, French, German, Italian, Portuguese, Romanian, Russian, Spanish. Chinese is not among them.",
-        "The En-De figure of 229K is consistent with v1.0; the En-Zh figure of 185K must therefore come from a different release."
+        "The En-De figure of 229K is consistent with v1.0; the En-Zh figure of 185K must therefore come from a different release.",
+        "Di Gangi et al. (2019), abstract and section 1: MuST-C covers 'English into 8 languages' — German, Spanish, French, Italian, Dutch, Portuguese, Romanian, Russian. Table 2 lists exactly these 8 sections.",
+        "MuST-C release history, recovered 2026-09-13 from the Internet Archive snapshot of https://ict.fbk.eu/must-c/ dated 2023-05-28 (the last snapshot returning HTTP 200): v1.0 covers 8 directions, English into Dutch, French, German, Italian, Portuguese, Romanian, Russian, Spanish; v1.1 is an IWSLT-2019 special release adding English-Czech, text only; v1.2 covers 14 directions and is the first release containing Chinese; v2.0 covers English into German, Chinese, and Japanese; v3.0 covers English-German only."
       ]
     }
   ],
@@ -1381,7 +1394,7 @@
     "published_requirements": "python==3.8, tensorflow==1.15 (repository README 'Requirement'); no requirements.txt or lockfile is published.",
     "base_image_conflict": "The repository's standard GPU base image ghcr.io/sign-language-processing/reproduction:latest supplies NVIDIA NGC PyTorch. SLTUNET is TensorFlow 1.15, which needs CUDA 10.0 / cuDNN 7.x and will not run on that image, so a paper-specific Dockerfile is expected. This is an environment adaptation, not a change to the published code, and the exact image has not been chosen or built yet.",
     "video_decoding": "The published SLTUNET training path consumes precomputed SMKD sign features in .h5 files rather than decoding video, so no video decoder is introduced for it. The upstream SMKD feature-extraction step does read frames and is where simple-video-utils would apply if that step is rerun.",
-    "planned_first_check": "An evaluation-path preflight using the authors' released PHOENIX checkpoint, to exercise decoding, checkpoint averaging, and eval/metrics.py against the published Table 4 numbers before committing to SMKD pretraining plus full SLTUNET training."
+    "planned_first_check": "Evaluation-path preflight using the authors' released PHOENIX artifacts: run the shipped infer.sh against the PHOENIX videos already in the shared Volume, using signemb_ckpt/average.pt and the checkpoint-averaged SLTUNET model, then score with eval/metrics.py against the Table 4 end-to-end test numbers. This needs no MuST-C and no SMKD pretraining, so it is unblocked by the open data gates, and it validates the TensorFlow 1.15 container, the decoding settings, and the metric implementation before any expensive run. Its result is artifact verification, not a reproduction of the authors' training."
   },
   "open_questions": [
     "Whether the study wants the DGS3-T targets pursued at all, given that permission from the University of Hamburg is a prerequisite and may not be obtainable within the study.",

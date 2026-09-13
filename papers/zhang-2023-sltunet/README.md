@@ -111,7 +111,7 @@ affect comparability were recorded from the paper and the repository:
 | --- | --- | --- | --- |
 | Paper PDF | https://arxiv.org/pdf/2305.01778v1 | `51aab83aaed709a042b45ec2bf51faed81ea6f11dd784e4bf2af61326f615add` | Target and protocol source |
 | Published code | https://github.com/bzhangGo/sltunet | `b1d1d0e8b3b7275e10cd89229f2632b556df5de9` | Model, training, decoding, metrics, SMKD adaptation, DGS3-T construction |
-| Released weights | https://data.statmt.org/bzhang/iclr2023_sltunet/ | not retrieved, not hashed | Intended evaluation-path preflight; unpinned |
+| Released artifacts | https://data.statmt.org/bzhang/iclr2023_sltunet/phoenix.tar.gz | `b0e708b7abe5689475905ad11ac578abb02eb0f9bf00b207bbd6d4342afe5152` | Pretrained SMKD model, trained SLTUNET checkpoint, exact configs, vocab, BPE model |
 | SMKD upstream | https://github.com/ycmin95/VAC_CSLR | not pinned | Cited sign-embedding method; a copy is vendored in the repo under `smkd/` |
 
 **Search performed.** The assignment URL alone did not identify the paper: OpenReview
@@ -205,19 +205,71 @@ a decision for Team S, not a download — see gate `slt-data-access`.
 
 **The En-Zh release is unidentified, and v1.0 cannot be the answer.** The paper
 cites Di Gangi et al. (2019) for both MT sets and reports 185K En-Zh samples, but
-MuST-C v1.0 covers English into eight languages — Dutch, French, German, Italian,
-Portuguese, Romanian, Russian, Spanish — and has **no Chinese portion**. The
-repository pins v1.0 for En-De only and says nothing about En-Zh. Picking a
-release silently would be an invented protocol detail affecting all 18 CSL-Daily
-targets, so this is gated at `mustc-enzh-version`; any CSL-Daily run made on a
-guess is conditional evidence, not a produced target.
+that paper's abstract, section 1, and Table 2 all state MuST-C covers English into
+eight languages — Dutch, French, German, Italian, Portuguese, Romanian, Russian,
+Spanish — with **no Chinese portion**. The FBK release history, recovered from the
+Internet Archive, confirms Chinese first appears in v1.2:
+
+| Release | Coverage |
+| --- | --- |
+| v1.0 | 8 directions (En→Nl, Fr, De, It, Pt, Ro, Ru, Es) — **no Chinese** |
+| v1.1 | IWSLT-2019 special release, +En-Cs, text only |
+| v1.2 | 14 directions — **first release with Chinese** |
+| v2.0 | En→{German, Chinese, Japanese} |
+| v3.0 | En→German only |
+
+So the En-Zh data came from v1.2 or v2.0, and nothing states which. The repository
+pins v1.0 for En-De only. Picking a release silently would be an invented protocol
+detail affecting all 18 CSL-Daily targets, so this is gated at
+`mustc-enzh-version`; any CSL-Daily run made on a guess is conditional evidence,
+not a produced target. This gate does **not** block the PHOENIX-2014T targets.
+
+**Identity fingerprints for verifying any candidate copy.** Di Gangi et al. (2019)
+Table 2 gives En-De as 2,093 talks / 234K sentences, consistent with the 229K
+training samples reported here after the dev (1.4K) and test (2.5K) holdouts. For
+En-Zh there is no such fingerprint, since that paper has no Chinese section; the
+only check is whether the v1.2 or v2.0 Chinese portion contains ~185K segments,
+which is also how the version question should be settled.
 
 **The PHOENIX features in the Volume are the wrong ones.** `features/phoenix14t.pami0.*`
 are the Camgoz et al. (2020b) embeddings — the paper's Table 2 row 1.1, scoring
 21.21 B@4 on dev. The targets require the authors' retrained SMKD embeddings with
-a 2D ResNet34 backbone. Reusing the available features would reproduce a
-different table row, so SMKD pretraining from the videos is required; that is the
-dominant cost, tracked at gate `smkd-pretraining-scope`.
+a 2D ResNet34 backbone, so these cannot be substituted.
+
+**But the authors released the SMKD model itself.** `phoenix.tar.gz` (1,014,073,705
+bytes, sha256 `b0e708b7…`, gzip integrity verified 2026-09-13) contains far more
+than weights:
+
+| File | Size | What it is |
+| --- | ---: | --- |
+| `signemb_ckpt/average.pt` | 519 MB | The pretrained SMKD sign-embedding model |
+| `sltunet_ckpt/average-0.*` | 589 MB | The checkpoint-averaged trained SLTUNET model |
+| `sltunet_ckpt/param.json` | — | Exact runtime hyperparameters |
+| `sltunet_ckpt/vocab.zero.drop`, `ende.bpe` | — | Joint vocabulary and BPE model |
+| `infer.sh`, `signemb.sh`, `sltunet.sh`, `baseline.yaml`, `configs/phoenix14.yaml` | — | Exact run configuration |
+
+`param.json` independently corroborates the target configuration read from the
+paper: `hidden_size 256`, `num_heads 4`, `filter_size 4096`, `num_encoder_layer 6`
+(= `N^P_enc=1` + `N^S_enc=5`), `num_decoder_layer 6`, `beam_size 8`,
+`decode_alpha 1.0` — matching system 15 of Table 2 and Appendix A.1.
+
+This opens **three paths that answer different questions**, tracked at gate
+`smkd-pretraining-scope`:
+
+1. **Inference only** from the released SLTUNET checkpoint — verifies the authors'
+   artifact and our evaluation pipeline, reproduces no training. Needs no MuST-C
+   and no SMKD pretraining, so it is unblocked today.
+2. **SLTUNET training** from the released SMKD embeddings — reproduces the paper's
+   own training but inherits their sign encoder. Still needs MuST-C.
+3. **Full reproduction** including SMKD pretraining from video — the only path that
+   reproduces the whole pipeline. Needs MuST-C and is the expensive one.
+
+Path 1 is the recommended first step regardless of which the study ultimately
+wants, because it validates the TensorFlow 1.15 container, the decoding settings,
+and the metric implementation against published numbers before anything expensive
+runs. Whichever path is chosen, reused artifacts are recorded as such: a score
+obtained from the authors' own weights is **artifact verification, not a
+reproduction of their training**, and cannot close a target as if it were.
 
 **DGS3-T: availability is no longer the obstacle, permission is.** The shared
 Volume already contains `dgs-corpus/` including `split.3.0.0-uzh-document.json`,
@@ -297,6 +349,23 @@ No protocol deviation has been made, because nothing has been run.
   absent. Outcome: `slt-data-access` narrowed to MuST-C plus a licence-basis
   confirmation; `dgs3t-licence` reframed from an availability question to a
   permission question.
+- **MuST-C acquisition hunt, 2026-09-13.** Hypothesis: the MuST-C paper or the
+  Internet Archive would expose a working download. Test: DNS and HTTP probes of
+  the FBK hosts, Wayback CDX enumeration, and retrieval of the last HTTP 200
+  snapshot of the download page (2023-05-28). Result: no download was ever
+  archived — even that snapshot reads "(available soon...)" in the "How to obtain
+  MuST-C" section, and its only external links were two Google Drive READMEs now
+  returning 404. Outcome: hypothesis rejected; MuST-C stays a Team S request. The
+  attempt was not wasted — the same snapshot yielded the release history that
+  rules out v1.0 for Chinese, and the MuST-C paper yielded the En-De identity
+  fingerprint (2,093 talks / 234K sentences) for checking any future copy.
+- **Pivot to the authors' released artifacts.** Hypothesis: the released archives
+  are weights only and cannot substitute for missing data. Test: fetched
+  `phoenix.tar.gz` and listed it. Result: hypothesis wrong — it ships the
+  pretrained SMKD model, the trained checkpoint-averaged SLTUNET model, and the
+  exact configs, which both corroborates the target configuration and opens an
+  inference-only path that no open data gate blocks. Note the server ignored the
+  HTTP range request, so the full 1 GB was fetched rather than a header slice.
 - **Sign-feature provenance check.** Hypothesis: the precomputed
   `features/phoenix14t.pami0.*` in the Volume could shortcut SMKD pretraining.
   Test: matched them against the paper's ablation ladder. Result: they are the
