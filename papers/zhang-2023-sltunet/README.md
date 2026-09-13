@@ -285,7 +285,33 @@ restriction, so the 18 Table 6 targets stay terminal `not_produced` /
 
 ## Environment and patches
 
-No container has been built and no patch has been written.
+**No patch to the authors' code has been needed.** The reproduction stays at
+preference level 1: the pinned upstream entry point is invoked directly with the
+authors' own released configuration, and only paths are substituted.
+
+**The container must carry two frameworks in one process.** `main.py inference()`
+imports `smkd.sign_embedder.SignEmbedding`, which is PyTorch, and feeds its output
+into the TensorFlow graph — so TF 1.15 and PyTorch must coexist. The image is the
+public `tensorflow/tensorflow:1.15.5-gpu-py3` plus `torch==1.7.1+cu101`,
+`torchvision==0.8.2+cu101`, and `opencv-python-headless==4.6.0.66`. The NGC `tf1`
+images would allow newer GPUs, but `nvcr.io` returned HTTP 401 for anonymous
+manifest requests and obtaining registry credentials is a secrets gate, so they
+were not pursued. Because the image is CUDA 10, the GPU must be Turing or older;
+runs use **T4**. The repository's standard GPU base image is deliberately not used
+— it supplies NGC PyTorch, not TensorFlow 1.15.
+
+**Frame source is a real fidelity caveat** (gate `phoenix-frame-fidelity`). The
+authors' released `test.txt` points at
+`features/fullFrame-210x260px/test/<seq>/*.png` — lossless frames, which is what
+their published numbers came from. The shared Volume instead holds
+`videos/test/<seq>.mp4`, **HEVC-encoded, muxed with Lavf 61.7.100**, i.e. a recent
+lossy re-encode made by the study; one test sequence is 34 KB. SMKD consumes raw
+pixels, so compression artifacts can shift features and therefore scores by an
+unmeasured amount. No code change is needed to read either form — the authors'
+own loader (`smkd/dataset/dataloader_video.py`, lines 65–77) branches on the path
+suffix and opens non-PNG paths with `cv2.VideoCapture` — so this is a path
+substitution, not a patch. The original 41.7 GB distribution is still live at
+RWTH if the study wants the faithful comparison.
 
 The published requirement is **Python 3.8 with TensorFlow 1.15**, stated in the
 repository README; there is no `requirements.txt`, `environment.yml`, or lockfile
