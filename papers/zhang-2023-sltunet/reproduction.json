@@ -1,0 +1,1283 @@
+{
+  "paper_id": "zhang-2023-sltunet",
+  "agents": [
+    {
+      "agent_id": "sonnet-5-claude-code",
+      "model": "Sonnet 5",
+      "model_id": "claude-sonnet-5",
+      "harness": "Claude Code",
+      "scope": "Opened the attempt: resolved the assignment URL to the paper identity, acquired the paper PDF, discovered and cloned the published code, and began the target contract. No experiment was executed by this agent. harness_version is not exposed by the session, so it is omitted.",
+      "evidence": [
+        "Interactive Claude Code session on 2026-09-13 declaring model name 'Sonnet 5' and exact model ID 'claude-sonnet-5'.",
+        "Session performed the OpenReview fetch failure diagnosis, arXiv PDF retrieval, and the git clone of the published code at commit b1d1d0e8b3b7275e10cd89229f2632b556df5de9."
+      ]
+    },
+    {
+      "agent_id": "opus-5-claude-code",
+      "model": "Opus 5 (1M context)",
+      "model_id": "claude-opus-5[1m]",
+      "harness": "Claude Code",
+      "scope": "Continued the same session after the session model changed mid-attempt: authored this record, the target ledger, the dataset and licence findings, and the open gates. No experiment was executed by this agent. harness_version is not exposed by the session, so it is omitted.",
+      "evidence": [
+        "Same interactive Claude Code session on 2026-09-13; the environment declared model name 'Opus 5 (1M context)' and exact model ID 'claude-opus-5[1m]' partway through the attempt.",
+        "Both agent entries are retained because AGENTS.md requires preserving earlier attributions when the model changes."
+      ]
+    }
+  ],
+  "assignment": {
+    "kind": "direct_user_request",
+    "source": {
+      "path": null,
+      "sha256": "3e935b739f4a6196515d49ad048d10ef238888e89031eaec14038bc695c893bf",
+      "note": "SHA-256 of the exact assignment string supplied by the user in the Claude Code session on 2026-09-13: 'https://openreview.net/pdf?id=EBS4C77p_5S'. No queue export was provided, so no queue-review fields (confirmation, status, reviewer, code_repos, availability, ethics flags) exist for this assignment."
+    },
+    "requested_scope": "The user supplied only the paper URL with no what_to_reproduce text. Scope was resolved from the paper itself to the SLTUNET system rows of the three main results tables (Tables 4, 5, and 6), which carry the paper's headline claims. The Table 2 ablation ladder and the Table 3 and Table 8 secondary ablations are not targets of this attempt."
+  },
+  "paper": {
+    "title": "SLTUNET: A Simple Unified Model for Sign Language Translation",
+    "citation": "Biao Zhang, Mathias Müller, and Rico Sennrich. SLTUNET: A Simple Unified Model for Sign Language Translation. In The Eleventh International Conference on Learning Representations (ICLR), 2023.",
+    "url": "https://openreview.net/forum?id=EBS4C77p_5S",
+    "pdf_sha256": "51aab83aaed709a042b45ec2bf51faed81ea6f11dd784e4bf2af61326f615add",
+    "pdf_url_hashed": "https://arxiv.org/pdf/2305.01778v1",
+    "accessed_at": "2026-09-13",
+    "arxiv_id": "2305.01778v1"
+  },
+  "sources": [
+    {
+      "source_id": "paper-pdf",
+      "kind": "paper",
+      "url": "https://arxiv.org/pdf/2305.01778v1",
+      "revision_or_sha256": "51aab83aaed709a042b45ec2bf51faed81ea6f11dd784e4bf2af61326f615add",
+      "role": "Target and protocol source. The assignment pointed at the OpenReview PDF, but openreview.net served an HTTP 403 bot challenge to both the fetch tool and curl on 2026-09-13, so the arXiv v1 copy of the same ICLR 2023 camera-ready was hashed instead. The arXiv copy carries the 'Published as a conference paper at ICLR 2023' header and the same tables; the OpenReview record remains the canonical citation."
+    },
+    {
+      "source_id": "published-code",
+      "kind": "code",
+      "url": "https://github.com/bzhangGo/sltunet",
+      "revision_or_sha256": "b1d1d0e8b3b7275e10cd89229f2632b556df5de9",
+      "role": "The authors' official implementation, linked from the paper abstract. Contains the SLTUNET model, the adapted SMKD sign-embedding pretraining code under smkd/, the evaluation metrics under eval/, the PHOENIX walk-through under example/, and the DGS3-T construction scripts under dgs3-t/. Master branch, latest commit dated 2023-07-10."
+    },
+    {
+      "source_id": "released-checkpoints",
+      "kind": "weights",
+      "url": "https://data.statmt.org/bzhang/iclr2023_sltunet/",
+      "revision_or_sha256": "unretrieved",
+      "role": "Authors' released trained models for PHOENIX and CSL-Daily (phoenix.tar.gz, csldaily.tar.gz, csldaily2.tar.gz, dgs3-t.tar.gz), announced in the repository README on 2023-07-09. Directory listing confirmed reachable on 2026-09-13 but no archive has been downloaded or hashed yet, so this source is not pinned. Intended use is an evaluation-path preflight and a check of the decoding/metric pipeline before any training run; a score obtained from the authors' own weights verifies the artifact and is not by itself a reproduction of their training."
+    },
+    {
+      "source_id": "smkd-upstream",
+      "kind": "code",
+      "url": "https://github.com/ycmin95/VAC_CSLR",
+      "revision_or_sha256": "unpinned",
+      "role": "Upstream SMKD/VAC_CSLR implementation cited by the paper (footnote 1) as the sign embedding extractor. The sltunet repository vendors an adapted copy under smkd/, so the vendored copy pinned through published-code is the artifact that will actually run; this upstream is recorded because the paper cites it and because the paper reports retraining SMKD with a 2D ResNet34 backbone."
+    }
+  ],
+  "status": {
+    "pipeline": null,
+    "numerical_agreement": "not_assessed",
+    "numerical_agreement_basis": "No target has produced a value: no environment has been built and no run has been executed, so there is nothing comparable to assess.",
+    "preference_level": 1,
+    "preference_level_basis": "The authors published a complete implementation at a pinnable commit, including training, decoding, and metric code, so the attempt starts at preference level 1. The level has not yet been tested by execution; the TensorFlow 1.15 / Python 3.8 requirement is expected to force container work and may force level 2 patches.",
+    "blocker": null,
+    "attempt_state": "In progress and not ready for review. Stages completed: assignment recorded, paper acquired and hashed, target contract resolved, published code discovered and pinned. Stages not started: environment build, data gate, preflight, training, evaluation. Three gates are open."
+  },
+  "datasets": [
+    {
+      "dataset_id": "phoenix-2014t",
+      "name": "RWTH-PHOENIX-Weather 2014 T (PHOENIX-2014T)",
+      "version_or_subset": "phoenix-2014-T.v3",
+      "license_or_permission": "Not yet verified against the RWTH Aachen distribution terms; the data gate for this dataset is open.",
+      "cloud_processing_allowed": false,
+      "modal_volume": "datasets",
+      "modal_path": "phoenix-2014t",
+      "source_url": "https://www-i6.informatik.rwth-aachen.de/ftp/pub/rwth-phoenix/2016/phoenix-2014-T.v3.tar.gz",
+      "verification_status": "unverified",
+      "verification_note": "Neither the Modal Volume path nor the archive has been inspected: the Modal CLI is not installed and the workspace is not authenticated, so the dataset gate could not be run. Sample counts below are the paper's published counts (Table 1), not counts observed in data.",
+      "splits": [
+        {
+          "name": "train",
+          "sample_count": 7096,
+          "count_source": "paper Table 1"
+        },
+        {
+          "name": "dev",
+          "sample_count": 519,
+          "count_source": "paper Table 1"
+        },
+        {
+          "name": "test",
+          "sample_count": 642,
+          "count_source": "paper Table 1"
+        }
+      ]
+    },
+    {
+      "dataset_id": "csl-daily",
+      "name": "CSL-Daily",
+      "version_or_subset": "Release used by Zhou et al. (2021); exact version to be confirmed at the data gate",
+      "license_or_permission": "Not yet verified; CSL-Daily is distributed under a signed research agreement. The data gate for this dataset is open.",
+      "cloud_processing_allowed": false,
+      "modal_volume": "datasets",
+      "modal_path": "csl-daily",
+      "source_url": "http://home.ustc.edu.cn/~zhouh156/dataset/csl-daily/",
+      "verification_status": "unverified",
+      "verification_note": "Not inspected; the Modal workspace is not authenticated. Sample counts are the paper's published counts (Table 1).",
+      "splits": [
+        {
+          "name": "train",
+          "sample_count": 18401,
+          "count_source": "paper Table 1"
+        },
+        {
+          "name": "dev",
+          "sample_count": 1077,
+          "count_source": "paper Table 1"
+        },
+        {
+          "name": "test",
+          "sample_count": 1176,
+          "count_source": "paper Table 1"
+        }
+      ]
+    },
+    {
+      "dataset_id": "dgs3-t",
+      "name": "DGS3-T (document-level split of the Public DGS Corpus, release 3)",
+      "version_or_subset": "Public DGS Corpus release 3 (MEINE DGS, doi 10.25592/dgs.meinedgs-3.0), authors' document-level translation split",
+      "license_or_permission": "Blocked: the Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg.",
+      "cloud_processing_allowed": false,
+      "modal_volume": "datasets",
+      "modal_path": "dgs3-t",
+      "source_url": "https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html",
+      "verification_status": "blocked",
+      "verification_note": "Not acquired and not acquirable without written permission. Two videos with an incorrect 25fps framerate are excluded by the authors' protocol (Appendix A.2); the split is a random document-level assignment with 10 documents each in dev and test.",
+      "splits": [
+        {
+          "name": "train",
+          "sample_count": 60306,
+          "count_source": "paper Table 1"
+        },
+        {
+          "name": "dev",
+          "sample_count": 967,
+          "count_source": "paper Table 1"
+        },
+        {
+          "name": "test",
+          "sample_count": 1575,
+          "count_source": "paper Table 1"
+        }
+      ]
+    },
+    {
+      "dataset_id": "must-c-en-de",
+      "name": "MuST-C English-German",
+      "version_or_subset": "v1.0, text side only (used as the MT auxiliary task for PHOENIX-2014T and DGS3-T)",
+      "license_or_permission": "CC BY-NC-ND 4.0 per the MuST-C release; non-commercial research use. To be confirmed at the data gate.",
+      "cloud_processing_allowed": false,
+      "modal_volume": "datasets",
+      "modal_path": "must-c-en-de",
+      "source_url": "https://ict.fbk.eu/must-c/",
+      "verification_status": "unverified",
+      "verification_note": "Not inspected. The paper states 229K samples and that punctuation is removed from English source sentences and from German sentences for PHOENIX-2014T.",
+      "splits": [
+        {
+          "name": "train",
+          "sample_count": 229000,
+          "count_source": "paper section 5.1, stated as 229K (approximate, not an exact observed count)"
+        }
+      ]
+    },
+    {
+      "dataset_id": "must-c-en-zh",
+      "name": "MuST-C English-Chinese",
+      "version_or_subset": "v1.0, text side only (used as the MT auxiliary task for CSL-Daily)",
+      "license_or_permission": "CC BY-NC-ND 4.0 per the MuST-C release; non-commercial research use. To be confirmed at the data gate.",
+      "cloud_processing_allowed": false,
+      "modal_volume": "datasets",
+      "modal_path": "must-c-en-zh",
+      "source_url": "https://ict.fbk.eu/must-c/",
+      "verification_status": "unverified",
+      "verification_note": "Not inspected. The paper states 185K samples and that punctuation is removed from English source sentences.",
+      "splits": [
+        {
+          "name": "train",
+          "sample_count": 185000,
+          "count_source": "paper section 5.1, stated as 185K (approximate, not an exact observed count)"
+        }
+      ]
+    }
+  ],
+  "metric_definitions": [
+    {
+      "metric_id": "bleu1-tok",
+      "name": "Tokenized BLEU, 1-gram (B@1)",
+      "direction": "higher_is_better",
+      "implementation": "sltunet eval/metrics.py, derived from signjoey metrics.py (github.com/neccam/slt)",
+      "version": "sltunet commit b1d1d0e8b3b7275e10cd89229f2632b556df5de9",
+      "aggregation": "corpus-level over the split",
+      "unit_or_scale": "0-100",
+      "notes": "Paper section 5.1 cites the signjoey metric scripts as the tokenized-BLEU implementation."
+    },
+    {
+      "metric_id": "bleu2-tok",
+      "name": "Tokenized BLEU, 2-gram (B@2)",
+      "direction": "higher_is_better",
+      "implementation": "sltunet eval/metrics.py, derived from signjoey metrics.py (github.com/neccam/slt)",
+      "version": "sltunet commit b1d1d0e8b3b7275e10cd89229f2632b556df5de9",
+      "aggregation": "corpus-level over the split",
+      "unit_or_scale": "0-100"
+    },
+    {
+      "metric_id": "bleu3-tok",
+      "name": "Tokenized BLEU, 3-gram (B@3)",
+      "direction": "higher_is_better",
+      "implementation": "sltunet eval/metrics.py, derived from signjoey metrics.py (github.com/neccam/slt)",
+      "version": "sltunet commit b1d1d0e8b3b7275e10cd89229f2632b556df5de9",
+      "aggregation": "corpus-level over the split",
+      "unit_or_scale": "0-100"
+    },
+    {
+      "metric_id": "bleu4-tok",
+      "name": "Tokenized BLEU, 4-gram (B@4)",
+      "direction": "higher_is_better",
+      "implementation": "sltunet eval/metrics.py, derived from signjoey metrics.py (github.com/neccam/slt)",
+      "version": "sltunet commit b1d1d0e8b3b7275e10cd89229f2632b556df5de9",
+      "aggregation": "corpus-level over the split",
+      "unit_or_scale": "0-100"
+    },
+    {
+      "metric_id": "rouge-l-f1",
+      "name": "Rouge-L F1 (ROUGE)",
+      "direction": "higher_is_better",
+      "implementation": "sltunet eval/mscoco_rouge.py via eval/metrics.py",
+      "version": "sltunet commit b1d1d0e8b3b7275e10cd89229f2632b556df5de9",
+      "aggregation": "corpus-level over the split",
+      "unit_or_scale": "0-100",
+      "notes": "Paper section 5.1 cites Lin (2004) Rouge-L F1."
+    },
+    {
+      "metric_id": "sacrebleu-detok",
+      "name": "Detokenized BLEU (sBLEU)",
+      "direction": "higher_is_better",
+      "implementation": "SacreBLEU (Post, 2018), vendored as sltunet eval/sacrebleu.py",
+      "version": "v1.4.2",
+      "aggregation": "corpus-level over the split",
+      "unit_or_scale": "0-100",
+      "notes": "Appendix A.1 signature: BLEU+c.mixed+#refs.1+s.exp+tok.{13a,zh}+v.1.4.2. tok.13a for German, tok.zh for Chinese."
+    },
+    {
+      "metric_id": "chrf",
+      "name": "ChrF",
+      "direction": "higher_is_better",
+      "implementation": "SacreBLEU (Post, 2018), vendored as sltunet eval/sacrebleu.py",
+      "version": "v1.4.2",
+      "aggregation": "corpus-level over the split",
+      "unit_or_scale": "0-100",
+      "notes": "Appendix A.1 signature: chrF2+c.mixed+#chars.6+#refs.1+space.False+v.1.4.2."
+    }
+  ],
+  "experiments": [
+    {
+      "experiment_id": "phoenix-sign2text",
+      "system": "SLTUNET, final configuration (system 15 of Table 2): d=256, h=4, dff=4096, N^P_enc=1, N^S_enc=5, N_dec=6, CTC alpha=0.3, stochastic BPE dropout (rate 0.2, stochastic rate 0.6), Xavier gain 0.5, sign-frame random crop and horizontal flip, trained on the Equation 4 multi-task objective with MT data, using sign embeddings from the retrained SMKD model with a 2D ResNet34 backbone. Evaluated end-to-end (Sign2Text).",
+      "dataset_id": "phoenix-2014t",
+      "task": "Sign2Text (end-to-end)",
+      "checkpoint_rule": "Average of the best 10 checkpoints ranked by dev-set Sign2Text performance, then beam search with beam size 8 and a length penalty tuned on the dev set (paper Appendix A.1; repository checkpoint_averaging.py and example/test.sh).",
+      "paper_evidence": "Table 4, block 'End-to-end: Sign2Text', row 'SLTUNET'."
+    },
+    {
+      "experiment_id": "phoenix-cascading",
+      "system": "SLTUNET, final configuration (system 15 of Table 2): d=256, h=4, dff=4096, N^P_enc=1, N^S_enc=5, N_dec=6, CTC alpha=0.3, stochastic BPE dropout (rate 0.2, stochastic rate 0.6), Xavier gain 0.5, sign-frame random crop and horizontal flip, trained on the Equation 4 multi-task objective with MT data, using sign embeddings from the retrained SMKD model with a 2D ResNet34 backbone. Evaluated in cascading mode (Sign2Gloss + Gloss2Text) using the same single trained model.",
+      "dataset_id": "phoenix-2014t",
+      "task": "Cascading Sign2Gloss + Gloss2Text",
+      "checkpoint_rule": "Average of the best 10 checkpoints ranked by dev-set Sign2Text performance, then beam search with beam size 8 and a length penalty tuned on the dev set (paper Appendix A.1; repository checkpoint_averaging.py and example/test.sh).",
+      "paper_evidence": "Table 4, block 'Cascading: Sign2Gloss +Gloss2Text', row 'SLTUNET'."
+    },
+    {
+      "experiment_id": "csldaily-sign2text",
+      "system": "SLTUNET, final configuration (system 15 of Table 2): d=256, h=4, dff=4096, N^P_enc=1, N^S_enc=5, N_dec=6, CTC alpha=0.3, stochastic BPE dropout (rate 0.2, stochastic rate 0.6), Xavier gain 0.5, sign-frame random crop and horizontal flip, trained on the Equation 4 multi-task objective with MT data, using sign embeddings from the retrained SMKD model with a 2D ResNet34 backbone. Evaluated end-to-end (Sign2Text) on Chinese Sign Language with MuST-C En-Zh as the MT task and a 10K joint BPE vocabulary.",
+      "dataset_id": "csl-daily",
+      "task": "Sign2Text (end-to-end)",
+      "checkpoint_rule": "Average of the best 10 checkpoints ranked by dev-set Sign2Text performance, then beam search with beam size 8 and a length penalty tuned on the dev set (paper Appendix A.1; repository checkpoint_averaging.py and example/test.sh).",
+      "paper_evidence": "Table 5, block 'End-to-end: Sign2Text', row 'SLTUNET'."
+    },
+    {
+      "experiment_id": "csldaily-cascading",
+      "system": "SLTUNET, final configuration (system 15 of Table 2): d=256, h=4, dff=4096, N^P_enc=1, N^S_enc=5, N_dec=6, CTC alpha=0.3, stochastic BPE dropout (rate 0.2, stochastic rate 0.6), Xavier gain 0.5, sign-frame random crop and horizontal flip, trained on the Equation 4 multi-task objective with MT data, using sign embeddings from the retrained SMKD model with a 2D ResNet34 backbone. Evaluated in cascading mode (Sign2Gloss + Gloss2Text) on Chinese Sign Language using the same single trained model.",
+      "dataset_id": "csl-daily",
+      "task": "Cascading Sign2Gloss + Gloss2Text",
+      "checkpoint_rule": "Average of the best 10 checkpoints ranked by dev-set Sign2Text performance, then beam search with beam size 8 and a length penalty tuned on the dev set (paper Appendix A.1; repository checkpoint_averaging.py and example/test.sh).",
+      "paper_evidence": "Table 5, block 'Cascading: Sign2Gloss +Gloss2Text', row 'SLTUNET'."
+    },
+    {
+      "experiment_id": "dgs3t-sign2text",
+      "system": "SLTUNET, final configuration (system 15 of Table 2): d=256, h=4, dff=4096, N^P_enc=1, N^S_enc=5, N_dec=6, CTC alpha=0.3, stochastic BPE dropout (rate 0.2, stochastic rate 0.6), Xavier gain 0.5, sign-frame random crop and horizontal flip, trained on the Equation 4 multi-task objective with MT data, using sign embeddings from the retrained SMKD model with a 2D ResNet34 backbone. Evaluated end-to-end (Sign2Text) on DGS3-T with MuST-C En-De mixed at a 1:1 SLT:MT ratio and an 8K joint BPE vocabulary.",
+      "dataset_id": "dgs3-t",
+      "task": "Sign2Text (end-to-end)",
+      "checkpoint_rule": "Average of the best 10 checkpoints ranked by dev-set Sign2Text performance, then beam search with beam size 8 and a length penalty tuned on the dev set (paper Appendix A.1; repository checkpoint_averaging.py and example/test.sh).",
+      "paper_evidence": "Table 6, block 'End-to-end: Sign2Text', row 'SLTUNET'; mixing ratio stated in section 5.2."
+    },
+    {
+      "experiment_id": "dgs3t-cascading",
+      "system": "SLTUNET, final configuration (system 15 of Table 2): d=256, h=4, dff=4096, N^P_enc=1, N^S_enc=5, N_dec=6, CTC alpha=0.3, stochastic BPE dropout (rate 0.2, stochastic rate 0.6), Xavier gain 0.5, sign-frame random crop and horizontal flip, trained on the Equation 4 multi-task objective with MT data, using sign embeddings from the retrained SMKD model with a 2D ResNet34 backbone. Evaluated in cascading mode (Sign2Gloss + Gloss2Text) on DGS3-T using the same single trained model.",
+      "dataset_id": "dgs3-t",
+      "task": "Cascading Sign2Gloss + Gloss2Text",
+      "checkpoint_rule": "Average of the best 10 checkpoints ranked by dev-set Sign2Text performance, then beam search with beam size 8 and a length penalty tuned on the dev set (paper Appendix A.1; repository checkpoint_averaging.py and example/test.sh).",
+      "paper_evidence": "Table 6, block 'Cascading: Sign2Gloss +Gloss2Text', row 'SLTUNET'."
+    }
+  ],
+  "targets": [
+    {
+      "target_id": "phoenix-cascading-dev-rouge",
+      "in_scope": true,
+      "experiment_id": "phoenix-cascading",
+      "metric_id": "rouge-l-f1",
+      "split": "dev",
+      "paper_location": "Table 4, row 'SLTUNET', dev column block (column as printed)",
+      "original_value": 49.61,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "phoenix-cascading-dev-b4",
+      "in_scope": true,
+      "experiment_id": "phoenix-cascading",
+      "metric_id": "bleu4-tok",
+      "split": "dev",
+      "paper_location": "Table 4, row 'SLTUNET', dev column block (column as printed)",
+      "original_value": 25.36,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "phoenix-cascading-test-rouge",
+      "in_scope": true,
+      "experiment_id": "phoenix-cascading",
+      "metric_id": "rouge-l-f1",
+      "split": "test",
+      "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 49.98,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "phoenix-cascading-test-b1",
+      "in_scope": true,
+      "experiment_id": "phoenix-cascading",
+      "metric_id": "bleu1-tok",
+      "split": "test",
+      "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 50.42,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "phoenix-cascading-test-b2",
+      "in_scope": true,
+      "experiment_id": "phoenix-cascading",
+      "metric_id": "bleu2-tok",
+      "split": "test",
+      "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 39.24,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "phoenix-cascading-test-b3",
+      "in_scope": true,
+      "experiment_id": "phoenix-cascading",
+      "metric_id": "bleu3-tok",
+      "split": "test",
+      "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 31.41,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "phoenix-cascading-test-b4",
+      "in_scope": true,
+      "experiment_id": "phoenix-cascading",
+      "metric_id": "bleu4-tok",
+      "split": "test",
+      "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 26.0,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "phoenix-cascading-test-sbleu",
+      "in_scope": true,
+      "experiment_id": "phoenix-cascading",
+      "metric_id": "sacrebleu-detok",
+      "split": "test",
+      "paper_location": "Table 4, row 'SLTUNET', test column block (sBLEU/ChrF reported in the row bracket)",
+      "original_value": 26.0,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "phoenix-cascading-test-chrf",
+      "in_scope": true,
+      "experiment_id": "phoenix-cascading",
+      "metric_id": "chrf",
+      "split": "test",
+      "paper_location": "Table 4, row 'SLTUNET', test column block (sBLEU/ChrF reported in the row bracket)",
+      "original_value": 51.96,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "phoenix-sign2text-dev-rouge",
+      "in_scope": true,
+      "experiment_id": "phoenix-sign2text",
+      "metric_id": "rouge-l-f1",
+      "split": "dev",
+      "paper_location": "Table 4, row 'SLTUNET', dev column block (column as printed)",
+      "original_value": 52.23,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "phoenix-sign2text-dev-b4",
+      "in_scope": true,
+      "experiment_id": "phoenix-sign2text",
+      "metric_id": "bleu4-tok",
+      "split": "dev",
+      "paper_location": "Table 4, row 'SLTUNET', dev column block (column as printed)",
+      "original_value": 27.87,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "phoenix-sign2text-test-rouge",
+      "in_scope": true,
+      "experiment_id": "phoenix-sign2text",
+      "metric_id": "rouge-l-f1",
+      "split": "test",
+      "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 52.11,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "phoenix-sign2text-test-b1",
+      "in_scope": true,
+      "experiment_id": "phoenix-sign2text",
+      "metric_id": "bleu1-tok",
+      "split": "test",
+      "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 52.92,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "phoenix-sign2text-test-b2",
+      "in_scope": true,
+      "experiment_id": "phoenix-sign2text",
+      "metric_id": "bleu2-tok",
+      "split": "test",
+      "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 41.76,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "phoenix-sign2text-test-b3",
+      "in_scope": true,
+      "experiment_id": "phoenix-sign2text",
+      "metric_id": "bleu3-tok",
+      "split": "test",
+      "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 33.99,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "phoenix-sign2text-test-b4",
+      "in_scope": true,
+      "experiment_id": "phoenix-sign2text",
+      "metric_id": "bleu4-tok",
+      "split": "test",
+      "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 28.47,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "phoenix-sign2text-test-sbleu",
+      "in_scope": true,
+      "experiment_id": "phoenix-sign2text",
+      "metric_id": "sacrebleu-detok",
+      "split": "test",
+      "paper_location": "Table 4, row 'SLTUNET', test column block (sBLEU/ChrF reported in the row bracket)",
+      "original_value": 28.47,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "phoenix-sign2text-test-chrf",
+      "in_scope": true,
+      "experiment_id": "phoenix-sign2text",
+      "metric_id": "chrf",
+      "split": "test",
+      "paper_location": "Table 4, row 'SLTUNET', test column block (sBLEU/ChrF reported in the row bracket)",
+      "original_value": 53.78,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "csldaily-cascading-dev-rouge",
+      "in_scope": true,
+      "experiment_id": "csldaily-cascading",
+      "metric_id": "rouge-l-f1",
+      "split": "dev",
+      "paper_location": "Table 5, row 'SLTUNET', dev column block (column as printed)",
+      "original_value": 52.89,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "csldaily-cascading-dev-b4",
+      "in_scope": true,
+      "experiment_id": "csldaily-cascading",
+      "metric_id": "bleu4-tok",
+      "split": "dev",
+      "paper_location": "Table 5, row 'SLTUNET', dev column block (column as printed)",
+      "original_value": 22.95,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "csldaily-cascading-test-rouge",
+      "in_scope": true,
+      "experiment_id": "csldaily-cascading",
+      "metric_id": "rouge-l-f1",
+      "split": "test",
+      "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 53.1,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "csldaily-cascading-test-b1",
+      "in_scope": true,
+      "experiment_id": "csldaily-cascading",
+      "metric_id": "bleu1-tok",
+      "split": "test",
+      "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 54.39,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "csldaily-cascading-test-b2",
+      "in_scope": true,
+      "experiment_id": "csldaily-cascading",
+      "metric_id": "bleu2-tok",
+      "split": "test",
+      "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 40.28,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "csldaily-cascading-test-b3",
+      "in_scope": true,
+      "experiment_id": "csldaily-cascading",
+      "metric_id": "bleu3-tok",
+      "split": "test",
+      "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 30.52,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "csldaily-cascading-test-b4",
+      "in_scope": true,
+      "experiment_id": "csldaily-cascading",
+      "metric_id": "bleu4-tok",
+      "split": "test",
+      "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 23.76,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "csldaily-cascading-test-sbleu",
+      "in_scope": true,
+      "experiment_id": "csldaily-cascading",
+      "metric_id": "sacrebleu-detok",
+      "split": "test",
+      "paper_location": "Table 5, row 'SLTUNET', test column block (sBLEU/ChrF reported in the row bracket)",
+      "original_value": 23.76,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "csldaily-cascading-test-chrf",
+      "in_scope": true,
+      "experiment_id": "csldaily-cascading",
+      "metric_id": "chrf",
+      "split": "test",
+      "paper_location": "Table 5, row 'SLTUNET', test column block (sBLEU/ChrF reported in the row bracket)",
+      "original_value": 21.09,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "csldaily-sign2text-dev-rouge",
+      "in_scope": true,
+      "experiment_id": "csldaily-sign2text",
+      "metric_id": "rouge-l-f1",
+      "split": "dev",
+      "paper_location": "Table 5, row 'SLTUNET', dev column block (column as printed)",
+      "original_value": 53.58,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "csldaily-sign2text-dev-b4",
+      "in_scope": true,
+      "experiment_id": "csldaily-sign2text",
+      "metric_id": "bleu4-tok",
+      "split": "dev",
+      "paper_location": "Table 5, row 'SLTUNET', dev column block (column as printed)",
+      "original_value": 23.99,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "csldaily-sign2text-test-rouge",
+      "in_scope": true,
+      "experiment_id": "csldaily-sign2text",
+      "metric_id": "rouge-l-f1",
+      "split": "test",
+      "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 54.08,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "csldaily-sign2text-test-b1",
+      "in_scope": true,
+      "experiment_id": "csldaily-sign2text",
+      "metric_id": "bleu1-tok",
+      "split": "test",
+      "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 54.98,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "csldaily-sign2text-test-b2",
+      "in_scope": true,
+      "experiment_id": "csldaily-sign2text",
+      "metric_id": "bleu2-tok",
+      "split": "test",
+      "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 41.44,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "csldaily-sign2text-test-b3",
+      "in_scope": true,
+      "experiment_id": "csldaily-sign2text",
+      "metric_id": "bleu3-tok",
+      "split": "test",
+      "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 31.84,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "csldaily-sign2text-test-b4",
+      "in_scope": true,
+      "experiment_id": "csldaily-sign2text",
+      "metric_id": "bleu4-tok",
+      "split": "test",
+      "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 25.01,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "csldaily-sign2text-test-sbleu",
+      "in_scope": true,
+      "experiment_id": "csldaily-sign2text",
+      "metric_id": "sacrebleu-detok",
+      "split": "test",
+      "paper_location": "Table 5, row 'SLTUNET', test column block (sBLEU/ChrF reported in the row bracket)",
+      "original_value": 25.01,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "csldaily-sign2text-test-chrf",
+      "in_scope": true,
+      "experiment_id": "csldaily-sign2text",
+      "metric_id": "chrf",
+      "split": "test",
+      "paper_location": "Table 5, row 'SLTUNET', test column block (sBLEU/ChrF reported in the row bracket)",
+      "original_value": 21.99,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+    },
+    {
+      "target_id": "dgs3t-cascading-dev-rouge",
+      "in_scope": true,
+      "experiment_id": "dgs3t-cascading",
+      "metric_id": "rouge-l-f1",
+      "split": "dev",
+      "paper_location": "Table 6, row 'SLTUNET', dev column block (column as printed)",
+      "original_value": 26.4,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "data_permission_blocked",
+          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "dgs3t-licence"
+        ],
+        "evidence": [
+          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
+          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
+          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
+        ]
+      }
+    },
+    {
+      "target_id": "dgs3t-cascading-dev-b4",
+      "in_scope": true,
+      "experiment_id": "dgs3t-cascading",
+      "metric_id": "bleu4-tok",
+      "split": "dev",
+      "paper_location": "Table 6, row 'SLTUNET', dev column block (column as printed)",
+      "original_value": 3.49,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "data_permission_blocked",
+          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "dgs3t-licence"
+        ],
+        "evidence": [
+          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
+          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
+          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
+        ]
+      }
+    },
+    {
+      "target_id": "dgs3t-cascading-test-rouge",
+      "in_scope": true,
+      "experiment_id": "dgs3t-cascading",
+      "metric_id": "rouge-l-f1",
+      "split": "test",
+      "paper_location": "Table 6, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 23.24,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "data_permission_blocked",
+          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "dgs3t-licence"
+        ],
+        "evidence": [
+          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
+          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
+          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
+        ]
+      }
+    },
+    {
+      "target_id": "dgs3t-cascading-test-b1",
+      "in_scope": true,
+      "experiment_id": "dgs3t-cascading",
+      "metric_id": "bleu1-tok",
+      "split": "test",
+      "paper_location": "Table 6, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 21.0,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "data_permission_blocked",
+          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "dgs3t-licence"
+        ],
+        "evidence": [
+          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
+          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
+          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
+        ]
+      }
+    },
+    {
+      "target_id": "dgs3t-cascading-test-b2",
+      "in_scope": true,
+      "experiment_id": "dgs3t-cascading",
+      "metric_id": "bleu2-tok",
+      "split": "test",
+      "paper_location": "Table 6, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 8.65,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "data_permission_blocked",
+          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "dgs3t-licence"
+        ],
+        "evidence": [
+          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
+          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
+          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
+        ]
+      }
+    },
+    {
+      "target_id": "dgs3t-cascading-test-b3",
+      "in_scope": true,
+      "experiment_id": "dgs3t-cascading",
+      "metric_id": "bleu3-tok",
+      "split": "test",
+      "paper_location": "Table 6, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 4.25,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "data_permission_blocked",
+          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "dgs3t-licence"
+        ],
+        "evidence": [
+          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
+          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
+          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
+        ]
+      }
+    },
+    {
+      "target_id": "dgs3t-cascading-test-b4",
+      "in_scope": true,
+      "experiment_id": "dgs3t-cascading",
+      "metric_id": "bleu4-tok",
+      "split": "test",
+      "paper_location": "Table 6, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 2.29,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "data_permission_blocked",
+          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "dgs3t-licence"
+        ],
+        "evidence": [
+          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
+          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
+          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
+        ]
+      }
+    },
+    {
+      "target_id": "dgs3t-cascading-test-sbleu",
+      "in_scope": true,
+      "experiment_id": "dgs3t-cascading",
+      "metric_id": "sacrebleu-detok",
+      "split": "test",
+      "paper_location": "Table 6, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 2.28,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "data_permission_blocked",
+          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "dgs3t-licence"
+        ],
+        "evidence": [
+          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
+          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
+          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
+        ]
+      }
+    },
+    {
+      "target_id": "dgs3t-cascading-test-chrf",
+      "in_scope": true,
+      "experiment_id": "dgs3t-cascading",
+      "metric_id": "chrf",
+      "split": "test",
+      "paper_location": "Table 6, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 18.96,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "data_permission_blocked",
+          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "dgs3t-licence"
+        ],
+        "evidence": [
+          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
+          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
+          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
+        ]
+      }
+    },
+    {
+      "target_id": "dgs3t-sign2text-dev-rouge",
+      "in_scope": true,
+      "experiment_id": "dgs3t-sign2text",
+      "metric_id": "rouge-l-f1",
+      "split": "dev",
+      "paper_location": "Table 6, row 'SLTUNET', dev column block (column as printed)",
+      "original_value": 27.95,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "data_permission_blocked",
+          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "dgs3t-licence"
+        ],
+        "evidence": [
+          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
+          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
+          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
+        ]
+      }
+    },
+    {
+      "target_id": "dgs3t-sign2text-dev-b4",
+      "in_scope": true,
+      "experiment_id": "dgs3t-sign2text",
+      "metric_id": "bleu4-tok",
+      "split": "dev",
+      "paper_location": "Table 6, row 'SLTUNET', dev column block (column as printed)",
+      "original_value": 3.94,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "data_permission_blocked",
+          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "dgs3t-licence"
+        ],
+        "evidence": [
+          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
+          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
+          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
+        ]
+      }
+    },
+    {
+      "target_id": "dgs3t-sign2text-test-rouge",
+      "in_scope": true,
+      "experiment_id": "dgs3t-sign2text",
+      "metric_id": "rouge-l-f1",
+      "split": "test",
+      "paper_location": "Table 6, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 24.53,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "data_permission_blocked",
+          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "dgs3t-licence"
+        ],
+        "evidence": [
+          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
+          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
+          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
+        ]
+      }
+    },
+    {
+      "target_id": "dgs3t-sign2text-test-b1",
+      "in_scope": true,
+      "experiment_id": "dgs3t-sign2text",
+      "metric_id": "bleu1-tok",
+      "split": "test",
+      "paper_location": "Table 6, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 23.11,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "data_permission_blocked",
+          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "dgs3t-licence"
+        ],
+        "evidence": [
+          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
+          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
+          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
+        ]
+      }
+    },
+    {
+      "target_id": "dgs3t-sign2text-test-b2",
+      "in_scope": true,
+      "experiment_id": "dgs3t-sign2text",
+      "metric_id": "bleu2-tok",
+      "split": "test",
+      "paper_location": "Table 6, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 10.05,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "data_permission_blocked",
+          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "dgs3t-licence"
+        ],
+        "evidence": [
+          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
+          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
+          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
+        ]
+      }
+    },
+    {
+      "target_id": "dgs3t-sign2text-test-b3",
+      "in_scope": true,
+      "experiment_id": "dgs3t-sign2text",
+      "metric_id": "bleu3-tok",
+      "split": "test",
+      "paper_location": "Table 6, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 5.13,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "data_permission_blocked",
+          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "dgs3t-licence"
+        ],
+        "evidence": [
+          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
+          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
+          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
+        ]
+      }
+    },
+    {
+      "target_id": "dgs3t-sign2text-test-b4",
+      "in_scope": true,
+      "experiment_id": "dgs3t-sign2text",
+      "metric_id": "bleu4-tok",
+      "split": "test",
+      "paper_location": "Table 6, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 2.81,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "data_permission_blocked",
+          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "dgs3t-licence"
+        ],
+        "evidence": [
+          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
+          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
+          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
+        ]
+      }
+    },
+    {
+      "target_id": "dgs3t-sign2text-test-sbleu",
+      "in_scope": true,
+      "experiment_id": "dgs3t-sign2text",
+      "metric_id": "sacrebleu-detok",
+      "split": "test",
+      "paper_location": "Table 6, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 2.82,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "data_permission_blocked",
+          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "dgs3t-licence"
+        ],
+        "evidence": [
+          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
+          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
+          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
+        ]
+      }
+    },
+    {
+      "target_id": "dgs3t-sign2text-test-chrf",
+      "in_scope": true,
+      "experiment_id": "dgs3t-sign2text",
+      "metric_id": "chrf",
+      "split": "test",
+      "paper_location": "Table 6, row 'SLTUNET', test column block (column as printed)",
+      "original_value": 20.56,
+      "copied_baseline": false,
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "data_permission_blocked",
+          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "dgs3t-licence"
+        ],
+        "evidence": [
+          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
+          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
+          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
+        ]
+      }
+    }
+  ],
+  "runs": [],
+  "artifacts": [],
+  "gates": [
+    {
+      "gate_id": "modal-auth",
+      "type": "modal_auth",
+      "status": "open",
+      "reason": "The Modal CLI is not installed on this machine and the repository's one-time ./setup.sh has not been run, so the repro-sign workspace preflight cannot succeed and no volume inspection, dataset gate, or compute is possible.",
+      "required_action": "The user runs ./setup.sh; when it stops after installing the Modal CLI, the user runs 'modal setup' interactively and selects or confirms the 'repro-sign' workspace, then re-runs ./setup.sh. Work resumes once .agents/skills/reproduce-paper/scripts/modal_repro_sign.sh preflight succeeds.",
+      "evidence": [
+        "'command -v modal' returned nothing on 2026-09-13.",
+        "The reproduction base image ghcr.io/sign-language-processing/reproduction:latest is not present in the local Docker image list.",
+        "AGENTS.md requires every Modal operation to run through the wrapper under profile 'repro-sign' and forbids falling back to another workspace."
+      ]
+    },
+    {
+      "gate_id": "dgs3t-licence",
+      "type": "data",
+      "status": "open",
+      "reason": "DGS3-T is derived from the Public DGS Corpus, whose licence forbids any computational research without express permission from the University of Hamburg. Acquiring, storing on project cloud infrastructure, training on, or reporting model outputs from this corpus all require that permission first.",
+      "required_action": "Route to Team S: obtain written permission from the University of Hamburg for computational use of Public DGS Corpus release 3 within this study, including processing on Modal cloud infrastructure, and confirm what may be reported and retained. Until then the Table 6 targets stay not_produced.",
+      "evidence": [
+        "Paper 'DATA LICENSING' section, page 10.",
+        "Published repository README, section 'DGS3-T Licensing'.",
+        "https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html",
+        "The paper's own authors are at the University of Zurich and Edinburgh and used the corpus, which implies permission was granted to them individually; it does not extend to this study."
+      ]
+    },
+    {
+      "gate_id": "slt-data-access",
+      "type": "data",
+      "status": "open",
+      "reason": "PHOENIX-2014T, CSL-Daily, and MuST-C have not been located in the shared 'datasets' Volume or verified against their distribution terms, because the Modal workspace preflight could not run. CSL-Daily in particular is released under a signed research agreement rather than an open licence, and MuST-C is CC BY-NC-ND, so their cloud-processing basis needs confirmation before any download or training.",
+      "required_action": "After the Modal auth gate closes, run .agents/skills/reproduce-paper/scripts/check_modal_dataset.sh for each slug; for any dataset that is absent, confirm licence, cloud-processing rights, and redistribution terms, and route CSL-Daily access to Team S if a signed agreement is required.",
+      "evidence": [
+        "Modal preflight is blocked by gate 'modal-auth', so no volume listing was obtained.",
+        "Repository example/README.md gives the PHOENIX-2014T and MuST-C download locations but no licence statement.",
+        "The paper does not state the licence basis for PHOENIX-2014T, CSL-Daily, or MuST-C."
+      ]
+    }
+  ],
+  "environment_plan": {
+    "published_requirements": "python==3.8, tensorflow==1.15 (repository README 'Requirement'); no requirements.txt or lockfile is published.",
+    "base_image_conflict": "The repository's standard GPU base image ghcr.io/sign-language-processing/reproduction:latest supplies NVIDIA NGC PyTorch. SLTUNET is TensorFlow 1.15, which needs CUDA 10.0 / cuDNN 7.x and will not run on that image, so a paper-specific Dockerfile is expected. This is an environment adaptation, not a change to the published code, and the exact image has not been chosen or built yet.",
+    "video_decoding": "The published SLTUNET training path consumes precomputed SMKD sign features in .h5 files rather than decoding video, so no video decoder is introduced for it. The upstream SMKD feature-extraction step does read frames and is where simple-video-utils would apply if that step is rerun.",
+    "planned_first_check": "An evaluation-path preflight using the authors' released PHOENIX checkpoint, to exercise decoding, checkpoint averaging, and eval/metrics.py against the published Table 4 numbers before committing to SMKD pretraining plus full SLTUNET training."
+  },
+  "open_questions": [
+    "Whether the study wants the DGS3-T targets pursued at all, given that permission from the University of Hamburg is a prerequisite and may not be obtainable within the study.",
+    "Whether reproducing Table 4/5 requires retraining SMKD sign embeddings from video (the expensive path the paper describes) or whether the authors' released checkpoints and any released features make a shorter path defensible; this changes the compute estimate by a large factor and has not been costed."
+  ]
+}
