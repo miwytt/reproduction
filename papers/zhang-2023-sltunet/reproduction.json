@@ -79,66 +79,115 @@
     "preference_level": 1,
     "preference_level_basis": "The authors published a complete implementation at a pinnable commit, including training, decoding, and metric code, so the attempt starts at preference level 1. The level has not yet been tested by execution; the TensorFlow 1.15 / Python 3.8 requirement is expected to force container work and may force level 2 patches.",
     "blocker": null,
-    "attempt_state": "In progress and not ready for review. Stages completed: assignment recorded, paper acquired and hashed, target contract resolved, published code discovered and pinned. Stages not started: environment build, data gate, preflight, training, evaluation. Three gates are open."
+    "attempt_state": "In progress and not ready for review. Completed: assignment recorded, paper acquired and hashed, target contract resolved, published code discovered and pinned, Modal workspace preflight passed, and the dataset gate run for all three SLT corpora. PHOENIX-2014T and CSL-Daily are verified present with counts matching paper Table 1 exactly. Not started: MuST-C acquisition, environment build, preflight, training, evaluation. Three gates remain open: slt-data-access (MuST-C absent), dgs3t-licence (permission, not availability), and smkd-pretraining-scope (uncosted compute)."
   },
   "datasets": [
     {
       "dataset_id": "phoenix-2014t",
       "name": "RWTH-PHOENIX-Weather 2014 T (PHOENIX-2014T)",
       "version_or_subset": "phoenix-2014-T.v3",
-      "license_or_permission": "Not yet verified against the RWTH Aachen distribution terms; the data gate for this dataset is open.",
-      "cloud_processing_allowed": false,
+      "license_or_permission": "Not established by this attempt. The dataset was already present in the shared approved 'datasets' Volume, placed there by the study before this attempt; the basis on which it was acquired and may be processed is recorded by whoever populated it, not by this record. RWTH distributes PHOENIX-2014T for research use.",
+      "cloud_processing_allowed": true,
       "modal_volume": "datasets",
-      "modal_path": "phoenix-2014t",
+      "modal_path": "rwth-phoenix-2014-t",
       "source_url": "https://www-i6.informatik.rwth-aachen.de/ftp/pub/rwth-phoenix/2016/phoenix-2014-T.v3.tar.gz",
-      "verification_status": "unverified",
-      "verification_note": "Neither the Modal Volume path nor the archive has been inspected: the Modal CLI is not installed and the workspace is not authenticated, so the dataset gate could not be run. Sample counts below are the paper's published counts (Table 1), not counts observed in data.",
+      "verification_status": "verified",
+      "verification_note": "Verified 2026-09-13 through the wrapper under profile 'repro-sign'. check_modal_dataset.sh confirmed 'rwth-phoenix-2014-t/'. The directory holds annotations/, features/, and videos/. Sentence counts parsed from the annotation CSVs match paper Table 1 exactly (7,096 / 519 / 642). The CSVs are pipe-separated with header name|video|start|end|speaker|orth|translation, providing the gloss (orth) and German text (translation) needed for every task in Equation 4.",
       "splits": [
         {
           "name": "train",
           "sample_count": 7096,
-          "count_source": "paper Table 1"
+          "count_source": "observed: line count of the annotation CSV minus header",
+          "matches_paper_table1": true,
+          "files": [
+            {
+              "path": "rwth-phoenix-2014-t/annotations/PHOENIX-2014-T.train.corpus.csv",
+              "sha256": "cc3dc2461f0a222b92f3927c24ac21c1467f3e5428b406ee7fe40bca1b0b8d44"
+            }
+          ]
         },
         {
           "name": "dev",
           "sample_count": 519,
-          "count_source": "paper Table 1"
+          "count_source": "observed: line count of the annotation CSV minus header",
+          "matches_paper_table1": true,
+          "files": [
+            {
+              "path": "rwth-phoenix-2014-t/annotations/PHOENIX-2014-T.dev.corpus.csv",
+              "sha256": "1085141d0ed6f28c6de6196a271b72c07366ed3fe5470c9717bd44640737f00b"
+            }
+          ]
         },
         {
           "name": "test",
           "sample_count": 642,
-          "count_source": "paper Table 1"
+          "count_source": "observed: line count of the annotation CSV minus header",
+          "matches_paper_table1": true,
+          "files": [
+            {
+              "path": "rwth-phoenix-2014-t/annotations/PHOENIX-2014-T.test.corpus.csv",
+              "sha256": "632b19c9a87fb9c98b0821e04861750565348bce20a069c6dea1bba5bda27879"
+            }
+          ]
         }
-      ]
+      ],
+      "cloud_processing_basis": "Already present in the study's approved shared 'datasets' Volume on Modal, which is the project's controlled store for approved data. This attempt mounts it read-only and adds nothing.",
+      "precomputed_features_note": "The volume also holds features/phoenix14t.pami0.{train,dev,test}, which are the Camgoz et al. (2020b) sign embeddings. These are NOT the embeddings behind the target numbers: Table 2 row 1.1 shows that using Camgoz et al. (2020b) embeddings scores 21.21 B@4 on dev, whereas the SLTUNET result requires the authors' retrained SMKD embeddings with a 2D ResNet34 backbone (18.90 WER, row 15, 27.87 B@4). Reproducing the targets therefore requires SMKD pretraining from the videos in videos/, not reuse of these features. Using them instead would be a behaviour-changing protocol deviation and would reproduce a different table row."
     },
     {
       "dataset_id": "csl-daily",
       "name": "CSL-Daily",
-      "version_or_subset": "Release used by Zhou et al. (2021); exact version to be confirmed at the data gate",
-      "license_or_permission": "Not yet verified; CSL-Daily is distributed under a signed research agreement. The data gate for this dataset is open.",
-      "cloud_processing_allowed": false,
+      "version_or_subset": "csl2020ct_v2 annotations with split_1.txt; the release distributed by Zhou et al. (2021)",
+      "license_or_permission": "Not established by this attempt. Already present in the study's approved shared 'datasets' Volume. CSL-Daily is normally distributed under a signed research agreement; the signed basis is held by whoever populated the Volume.",
+      "cloud_processing_allowed": true,
       "modal_volume": "datasets",
       "modal_path": "csl-daily",
       "source_url": "http://home.ustc.edu.cn/~zhouh156/dataset/csl-daily/",
-      "verification_status": "unverified",
-      "verification_note": "Not inspected; the Modal workspace is not authenticated. Sample counts are the paper's published counts (Table 1).",
+      "verification_status": "verified",
+      "verification_note": "Verified 2026-09-13 through the wrapper. check_modal_dataset.sh confirmed 'csl-daily/'. Holds sentence_label/ and videos/. Split counts parsed from split_1.txt match paper Table 1 exactly (18,401 / 1,077 / 1,176 over 20,654 rows). Annotations are in csl2020ct_v2.pkl, whose 'label_char' field the dataset README identifies as the SLT target and 'label_gloss' as the gloss sequence.",
       "splits": [
         {
           "name": "train",
           "sample_count": 18401,
-          "count_source": "paper Table 1"
+          "count_source": "observed: split_1.txt rows labelled train",
+          "matches_paper_table1": true,
+          "files": [
+            {
+              "path": "csl-daily/sentence_label/split_1.txt",
+              "sha256": "45960c86eaeb2e27bf14f81321aab711b67a144ce931383f8b2ff0cc7c144bdf",
+              "note": "One manifest defines all three splits; listed under each split it defines."
+            }
+          ]
         },
         {
           "name": "dev",
           "sample_count": 1077,
-          "count_source": "paper Table 1"
+          "count_source": "observed: split_1.txt rows labelled dev",
+          "matches_paper_table1": true,
+          "files": [
+            {
+              "path": "csl-daily/sentence_label/split_1.txt",
+              "sha256": "45960c86eaeb2e27bf14f81321aab711b67a144ce931383f8b2ff0cc7c144bdf",
+              "note": "One manifest defines all three splits; listed under each split it defines."
+            }
+          ]
         },
         {
           "name": "test",
           "sample_count": 1176,
-          "count_source": "paper Table 1"
+          "count_source": "observed: split_1.txt rows labelled test",
+          "matches_paper_table1": true,
+          "files": [
+            {
+              "path": "csl-daily/sentence_label/split_1.txt",
+              "sha256": "45960c86eaeb2e27bf14f81321aab711b67a144ce931383f8b2ff0cc7c144bdf",
+              "note": "One manifest defines all three splits; listed under each split it defines."
+            }
+          ]
         }
-      ]
+      ],
+      "cloud_processing_basis": "Already present in the study's approved shared 'datasets' Volume on Modal. Mounted read-only by this attempt.",
+      "subword_protocol_note": "Repository README update of 2023-04-02: for CSL-Daily the authors always use subword (not character) preprocessing for target text and glosses during training and inference, post-processing to characters only at evaluation for char-level BLEU. This is not stated in the paper and must be followed to obtain the Table 5 numbers."
     },
     {
       "dataset_id": "dgs3-t",
@@ -147,25 +196,46 @@
       "license_or_permission": "Blocked: the Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg.",
       "cloud_processing_allowed": false,
       "modal_volume": "datasets",
-      "modal_path": "dgs3-t",
+      "modal_path": "dgs-corpus",
       "source_url": "https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html",
-      "verification_status": "blocked",
-      "verification_note": "Not acquired and not acquirable without written permission. Two videos with an incorrect 25fps framerate are excluded by the authors' protocol (Appendix A.2); the split is a random document-level assignment with 10 documents each in dev and test.",
+      "verification_status": "present_but_permission_unresolved",
+      "verification_note": "Verified 2026-09-13: the shared Volume already contains 'dgs-corpus/' with videos/, dgs.json, download.py, index.py, and split.3.0.0-uzh-document.json. That split file is the DGS3-T protocol itself: it declares dgs_corpus_version '3.0.0' and partitions documents 384 train / 10 dev / 10 test, matching Appendix A.2, which states the desired number of documents in dev and test is 10 each. 'uzh' matches the authors' institution (Müller and Sennrich, University of Zurich). Availability is therefore no longer the obstacle; permission is. Only the split manifest was read, to establish gate status. No corpus content was processed. sha256 of the split manifest: a687622057adc8f7b2423ab457280dd1a37b0db3906bb42a4b112a5739cd5378.",
       "splits": [
         {
           "name": "train",
           "sample_count": 60306,
-          "count_source": "paper Table 1"
+          "count_source": "paper Table 1 (sentence level); the manifest observed here lists 384 documents",
+          "document_count": 384,
+          "files": [
+            {
+              "path": "dgs-corpus/split.3.0.0-uzh-document.json",
+              "sha256": "a687622057adc8f7b2423ab457280dd1a37b0db3906bb42a4b112a5739cd5378"
+            }
+          ]
         },
         {
           "name": "dev",
           "sample_count": 967,
-          "count_source": "paper Table 1"
+          "count_source": "paper Table 1 (sentence level); the manifest observed here lists 10 documents",
+          "document_count": 10,
+          "files": [
+            {
+              "path": "dgs-corpus/split.3.0.0-uzh-document.json",
+              "sha256": "a687622057adc8f7b2423ab457280dd1a37b0db3906bb42a4b112a5739cd5378"
+            }
+          ]
         },
         {
           "name": "test",
           "sample_count": 1575,
-          "count_source": "paper Table 1"
+          "count_source": "paper Table 1 (sentence level); the manifest observed here lists 10 documents",
+          "document_count": 10,
+          "files": [
+            {
+              "path": "dgs-corpus/split.3.0.0-uzh-document.json",
+              "sha256": "a687622057adc8f7b2423ab457280dd1a37b0db3906bb42a4b112a5739cd5378"
+            }
+          ]
         }
       ]
     },
@@ -178,13 +248,14 @@
       "modal_volume": "datasets",
       "modal_path": "must-c-en-de",
       "source_url": "https://ict.fbk.eu/must-c/",
-      "verification_status": "unverified",
-      "verification_note": "Not inspected. The paper states 229K samples and that punctuation is removed from English source sentences and from German sentences for PHOENIX-2014T.",
+      "verification_status": "absent",
+      "verification_note": "Verified 2026-09-13: no MuST-C directory exists in the shared 'datasets' Volume. The volume listing contains no must-c slug of any spelling. MuST-C is required as the MT auxiliary task in Equation 4 for every target, so it must be acquired under its own terms (registration at FBK, CC BY-NC-ND 4.0) before any training run. Only the text side is needed, not the audio.",
       "splits": [
         {
           "name": "train",
           "sample_count": 229000,
-          "count_source": "paper section 5.1, stated as 229K (approximate, not an exact observed count)"
+          "count_source": "paper section 5.1, approximate; not observed",
+          "files": []
         }
       ]
     },
@@ -197,13 +268,14 @@
       "modal_volume": "datasets",
       "modal_path": "must-c-en-zh",
       "source_url": "https://ict.fbk.eu/must-c/",
-      "verification_status": "unverified",
-      "verification_note": "Not inspected. The paper states 185K samples and that punctuation is removed from English source sentences.",
+      "verification_status": "absent",
+      "verification_note": "Verified 2026-09-13: no MuST-C directory exists in the shared 'datasets' Volume. The volume listing contains no must-c slug of any spelling. MuST-C is required as the MT auxiliary task in Equation 4 for every target, so it must be acquired under its own terms (registration at FBK, CC BY-NC-ND 4.0) before any training run. Only the text side is needed, not the audio.",
       "splits": [
         {
           "name": "train",
           "sample_count": 185000,
-          "count_source": "paper section 5.1, stated as 185K (approximate, not an exact observed count)"
+          "count_source": "paper section 5.1, approximate; not observed",
+          "files": []
         }
       ]
     }
@@ -1235,38 +1307,54 @@
     {
       "gate_id": "modal-auth",
       "type": "modal_auth",
-      "status": "open",
+      "status": "resolved",
       "reason": "The Modal CLI is not installed on this machine and the repository's one-time ./setup.sh has not been run, so the repro-sign workspace preflight cannot succeed and no volume inspection, dataset gate, or compute is possible.",
       "required_action": "The user runs ./setup.sh; when it stops after installing the Modal CLI, the user runs 'modal setup' interactively and selects or confirms the 'repro-sign' workspace, then re-runs ./setup.sh. Work resumes once .agents/skills/reproduce-paper/scripts/modal_repro_sign.sh preflight succeeds.",
       "evidence": [
         "'command -v modal' returned nothing on 2026-09-13.",
         "The reproduction base image ghcr.io/sign-language-processing/reproduction:latest is not present in the local Docker image list.",
         "AGENTS.md requires every Modal operation to run through the wrapper under profile 'repro-sign' and forbids falling back to another workspace."
-      ]
+      ],
+      "resolution": "Resolved 2026-09-13. The user installed the Modal CLI (client version 1.5.5) and authenticated. The wrapper preflight prints \"Verified Modal profile and workspace 'repro-sign'\" and exits zero. Both canonical v2 Volumes 'datasets' and 'huggingface-cache' are present in the workspace."
     },
     {
       "gate_id": "dgs3t-licence",
       "type": "data",
       "status": "open",
-      "reason": "DGS3-T is derived from the Public DGS Corpus, whose licence forbids any computational research without express permission from the University of Hamburg. Acquiring, storing on project cloud infrastructure, training on, or reporting model outputs from this corpus all require that permission first.",
-      "required_action": "Route to Team S: obtain written permission from the University of Hamburg for computational use of Public DGS Corpus release 3 within this study, including processing on Modal cloud infrastructure, and confirm what may be reported and retained. Until then the Table 6 targets stay not_produced.",
+      "reason": "The DGS3-T data and the authors' exact split are already present in the study's shared approved Volume as 'dgs-corpus/', including split.3.0.0-uzh-document.json (version 3.0.0, 384/10/10 documents, matching Appendix A.2 and bearing the authors' institution tag). Availability is therefore not the obstacle. The Public DGS Corpus licence still forbids computational research without express permission from the University of Hamburg, and this attempt has no record of whether the study holds such permission, what it covers, or whether it extends to training models and publishing translation outputs. Proceeding on the assumption that presence implies permission would be working around a restriction.",
+      "required_action": "Team S confirms in writing whether the study holds University of Hamburg permission for computational use of Public DGS Corpus release 3, and whether that permission covers training models on Modal and reporting generated translations. If it does, the 18 Table 6 targets can be re-scoped from not_produced to runnable. If it does not, they stay terminal. Note the corpus contains identifiable video of 330 named signers, so the reporting and retention terms attached to any permission need reading too.",
       "evidence": [
         "Paper 'DATA LICENSING' section, page 10.",
         "Published repository README, section 'DGS3-T Licensing'.",
         "https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html",
-        "The paper's own authors are at the University of Zurich and Edinburgh and used the corpus, which implies permission was granted to them individually; it does not extend to this study."
+        "Wrapper volume listing on 2026-09-13: dgs-corpus/ contains videos/, dgs.json, download.py, index.py, and split.3.0.0-uzh-document.json.",
+        "The split manifest declares dgs_corpus_version '3.0.0' and 384 train / 10 dev / 10 test documents, matching the paper's Appendix A.2 protocol."
       ]
     },
     {
       "gate_id": "slt-data-access",
       "type": "data",
       "status": "open",
-      "reason": "PHOENIX-2014T, CSL-Daily, and MuST-C have not been located in the shared 'datasets' Volume or verified against their distribution terms, because the Modal workspace preflight could not run. CSL-Daily in particular is released under a signed research agreement rather than an open licence, and MuST-C is CC BY-NC-ND, so their cloud-processing basis needs confirmation before any download or training.",
-      "required_action": "After the Modal auth gate closes, run .agents/skills/reproduce-paper/scripts/check_modal_dataset.sh for each slug; for any dataset that is absent, confirm licence, cloud-processing rights, and redistribution terms, and route CSL-Daily access to Team S if a signed agreement is required.",
+      "reason": "Narrowed by verification. PHOENIX-2014T and CSL-Daily are present in the shared approved Volume with sentence counts matching paper Table 1 exactly, so their identity is settled and this attempt will mount them read-only. Two items remain: MuST-C En-De and En-Zh are absent from the Volume and are required by the Equation 4 MT task for every target; and the licence basis under which PHOENIX-2014T and CSL-Daily were placed in the Volume is held by the study, not recorded in this attempt, so it should be confirmed rather than assumed.",
+      "required_action": "Confirm with Team S the basis on which PHOENIX-2014T and CSL-Daily sit in the shared Volume and that reproduction use is covered. Separately, decide whether to acquire MuST-C v1.0 En-De and En-Zh (text side only) under CC BY-NC-ND 4.0 via FBK registration and populate /datasets/must-c-en-de and /datasets/must-c-en-zh with an idempotent data.sh. Training cannot reproduce any target without the MT task.",
       "evidence": [
-        "Modal preflight is blocked by gate 'modal-auth', so no volume listing was obtained.",
-        "Repository example/README.md gives the PHOENIX-2014T and MuST-C download locations but no licence statement.",
-        "The paper does not state the licence basis for PHOENIX-2014T, CSL-Daily, or MuST-C."
+        "Wrapper volume listing on 2026-09-13: 'datasets' contains rwth-phoenix-2014-t, csl-daily, and dgs-corpus, and no must-c entry.",
+        "check_modal_dataset.sh confirmed both 'rwth-phoenix-2014-t/' and 'csl-daily/'.",
+        "Observed counts: PHOENIX 7,096/519/642 and CSL-Daily 18,401/1,077/1,176, both exactly matching paper Table 1.",
+        "Paper section 5.1 makes MuST-C part of the training objective for every reported SLTUNET result, not an optional extra."
+      ]
+    },
+    {
+      "gate_id": "smkd-pretraining-scope",
+      "type": "compute",
+      "status": "open",
+      "reason": "The targets require sign embeddings from the authors' retrained SMKD model with a 2D ResNet34 backbone, which must be pretrained from video per benchmark. The precomputed features already in the PHOENIX volume are the Camgoz et al. (2020b) embeddings, which the paper's own Table 2 row 1.1 shows produce a materially different score (21.21 versus 22.62 B@4 for the baseline, and the final SLTUNET number depends on the improved SMKD model). Substituting them would reproduce a different row. SMKD pretraining from video is the dominant cost in this reproduction and has not been estimated, because no preflight has run.",
+      "required_action": "Measure SMKD pretraining cost on a representative preflight once the environment exists, then apply the compute gate: proceed autonomously if the whole plan is single-GPU and under 24 hours, otherwise discuss in #repro-sign-team-r before launching. The estimate must cover SMKD pretraining plus SLTUNET training for both PHOENIX-2014T and CSL-Daily.",
+      "evidence": [
+        "Paper section 5.1: the SMKD model is pretrained on each benchmark separately on the Sign2Gloss task.",
+        "Paper section 5.2: replacing Camgoz et al. (2020b) embeddings with the retrained SMKD model gives +1.41 BLEU, and the ResNet34 backbone change gives a further +0.31 BLEU into the final system 15.",
+        "Wrapper listing on 2026-09-13: the volume's PHOENIX features are phoenix14t.pami0.*, the Camgoz et al. (2020b) embeddings.",
+        "Repository example/README.md step 2 describes SMKD pretraining, checkpoint averaging, and feature extraction with --num-feature-aug 10 as prerequisites of SLTUNET training."
       ]
     }
   ],

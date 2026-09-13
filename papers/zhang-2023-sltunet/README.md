@@ -17,9 +17,9 @@
 ## Attempt state
 
 This attempt is **open and not ready for review**. It has completed assignment
-recording, paper acquisition, target resolution, and source discovery. It has
-not built an environment, passed the data gate, run a preflight, trained, or
-evaluated anything. Three gates are open and two of them block all execution.
+recording, paper acquisition, target resolution, source discovery, the Modal
+workspace preflight, and the dataset gate for all three SLT corpora. It has not
+built an environment, run a preflight, trained, or evaluated anything.
 
 | Stage | State |
 | --- | --- |
@@ -27,11 +27,16 @@ evaluated anything. Three gates are open and two of them block all execution.
 | Paper acquired and hashed | done |
 | Target contract resolved | done — 54 targets |
 | Sources discovered and pinned | done for code and paper; released weights not yet downloaded or hashed |
+| Modal workspace preflight | done — profile `repro-sign` verified, both canonical Volumes present |
+| Data gate | PHOENIX-2014T and CSL-Daily verified; MuST-C absent; DGS3-T present but permission unresolved |
 | Environment built | not started |
-| Data gate | blocked — gates `modal-auth`, `slt-data-access`, `dgs3t-licence` |
 | Preflight | not started |
 | Full run | not started |
 | Evaluation | not started |
+
+Open gates: `slt-data-access` (MuST-C absent), `dgs3t-licence` (permission, not
+availability), `smkd-pretraining-scope` (uncosted compute). Resolved:
+`modal-auth`.
 
 ## Reproduction agents
 
@@ -169,29 +174,45 @@ produce `train/dev/test.h5`; (3) train SLTUNET (`example/train.sh`);
 
 ## Data provenance and permissions
 
+Verified 2026-09-13 through `modal_repro_sign.sh` under profile `repro-sign`.
+Both canonical Volumes (`datasets`, `huggingface-cache`) exist.
+
 | Dataset | Version/subset/splits | Source and access date | License/permission and cloud-use basis | Path in Volume `datasets` | Counts / manifest / checksum | Deviations |
 | --- | --- | --- | --- | --- | --- | --- |
-| PHOENIX-2014T | v3; train/dev/test | RWTH Aachen FTP; not accessed | Not yet verified — gate `slt-data-access` | `phoenix-2014t` (not confirmed to exist) | 7,096 / 519 / 642 — paper Table 1, not observed | none yet |
-| CSL-Daily | release of Zhou et al. 2021; train/dev/test | USTC page; not accessed | Not verified; distributed under a signed research agreement — gate `slt-data-access` | `csl-daily` (not confirmed to exist) | 18,401 / 1,077 / 1,176 — paper Table 1, not observed | none yet |
-| DGS3-T | Public DGS Corpus release 3, authors' document-level split | Not acquired | **Blocked** — licence forbids computational research without express University of Hamburg permission — gate `dgs3t-licence` | `dgs3-t` (not to be populated without permission) | 60,306 / 967 / 1,575 — paper Table 1, not observed | Authors exclude 2 videos with an incorrect 25fps framerate (Appendix A.2) |
-| MuST-C En-De | v1.0, text side, 229K | FBK; not accessed | CC BY-NC-ND 4.0, to confirm — gate `slt-data-access` | `must-c-en-de` (not confirmed to exist) | 229K — paper section 5.1, approximate | Punctuation removed from English source and from German for PHOENIX-2014T |
-| MuST-C En-Zh | v1.0, text side, 185K | FBK; not accessed | CC BY-NC-ND 4.0, to confirm — gate `slt-data-access` | `must-c-en-zh` (not confirmed to exist) | 185K — paper section 5.1, approximate | Punctuation removed from English source |
+| PHOENIX-2014T | v3; train/dev/test | Already in shared Volume; verified 2026-09-13 | Held by the study, not by this attempt — confirm at gate `slt-data-access`. Mounted read-only | `rwth-phoenix-2014-t` ✅ | **7,096 / 519 / 642 — observed, exact match to Table 1**; per-split CSV checksums in `reproduction.json` | none |
+| CSL-Daily | csl2020ct_v2 + split_1.txt | Already in shared Volume; verified 2026-09-13 | Held by the study — confirm at gate `slt-data-access`. Mounted read-only | `csl-daily` ✅ | **18,401 / 1,077 / 1,176 — observed, exact match to Table 1**; `split_1.txt` sha256 `45960c86…` | Subword (not char) preprocessing per repo README update |
+| DGS3-T | Public DGS Corpus 3.0.0, UZH document split | Present in shared Volume; split manifest read 2026-09-13 | **Permission unresolved** — licence forbids computational research without express University of Hamburg permission — gate `dgs3t-licence` | `dgs-corpus` (present, not to be processed) | Manifest declares 384 / 10 / 10 **documents**, matching Appendix A.2; sha256 `a6876220…` | Authors exclude 2 videos with an incorrect 25fps framerate (Appendix A.2) |
+| MuST-C En-De | v1.0, text side, 229K | **Absent** | CC BY-NC-ND 4.0, FBK registration — gate `slt-data-access` | not present ❌ | 229K — paper section 5.1, approximate | Punctuation removed from English source and from German for PHOENIX-2014T |
+| MuST-C En-Zh | v1.0, text side, 185K | **Absent** | CC BY-NC-ND 4.0, FBK registration — gate `slt-data-access` | not present ❌ | 185K — paper section 5.1, approximate | Punctuation removed from English source |
 
-**No dataset has been verified.** The Modal CLI is not installed and the
-`repro-sign` workspace is not authenticated, so neither the `datasets` Volume nor
-the `huggingface-cache` Volume has been listed and
-`check_modal_dataset.sh` has not been run for any slug. Every count above is the
-paper's published count, not a count observed in data, and no file checksums
-exist. The Modal paths are the slugs this attempt intends to use, not paths
-confirmed to exist.
+**PHOENIX-2014T and CSL-Daily are verified.** `check_modal_dataset.sh` confirmed
+both slugs, and sentence counts parsed from the actual annotation manifests match
+paper Table 1 exactly. Note the volume slug is `rwth-phoenix-2014-t`, not the
+`phoenix-2014t` this attempt initially assumed.
 
-**DGS3-T is licence-blocked.** The paper's own data-licensing section states that
-the Public DGS Corpus licence "does not allow any computational research except
-if express permission is given by the University of Hamburg", and the repository
-README repeats it. The authors evidently held such permission; it does not
-transfer to this study. The 18 Table 6 targets are therefore terminal
-`not_produced` / `data_permission_blocked` pending gate `dgs3t-licence`, which is
-routed to Team S.
+**MuST-C is missing and is not optional.** The Equation 4 objective includes the
+MT task for every reported SLTUNET result, so no target can be reproduced without
+it. It must be acquired under CC BY-NC-ND 4.0 via FBK registration and populated
+into the Volume before training.
+
+**The PHOENIX features in the Volume are the wrong ones.** `features/phoenix14t.pami0.*`
+are the Camgoz et al. (2020b) embeddings — the paper's Table 2 row 1.1, scoring
+21.21 B@4 on dev. The targets require the authors' retrained SMKD embeddings with
+a 2D ResNet34 backbone. Reusing the available features would reproduce a
+different table row, so SMKD pretraining from the videos is required; that is the
+dominant cost, tracked at gate `smkd-pretraining-scope`.
+
+**DGS3-T: availability is no longer the obstacle, permission is.** The shared
+Volume already contains `dgs-corpus/` including `split.3.0.0-uzh-document.json`,
+which *is* the DGS3-T protocol: version 3.0.0, 384/10/10 documents, matching
+Appendix A.2's "desired number of documents in the development and test set is
+10", and tagged `uzh` for the authors' own institution. Only that manifest was
+read, to establish gate status; no corpus content was processed. The Public DGS
+Corpus licence still forbids computational research without express University of
+Hamburg permission, and this attempt has no record of whether the study holds it
+or what it covers. Treating presence as permission would be working around a
+restriction, so the 18 Table 6 targets stay terminal `not_produced` /
+`data_permission_blocked` pending gate `dgs3t-licence`.
 
 ## Environment and patches
 
@@ -250,6 +271,23 @@ No protocol deviation has been made, because nothing has been run.
   licence. Test: GitHub API `license` field and a tree-wide `LICENSE` search.
   Result: no licence, either way. Outcome: no fork or vendored copy will be
   committed; the code is pinned by commit and cloned at runtime.
+- **Dataset gate, 2026-09-13.** Hypothesis: the three SLT corpora are absent from
+  the shared Volume and must be acquired. Test: wrapper volume listing plus
+  `check_modal_dataset.sh` per slug, then parsing the annotation manifests.
+  Result: hypothesis wrong on all three counts — PHOENIX-2014T and CSL-Daily are
+  present with counts matching Table 1 exactly, and the DGS corpus with the
+  authors' own UZH split is present too. MuST-C is the one that is genuinely
+  absent. Outcome: `slt-data-access` narrowed to MuST-C plus a licence-basis
+  confirmation; `dgs3t-licence` reframed from an availability question to a
+  permission question.
+- **Sign-feature provenance check.** Hypothesis: the precomputed
+  `features/phoenix14t.pami0.*` in the Volume could shortcut SMKD pretraining.
+  Test: matched them against the paper's ablation ladder. Result: they are the
+  Camgoz et al. (2020b) embeddings, which Table 2 row 1.1 scores at 21.21 B@4;
+  the targets need the retrained SMKD ResNet34 embeddings from row 15. Outcome:
+  shortcut rejected as a behaviour-changing deviation that would reproduce a
+  different row; SMKD pretraining from video stays in scope and is gated for
+  cost at `smkd-pretraining-scope`.
 
 ## Candidate flags, ethics, and human evaluation
 
