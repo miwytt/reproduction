@@ -1859,6 +1859,19 @@
     "terminal": "FAILED with CUDA out of memory at roughly step 83 of 100 in the first epoch: \"Tried to allocate 90.00 MiB (GPU 0; 14.56 GiB total capacity; 13.43 GiB already allocated; 31.81 MiB free)\". The failure is sequence-length dependent, since shorter clips completed and a longer one exhausted memory.",
     "conclusion": "SMKD training does not fit on a T4 at the authors published batch size. This is not a tuning problem: the authors baseline.yaml sets device 0,1, so their run had roughly twice the memory pool available. Reducing batch size to 1 would change effective batch and therefore optimisation semantics, which AGENTS.md forbids doing silently, and would also double wall time.",
     "implication": "The TensorFlow 1.15 constraint forces CUDA 10, which on Modal means T4 is the only usable accelerator, and T4 cannot run the expensive stage. However SMKD is PyTorch and SLTUNET is TensorFlow, and for TRAINING they are separate processes joined only by .h5 feature files; only the inference path loads both in one process. SMKD pretraining and feature extraction can therefore run in a modern PyTorch container on a large-memory GPU, with SLTUNET training staying in the TF 1.15 container on T4. That removes the CUDA 10 limit from the stage that actually needs the memory and the speed.",
-    "still_unmeasured": "SLTUNET transformer training step time and memory. The preflight targeted SMKD because it dominates the estimate and was least grounded. SLTUNET trains on precomputed features and is a 36.8M parameter model, so it is expected to be far cheaper, but that is an expectation and not a measurement."
+    "still_unmeasured": "SLTUNET transformer training step time and memory. The preflight targeted SMKD because it dominates the estimate and was least grounded. SLTUNET trains on precomputed features and is a 36.8M parameter model, so it is expected to be far cheaper, but that is an expectation and not a measurement.",
+    "split_container_test": {
+      "hypothesis": "SMKD is PyTorch and SLTUNET is TensorFlow 1.15, and for training they are separate processes joined only by .h5 feature files, so SMKD pretraining can run on a modern PyTorch stack with a large-memory GPU while SLTUNET training stays in the CUDA 10 container. That would lift the T4 memory ceiling off the expensive stage.",
+      "validated": [
+        "A100-SXM4-40GB allocates and is usable through the repro-sign workspace.",
+        "torch 1.13.1+cu117 reports device capability (8, 0), i.e. Ampere is supported, unlike the CUDA 10 stack which caps at Turing.",
+        "ctcdecode at the pinned 2021 commit c90ad94a compiles successfully against torch 1.13.1, which was the main compatibility risk in this plan.",
+        "The authors released SMKD checkpoint signemb_ckpt/average.pt, saved under torch 1.7, loads without error under torch 1.13.1 (log line \"Loading model finished\").",
+        "six and pandas are additionally required on a slim modern base; they came free with the TensorFlow image."
+      ],
+      "not_validated": "SMKD training throughput and peak memory on A100 were NOT measured. After the model and data loaded, the training subprocess produced no progress output and did not terminate at its 420 second timeout. The run was stopped manually rather than left to burn A100 time to the one hour function timeout.",
+      "leading_hypothesis_for_the_hang": "A DataLoader/OpenCV fork deadlock on the modern stack. baseline.yaml sets num_worker: 10, and the same code progressed normally to step 83 under the older image (python 3.6, opencv 4.6, torch 1.7). Modern OpenCV spawns more internal threads by default and forked DataLoader workers can deadlock on its locks. The cheap next test is cv2.setNumThreads(0) and/or num_worker 0 or 2, neither of which changes optimisation semantics since dataloader parallelism does not affect the model.",
+      "status": "promising but unproven; the memory ceiling problem on T4 remains unsolved in practice"
+    }
   }
 }
