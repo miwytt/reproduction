@@ -307,7 +307,9 @@
       "url": "https://data.statmt.org/bzhang/iclr2023_sltunet/",
       "revision_or_sha256": "phoenix.tar.gz sha256 b0e708b7abe5689475905ad11ac578abb02eb0f9bf00b207bbd6d4342afe5152",
       "role": "Authors' released trained models. phoenix.tar.gz was downloaded and verified on 2026-09-13 (1,014,073,705 bytes, gzip integrity OK, sha256 b0e708b7abe5689475905ad11ac578abb02eb0f9bf00b207bbd6d4342afe5152). It contains more than weights: signemb_ckpt/average.pt (519 MB) is the pretrained SMKD sign-embedding model, sltunet_ckpt/average-0.* (589 MB) is the checkpoint-averaged trained SLTUNET model, and it also ships the exact runtime configuration (sltunet_ckpt/param.json, infer.sh, signemb.sh, sltunet.sh, baseline.yaml, configs/phoenix14.yaml), the joint vocabulary (vocab.zero.drop), the BPE model (ende.bpe), and the MT test data (test.bpe.en/de). The csldaily, csldaily2, and dgs3-t archives are reachable but have not been downloaded. Note the range request was ignored by the server, so the whole 1 GB archive was fetched rather than a header slice.",
-      "config_corroboration": "sltunet_ckpt/param.json independently confirms the target configuration read from the paper: hidden_size 256, embed_size 256, num_heads 4, filter_size 4096, num_encoder_layer 6, num_decoder_layer 6, beam_size 8, decode_alpha 1.0, remove_bpe true, img_feature_size 1024, max_img_len 512. This matches system 15 of Table 2 (d=256, h=4, dff=4096, N^P_enc=1 + N^S_enc=5 = 6 encoder layers, N_dec=6) and Appendix A.1 (beam size 8)."
+      "config_corroboration": "sltunet_ckpt/param.json independently confirms the target configuration read from the paper: hidden_size 256, embed_size 256, num_heads 4, filter_size 4096, num_encoder_layer 6, num_decoder_layer 6, beam_size 8, decode_alpha 1.0, remove_bpe true, img_feature_size 1024, max_img_len 512. This matches system 15 of Table 2 (d=256, h=4, dff=4096, N^P_enc=1 + N^S_enc=5 = 6 encoder layers, N_dec=6) and Appendix A.1 (beam size 8).",
+      "csldaily_archives": "Listed 2026-09-13 by streaming the tar index without downloading in full. Both csldaily.tar.gz and csldaily2.tar.gz have the same shape as the PHOENIX archive and DO contain a CSL-Daily SMKD sign-embedding model (signemb_ckpt/average.pt, 533,883,687 bytes in both), a trained SLTUNET checkpoint, csldaily/gloss_dict.npy, the En-Zh BPE model enzh.bpe, vocab.zero.drop, the MT test data test.bpe.en/test.bpe.zh, infer.sh, baseline.yaml and test.txt. This removes CSL-Daily SMKD pretraining from the cost estimate entirely. Neither archive contains MuST-C training data, so CSL-Daily TRAINING remains blocked; only artifact verification is unblocked.",
+      "csldaily_version_ambiguity": "The two CSL-Daily archives are not the same model and it is unresolved which one corresponds to the published Table 5. csldaily.tar.gz is dated 2023-07-10 with sltunet_ckpt/average-0.data-00000-of-00001 at 456,593,704 bytes; csldaily2.tar.gz is dated 2023-09-18 with the same file at 675,123,496 bytes, a materially larger model, and a slightly different index. The July archive is contemporaneous with the PHOENIX release announced in the repository README on 2023-07-09 and is the more likely match for the paper; the September archive postdates publication and is undocumented. Any CSL-Daily artifact verification must state which archive it used and should not assume the larger one is the paper system."
     },
     {
       "source_id": "smkd-upstream",
@@ -433,7 +435,8 @@
         }
       ],
       "cloud_processing_basis": "Already present in the study's approved shared 'datasets' Volume on Modal. Mounted read-only by this attempt.",
-      "subword_protocol_note": "Repository README update of 2023-04-02: for CSL-Daily the authors always use subword (not character) preprocessing for target text and glosses during training and inference, post-processing to characters only at evaluation for char-level BLEU. This is not stated in the paper and must be followed to obtain the Table 5 numbers."
+      "subword_protocol_note": "Repository README update of 2023-04-02: for CSL-Daily the authors always use subword (not character) preprocessing for target text and glosses during training and inference, post-processing to characters only at evaluation for char-level BLEU. This is not stated in the paper and must be followed to obtain the Table 5 numbers.",
+      "smkd_availability": "The CSL-Daily SMKD sign-embedding model is released by the authors inside csldaily.tar.gz and csldaily2.tar.gz, so SMKD pretraining for this benchmark is not required and the earlier worst-case estimate of roughly 150 GPU-hours for it does not apply."
     },
     {
       "dataset_id": "dgs3-t",
@@ -1841,5 +1844,21 @@
     "includes_human_evaluation": "Queue value 'no'. Consistent with the paper: all reported results are automatic metrics. No ethics or participant gate is opened on this basis.",
     "potential_ethical_concerns": "Queue value 'no'. Note this does not address the Public DGS Corpus licence, which is a separate restriction tracked at gate dgs3t-licence, nor the fact that the corpus contains identifiable video of named signers.",
     "compute_requirements": "Queue value 'N/A'. Treated as absent reviewer information, not as evidence that compute is negligible. The paper's own footnote 3 says the authors could not afford a full grid search."
+  },
+  "compute_preflight": {
+    "run_at_utc": "2026-09-13T13:10:41Z",
+    "platform": "Modal Sandbox, profile repro-sign, 1x T4 (15,360 MiB), 8 CPU, 32 GB",
+    "what_was_measured": "SMKD sign-encoder training on real PHOENIX-2014T video from the shared Volume, using the authors baseline.yaml at its stated batch_size of 2, with nvidia-smi sampling peak GPU memory. A 200-sequence training subset was used so that per-step cost is measured at steady state; subsetting changes the number of steps, not their cost.",
+    "measured": {
+      "smkd_train_step_seconds_at_batch_2": 1.5,
+      "smkd_train_seconds_per_sequence": 0.75,
+      "peak_gpu_memory_mib": 14177,
+      "gpu_total_mib": 15360,
+      "memory_headroom_percent": 7.7
+    },
+    "terminal": "FAILED with CUDA out of memory at roughly step 83 of 100 in the first epoch: \"Tried to allocate 90.00 MiB (GPU 0; 14.56 GiB total capacity; 13.43 GiB already allocated; 31.81 MiB free)\". The failure is sequence-length dependent, since shorter clips completed and a longer one exhausted memory.",
+    "conclusion": "SMKD training does not fit on a T4 at the authors published batch size. This is not a tuning problem: the authors baseline.yaml sets device 0,1, so their run had roughly twice the memory pool available. Reducing batch size to 1 would change effective batch and therefore optimisation semantics, which AGENTS.md forbids doing silently, and would also double wall time.",
+    "implication": "The TensorFlow 1.15 constraint forces CUDA 10, which on Modal means T4 is the only usable accelerator, and T4 cannot run the expensive stage. However SMKD is PyTorch and SLTUNET is TensorFlow, and for TRAINING they are separate processes joined only by .h5 feature files; only the inference path loads both in one process. SMKD pretraining and feature extraction can therefore run in a modern PyTorch container on a large-memory GPU, with SLTUNET training staying in the TF 1.15 container on T4. That removes the CUDA 10 limit from the stage that actually needs the memory and the speed.",
+    "still_unmeasured": "SLTUNET transformer training step time and memory. The preflight targeted SMKD because it dominates the estimate and was least grounded. SLTUNET trains on precomputed features and is a 36.8M parameter model, so it is expected to be far cheaper, but that is an expectation and not a measurement."
   }
 }
