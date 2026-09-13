@@ -200,12 +200,27 @@ checkpoint, and input ordering are all correct.
 - The sign videos are the lossy HEVC re-encodings, not the original frames behind
   the published numbers (gate `phoenix-frame-fidelity`).
 
-**The residual gap is unexplained and untested.** Every metric sits about 0.4–0.6
-below the published value. The leading hypothesis is the lossy frame source, since
-the sign encoder consumes raw pixels, but that is a hypothesis, not a finding. The
-discriminating experiment is to rerun this identical pipeline against the original
-PNG frames and compare. No parameter was adjusted to narrow this gap, and none
-should be.
+**Which eval path this is.** The authors' canonical path is `example/test.sh`
+(`run.py --mode test`), which scores internally through `evalu.eval_metric` and
+strips BPE from hypotheses and references in a single step. That path consumes
+precomputed SMKD features as `test.h5`, which the shared Volume does not hold, so
+this attempt used `run.py --mode infer` — the path the authors' own released
+`infer.sh` uses to decode from raw video — followed by their `eval/metrics.py`.
+Both the decoding and the metric code are the authors'; only the join between them
+is ours, which is exactly where the BPE defect arose.
+
+**Reference construction is ruled out as a source of the gap.** Because
+`--mode infer` takes no reference, references were built from the PHOENIX
+annotation CSV. They were then compared line by line against the authors' own
+`sltunet_ckpt/test.bpe.de` from the released tarball, with BPE removed as
+`evalu.eval_metric` does: **642 of 642 lines are character-identical**.
+
+**The residual gap is unexplained.** Every metric sits about 0.4–0.6 below the
+published value. With the reference eliminated, the leading remaining hypothesis
+is the lossy frame source, since the sign encoder consumes raw pixels; hardware
+and library nondeterminism is a second, smaller candidate. The discriminating
+experiment is to rerun this identical pipeline against the original PNG frames and
+compare. No parameter was adjusted to narrow this gap, and none should be.
 
 **A scoring defect was found and fixed along the way.** The first pass scored B@4
 22.35. The cause was in this attempt's scoring step: upstream applies BPE removal
