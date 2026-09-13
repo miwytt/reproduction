@@ -79,7 +79,7 @@
     "preference_level": 1,
     "preference_level_basis": "The authors published a complete implementation at a pinnable commit, including training, decoding, and metric code, so the attempt starts at preference level 1. The level has not yet been tested by execution; the TensorFlow 1.15 / Python 3.8 requirement is expected to force container work and may force level 2 patches.",
     "blocker": null,
-    "attempt_state": "In progress and not ready for review. Completed: assignment recorded, paper acquired and hashed, target contract resolved, published code discovered and pinned, Modal workspace preflight passed, and the dataset gate run for all three SLT corpora. PHOENIX-2014T and CSL-Daily are verified present with counts matching paper Table 1 exactly. Not started: MuST-C acquisition, environment build, preflight, training, evaluation. Three gates remain open: slt-data-access (MuST-C absent), dgs3t-licence (permission, not availability), and smkd-pretraining-scope (uncosted compute)."
+    "attempt_state": "In progress and not ready for review. Completed: assignment recorded, paper acquired and hashed, target contract resolved, published code discovered and pinned, Modal workspace preflight passed, and the dataset gate run for all three SLT corpora. PHOENIX-2014T and CSL-Daily are verified present with counts matching paper Table 1 exactly. Not started: MuST-C acquisition, environment build, preflight, training, evaluation. Four gates remain open: slt-data-access (MuST-C absent and its official distribution channel is dead), mustc-enzh-version (the En-Zh release is unidentified and v1.0 has no Chinese), dgs3t-licence (permission, not availability), and smkd-pretraining-scope (uncosted compute)."
   },
   "datasets": [
     {
@@ -247,7 +247,7 @@
       "cloud_processing_allowed": false,
       "modal_volume": "datasets",
       "modal_path": "must-c-en-de",
-      "source_url": "https://ict.fbk.eu/must-c/",
+      "source_url": "https://ict.fbk.eu/must-c/ (dead, redirects); mustc.fbk.eu (NXDOMAIN as of 2026-09-13)",
       "verification_status": "absent",
       "verification_note": "Verified 2026-09-13: no MuST-C directory exists in the shared 'datasets' Volume. The volume listing contains no must-c slug of any spelling. MuST-C is required as the MT auxiliary task in Equation 4 for every target, so it must be acquired under its own terms (registration at FBK, CC BY-NC-ND 4.0) before any training run. Only the text side is needed, not the audio.",
       "splits": [
@@ -257,17 +257,18 @@
           "count_source": "paper section 5.1, approximate; not observed",
           "files": []
         }
-      ]
+      ],
+      "acquisition_note": "Checked 2026-09-13. The official distribution channel is gone: mustc.fbk.eu returns NXDOMAIN, and ict.fbk.eu/must-c (the URL cited by the published repository's example/README.md) now 301-redirects to a generic FBK research-centres page. MuST-C is no longer listed on the FBK MT unit resources page at mt.fbk.eu/resources/. Third-party Hugging Face re-uploads exist for German but carry contradictory licence metadata (afl-3.0 and apache-2.0 on a corpus released as CC BY-NC-ND 4.0) and are CSV conversions rather than the original release, so their identity and licence basis cannot be established without a reference copy to compare against."
     },
     {
       "dataset_id": "must-c-en-zh",
       "name": "MuST-C English-Chinese",
-      "version_or_subset": "v1.0, text side only (used as the MT auxiliary task for CSL-Daily)",
+      "version_or_subset": "Unresolved: the paper cites Di Gangi et al. (2019) for 185K En-Zh samples, but v1.0 has no Chinese portion. The actual release used is not stated.",
       "license_or_permission": "CC BY-NC-ND 4.0 per the MuST-C release; non-commercial research use. To be confirmed at the data gate.",
       "cloud_processing_allowed": false,
       "modal_volume": "datasets",
       "modal_path": "must-c-en-zh",
-      "source_url": "https://ict.fbk.eu/must-c/",
+      "source_url": "https://ict.fbk.eu/must-c/ (dead, redirects); mustc.fbk.eu (NXDOMAIN as of 2026-09-13)",
       "verification_status": "absent",
       "verification_note": "Verified 2026-09-13: no MuST-C directory exists in the shared 'datasets' Volume. The volume listing contains no must-c slug of any spelling. MuST-C is required as the MT auxiliary task in Equation 4 for every target, so it must be acquired under its own terms (registration at FBK, CC BY-NC-ND 4.0) before any training run. Only the text side is needed, not the audio.",
       "splits": [
@@ -277,7 +278,8 @@
           "count_source": "paper section 5.1, approximate; not observed",
           "files": []
         }
-      ]
+      ],
+      "acquisition_note": "Checked 2026-09-13. Same dead official channel as En-De. Additionally, the requested version is ambiguous: MuST-C v1.0 (Di Gangi et al., 2019) covers English into eight languages only (Dutch, French, German, Italian, Portuguese, Romanian, Russian, Spanish) and does not include Chinese, which appears in a later release. The published repository pins v1.0 for En-De only; neither the paper nor the repository states which release supplied the 185K En-Zh samples."
     }
   ],
   "metric_definitions": [
@@ -1335,13 +1337,17 @@
       "gate_id": "slt-data-access",
       "type": "data",
       "status": "open",
-      "reason": "Narrowed by verification. PHOENIX-2014T and CSL-Daily are present in the shared approved Volume with sentence counts matching paper Table 1 exactly, so their identity is settled and this attempt will mount them read-only. Two items remain: MuST-C En-De and En-Zh are absent from the Volume and are required by the Equation 4 MT task for every target; and the licence basis under which PHOENIX-2014T and CSL-Daily were placed in the Volume is held by the study, not recorded in this attempt, so it should be confirmed rather than assumed.",
-      "required_action": "Confirm with Team S the basis on which PHOENIX-2014T and CSL-Daily sit in the shared Volume and that reproduction use is covered. Separately, decide whether to acquire MuST-C v1.0 En-De and En-Zh (text side only) under CC BY-NC-ND 4.0 via FBK registration and populate /datasets/must-c-en-de and /datasets/must-c-en-zh with an idempotent data.sh. Training cannot reproduce any target without the MT task.",
+      "reason": "MuST-C En-De and En-Zh are absent from the shared Volume and are required by the Equation 4 MT task for every target, but the corpus no longer has a working official distribution channel: mustc.fbk.eu is NXDOMAIN and the repository's cited URL redirects to a generic FBK page. Acquisition therefore needs a decision about an acceptable source rather than a download. Separately, the licence basis under which PHOENIX-2014T and CSL-Daily already sit in the shared Volume is held by the study and should be confirmed rather than assumed.",
+      "required_action": "Decide the MuST-C acquisition route and route it to Team S as a data-access request: (a) request the corpus directly from the FBK MT unit, which is the licence holder and the only source that can establish identity and terms; (b) use an institutional or collaborator copy if UZH already holds one, recording its provenance and checksums; or (c) accept a third-party mirror only as a documented deviation, which is currently not advisable because the available mirrors carry contradictory licence metadata and are format conversions of a no-derivatives corpus. Also confirm the PHOENIX-2014T and CSL-Daily licence basis. Training cannot reproduce any target until MuST-C is resolved.",
       "evidence": [
         "Wrapper volume listing on 2026-09-13: 'datasets' contains rwth-phoenix-2014-t, csl-daily, and dgs-corpus, and no must-c entry.",
         "check_modal_dataset.sh confirmed both 'rwth-phoenix-2014-t/' and 'csl-daily/'.",
         "Observed counts: PHOENIX 7,096/519/642 and CSL-Daily 18,401/1,077/1,176, both exactly matching paper Table 1.",
-        "Paper section 5.1 makes MuST-C part of the training objective for every reported SLTUNET result, not an optional extra."
+        "Paper section 5.1 makes MuST-C part of the training objective for every reported SLTUNET result, not an optional extra.",
+        "DNS check 2026-09-13: mustc.fbk.eu returns NXDOMAIN.",
+        "HTTP check 2026-09-13: https://ict.fbk.eu/must-c/ returns 301 to https://www.fbk.eu/en/research-centers/.",
+        "MuST-C is absent from the FBK MT resources listing at https://mt.fbk.eu/resources/ as of 2026-09-13.",
+        "Hugging Face mirrors found for de/fr/it/ru/es carry licence tags afl-3.0, apache-2.0, or other, conflicting with the corpus's stated CC BY-NC-ND 4.0; no Chinese mirror exists."
       ]
     },
     {
@@ -1355,6 +1361,19 @@
         "Paper section 5.2: replacing Camgoz et al. (2020b) embeddings with the retrained SMKD model gives +1.41 BLEU, and the ResNet34 backbone change gives a further +0.31 BLEU into the final system 15.",
         "Wrapper listing on 2026-09-13: the volume's PHOENIX features are phoenix14t.pami0.*, the Camgoz et al. (2020b) embeddings.",
         "Repository example/README.md step 2 describes SMKD pretraining, checkpoint averaging, and feature extraction with --num-feature-aug 10 as prerequisites of SLTUNET training."
+      ]
+    },
+    {
+      "gate_id": "mustc-enzh-version",
+      "type": "protocol",
+      "status": "open",
+      "reason": "The MuST-C release supplying the En-Zh MT data for the CSL-Daily experiments is not identified. The paper cites Di Gangi et al. (2019) and reports 185K En-Zh samples, but MuST-C v1.0 from that paper covers only eight target languages and has no Chinese portion; Chinese appears in a later release. The published repository pins v1.0 for En-De only and says nothing about En-Zh. Choosing a release silently would be an invented protocol detail affecting all 18 CSL-Daily targets, whose training objective includes this MT data.",
+      "required_action": "Resolve which MuST-C release supplied the 185K En-Zh samples. Check the release whose En-Zh training portion actually contains about 185K segments and compare against the paper's figure; if no release matches, this becomes an author-contact question, which is gated until after an independent attempt. Until resolved, any CSL-Daily run using a guessed release is conditional evidence, not a produced target.",
+      "evidence": [
+        "Paper section 5.1: 'We employ MuST-C English-German (En-De, 229K samples) and English-Chinese (En-Zh, 185K samples) (Di Gangi et al., 2019) as the augmented MT data for PHOENIX-2014T/DGS3-T and CSL-Daily, respectively.'",
+        "Published repository example/README.md step 1: 'Get MuST-C En-De dataset from FBK; note we used the data in v1.0' — v1.0 is pinned for En-De only.",
+        "Di Gangi et al. (2019) describes MuST-C as covering English into eight languages: Dutch, French, German, Italian, Portuguese, Romanian, Russian, Spanish. Chinese is not among them.",
+        "The En-De figure of 229K is consistent with v1.0; the En-Zh figure of 185K must therefore come from a different release."
       ]
     }
   ],

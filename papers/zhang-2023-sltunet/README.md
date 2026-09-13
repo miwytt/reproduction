@@ -34,7 +34,8 @@ built an environment, run a preflight, trained, or evaluated anything.
 | Full run | not started |
 | Evaluation | not started |
 
-Open gates: `slt-data-access` (MuST-C absent), `dgs3t-licence` (permission, not
+Open gates: `slt-data-access` (MuST-C absent, official channel dead),
+`mustc-enzh-version` (En-Zh release unidentified), `dgs3t-licence` (permission, not
 availability), `smkd-pretraining-scope` (uncosted compute). Resolved:
 `modal-auth`.
 
@@ -190,10 +191,26 @@ both slugs, and sentence counts parsed from the actual annotation manifests matc
 paper Table 1 exactly. Note the volume slug is `rwth-phoenix-2014-t`, not the
 `phoenix-2014t` this attempt initially assumed.
 
-**MuST-C is missing and is not optional.** The Equation 4 objective includes the
-MT task for every reported SLTUNET result, so no target can be reproduced without
-it. It must be acquired under CC BY-NC-ND 4.0 via FBK registration and populated
-into the Volume before training.
+**MuST-C is missing, is not optional, and has no working official source.** The
+Equation 4 objective includes the MT task for every reported SLTUNET result, so
+no target can be reproduced without it. As of 2026-09-13 the corpus has no live
+distribution channel: `mustc.fbk.eu` returns NXDOMAIN, the
+`ict.fbk.eu/must-c` URL cited by the published repository 301-redirects to a
+generic FBK page, and MuST-C is no longer listed at `mt.fbk.eu/resources/`.
+Third-party Hugging Face mirrors exist for German and a few other languages but
+carry licence tags (`afl-3.0`, `apache-2.0`) that contradict the corpus's stated
+CC BY-NC-ND 4.0 and are CSV conversions rather than the original release, so
+neither their identity nor their licence basis can be established. Acquisition is
+a decision for Team S, not a download — see gate `slt-data-access`.
+
+**The En-Zh release is unidentified, and v1.0 cannot be the answer.** The paper
+cites Di Gangi et al. (2019) for both MT sets and reports 185K En-Zh samples, but
+MuST-C v1.0 covers English into eight languages — Dutch, French, German, Italian,
+Portuguese, Romanian, Russian, Spanish — and has **no Chinese portion**. The
+repository pins v1.0 for En-De only and says nothing about En-Zh. Picking a
+release silently would be an invented protocol detail affecting all 18 CSL-Daily
+targets, so this is gated at `mustc-enzh-version`; any CSL-Daily run made on a
+guess is conditional evidence, not a produced target.
 
 **The PHOENIX features in the Volume are the wrong ones.** `features/phoenix14t.pami0.*`
 are the Camgoz et al. (2020b) embeddings — the paper's Table 2 row 1.1, scoring
