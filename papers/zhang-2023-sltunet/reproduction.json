@@ -1734,7 +1734,8 @@
         "Container-format inspection of one test video: ftyp 'isom', codec box 'hvc1' (HEVC), muxer string 'Lavf61.7.100', file size 34,249 bytes.",
         "HTTP check 2026-09-13: the original RWTH distribution is live at 41,699,758,035 bytes.",
         "smkd/dataset/dataloader_video.py lines 65-77: the loader globs PNG/JPG when the suffix matches and otherwise opens the path with cv2.VideoCapture, so both sources are supported upstream."
-      ]
+      ],
+      "blocked_diagnostic": "Attempted 2026-09-13 and could not be run faithfully. The plan was to score the released SMKD model on Sign2Gloss and compare against the published dev WER of 18.90 (paper section 5.2), isolating frame quality from translation. SMKD WER evaluation goes through smkd/evaluation/slr_eval/wer_calculation.evaluate, which requires the official PHOENIX ground-truth file {evaluation_prefix}-{mode}.stm even on its python path. No .stm ships in the sltunet repository, none exists in the shared Volume (the rwth-phoenix-2014 entry holds only raw/phoenix2014-release with annotations and features, no evaluation directory), and RWTH publishes no features-free archive for PHOENIX-2014T, only the full 41.7 GB phoenix-2014-T.v3.tar.gz. Building a substitute stm from the annotation CSV orth column was rejected: evaluation/slr_eval/preprocess.sh applies heavy PHOENIX-specific gloss normalisation to hypotheses, and whether the official reference carries the same normalisation is unknown, so a self-built reference would shift WER by an unquantified amount and the comparison against 18.90 would be uninterpretable. Consequence: the cheap diagnostic and the actual fix require the same download, so this gate and the WER check collapse into one decision."
     },
     {
       "gate_id": "target-scope-table2",
