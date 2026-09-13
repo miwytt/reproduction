@@ -1,6 +1,7 @@
 # SLTUNET reproduction
 
-**Paper ID:** `zhang-2023-sltunet`
+**Paper ID:** `3bbc8841012fdb5971d1c86dff528edd8590f1b8` (directory slug
+`zhang-2023-sltunet`)
 
 **Citation:** Biao Zhang, Mathias Müller, and Rico Sennrich. SLTUNET: A Simple Unified Model for Sign Language Translation. In The Eleventh International Conference on Learning Representations (ICLR), 2023.
 
@@ -10,52 +11,65 @@
 
 **Pipeline status:** `in_progress` — no terminal pipeline status yet; see "Attempt state" below
 
-**Numerical agreement:** `not_assessed` — no run has been executed, so no value exists to compare
+**Numerical agreement:** `not_assessed` — no target has produced a value; the
+artifact-verification run below is conditional evidence, not a target result
 
 **Attempt date:** 2026-09-13 (opened; not completed)
 
 ## Attempt state
 
-This attempt is **open and not ready for review**. It has completed assignment
-recording, paper acquisition, target resolution, source discovery, the Modal
-workspace preflight, and the dataset gate for all three SLT corpora. It has not
-built an environment, run a preflight, trained, or evaluated anything.
+This attempt is **open and not ready for review**. The environment is built and
+the authors' published inference path runs end to end, but no training has been
+performed and no target has been produced.
 
 | Stage | State |
 | --- | --- |
 | Assignment recorded | done |
 | Paper acquired and hashed | done |
 | Target contract resolved | done — 54 targets |
-| Sources discovered and pinned | done for code and paper; released weights not yet downloaded or hashed |
+| Sources discovered and pinned | done — code, paper, and the released PHOENIX artifact |
 | Modal workspace preflight | done — profile `repro-sign` verified, both canonical Volumes present |
 | Data gate | PHOENIX-2014T and CSL-Daily verified; MuST-C absent; DGS3-T present but permission unresolved |
-| Environment built | not started |
-| Preflight | not started |
-| Full run | not started |
-| Evaluation | not started |
+| Environment built | done — TF 1.15 + PyTorch container, five undeclared dependencies pinned |
+| Preflight | done — real data, real weights, parsed metrics, exit 0 |
+| Artifact-verification run | done — full 642-sequence test split, exit 0 |
+| SMKD pretraining | not started |
+| SLTUNET training | not started |
+| CSL-Daily / DGS3-T | not started |
 
 Open gates: `slt-data-access` (MuST-C absent, official channel dead),
 `mustc-enzh-version` (En-Zh release unidentified), `dgs3t-licence` (permission, not
-availability), `smkd-pretraining-scope` (uncosted compute). Resolved:
-`modal-auth`.
+availability), `smkd-pretraining-scope` (path decision and cost),
+`phoenix-frame-fidelity` (lossy frame source). Resolved: `modal-auth`.
 
 ## Reproduction agents
 
 | Agent ID | Model and version | Agent application | Contribution | Attribution evidence / unknowns |
 | --- | --- | --- | --- | --- |
 | `sonnet-5-claude-code` | Sonnet 5 (`claude-sonnet-5`) | Claude Code | Resolved the assignment URL to the paper identity, acquired and hashed the PDF, discovered and cloned the published code, began the target contract. Executed no experiment. | Interactive Claude Code session on 2026-09-13 declaring this model name and ID. Harness version is not exposed by the session and is recorded as absent. |
-| `opus-5-claude-code` | Opus 5 (1M context) (`claude-opus-5[1m]`) | Claude Code | Continued the same session after the session model changed mid-attempt: authored `reproduction.json`, the target ledger, the dataset and licence findings, and the open gates. Executed no experiment. | Same session on 2026-09-13; the environment declared this model name and ID partway through the attempt. Harness version not exposed. |
+| `opus-5-claude-code` | Opus 5 (1M context) (`claude-opus-5[1m]`) | Claude Code | Continued the same session after the session model changed mid-attempt: authored `reproduction.json`, the target ledger, the dataset and licence findings, the gates, the container and Modal app, and **executed** the preflight and artifact-verification runs. | Same session on 2026-09-13; the environment declared this model name and ID partway through the attempt. Harness version not exposed. |
 
-No run has been executed, so no `runs[].agent_ids` entries exist yet.
+The single retained run,
+`artifact-verification-phoenix-sign2text-attempt-1`, carries
+`agent_ids: ["opus-5-claude-code"]`. No run was executed by `sonnet-5-claude-code`.
 
 ## Scope and target contract
 
-The assignment was a bare paper URL (`https://openreview.net/pdf?id=EBS4C77p_5S`)
-with no `what_to_reproduce` text and no queue record, so the requested numbers
-were resolved from the paper itself rather than from reviewer shorthand.
+> **Scope is contested and the ledger is incomplete — gate `target-scope-table2`.**
+> The attempt began from a bare paper URL with no queue record, so scope was
+> resolved from the paper. A queue record was later found in this directory and is
+> now the authoritative assignment. Its `what_to_reproduce` is **"Tables 2, 4, 5
+> and 6"** — Table 2 is in scope and the 54-target ledger below does not cover it.
+> Table 2 is a 15-step optimization ladder plus 9 discarded variants, so covering
+> it in full means training roughly two dozen configurations: the dominant cost of
+> the entire reproduction. The scope must be decided before compute is estimated.
 
-Scope was set to the **SLTUNET system rows of the three main results tables**,
-which carry the paper's headline claims:
+The original assignment was a bare paper URL
+(`https://openreview.net/pdf?id=EBS4C77p_5S`) with no `what_to_reproduce` text and
+no queue record, so the requested numbers were resolved from the paper itself.
+
+On that basis scope was set to the **SLTUNET system rows of the three main results
+tables**, which carry the paper's headline claims:
 
 - **Table 4** — PHOENIX-2014T, cascading (Sign2Gloss + Gloss2Text) and end-to-end
   (Sign2Text). Dev ROUGE and B@4; test ROUGE, B@1–B@4, and the sBLEU/ChrF pair
@@ -66,11 +80,34 @@ which carry the paper's headline claims:
 That is 54 targets. Each is one published number with its own `target_id`,
 experiment, metric definition, split, and paper location.
 
-Deliberately **out of scope**: the Table 2 optimization ladder (systems 1–15 and
-their variants), the Table 3 single-task/multi-task ablation, and the Table 8
-shared-versus-separate module ablation. These are analysis ablations supporting
-the design, not the paper's reported system results. If the study wants the
-ablation ladder reproduced too, the target ledger must be extended.
+Judged out of scope at the time: the Table 2 optimization ladder, the Table 3
+single-task/multi-task ablation, and the Table 8 shared-versus-separate module
+ablation. **The queue record overrides that judgement for Table 2**, which it
+names explicitly; the ledger must be extended once the scope question above is
+settled. Tables 3 and 8 remain out of scope, since the queue record does not name
+them.
+
+**Queue record provenance.** `paper_id`
+`3bbc8841012fdb5971d1c86dff528edd8590f1b8`, assigned to michelle.wastl@uzh.ch,
+paper status `final` (moved from `needs_review` by goehring@cl.uzh.ch on
+2026-08-11). Two contract mismatches are recorded rather than papered over: the
+export has **no `confirmation` field at all**, and
+`ingest_candidate.py` rejects it in its published shape — it is a single JSON
+object rather than the required top-level array, and its database `id`
+(`cvptk5ysnaqk36e`) differs from its `paper_id`, which the script requires to
+match. The record was **not** reshaped to force ingestion, since editing an
+assignment record to satisfy a validator would fabricate provenance. It is
+preserved verbatim under `reproduction.json.assignment.record`.
+
+**Queue flags investigated.** `copied_scores: "yes"` — in Tables 4–6 the SLTUNET
+rows are the authors' own measurements while the comparison rows are quoted from
+the cited papers, which the Table 4 caption states outright; all 54 current
+targets are the authors' own rows, so none is a copied baseline.
+`includes_human_evaluation: "no"` and `potential_ethical_concerns: "no"` are
+consistent with the paper, though the latter does not address the Public DGS
+Corpus licence or its identifiable signer video. `compute_requirements: "N/A"` is
+treated as absent information, not as evidence that compute is small — the paper's
+own footnote 3 says the authors could not afford a full grid search.
 
 All 54 targets are the authors' own system, not scores copied from earlier work;
 the copied rows in those tables belong to the comparison systems (SL-Transf.,
@@ -129,6 +166,55 @@ listing confirmed reachable on 2026-09-13.
 `LICENSE` file exists in the tree at the pinned commit. The code is public but
 unlicensed, which permits reading and running it for this reproduction but not
 redistribution; no fork or vendored copy will be committed here.
+
+## Artifact verification (conditional evidence, not a target result)
+
+The authors' released checkpoint-averaged SLTUNET model and released SMKD
+sign-embedding model were run through their pinned inference entry point over the
+full 642-sequence PHOENIX-2014T test split and scored with their own metric code.
+
+| Metric | Published (Table 4, end-to-end, test) | This run | Difference |
+| --- | ---: | ---: | ---: |
+| B@1 | 52.92 | 52.50 | −0.42 |
+| B@2 | 41.76 | 41.33 | −0.43 |
+| B@3 | 33.99 | 33.42 | −0.57 |
+| B@4 | 28.47 | 27.91 | −0.56 |
+| ChrF | 53.78 | 53.43 | −0.35 |
+
+Both SacreBLEU signatures match Appendix A.1 exactly
+(`BLEU+case.mixed+numrefs.1+smooth.exp+tok.13a+version.1.4.2` and
+`chrF2+case.mixed+numchars.6+numrefs.1+space.False+version.1.4.2`), so the metric
+implementation and version are the paper's.
+
+**Independent corroboration.** Output line 2 of the test split is
+character-identical to the SLTUNET generation printed in the paper's own Table 10
+case study — "am donnerstag in küstennähe regen sonst mal sonne mal wolken im
+wechsel dann am freitag ähnliches wetter". Reproducing a published generated
+sentence exactly is strong evidence that the decoding configuration, vocabulary,
+checkpoint, and input ordering are all correct.
+
+**This does not close any target**, and closeness does not change that:
+
+- No training was performed. These are the authors' own weights, so this verifies
+  their released artifact and our evaluation pipeline, not their training pipeline.
+- The sign videos are the lossy HEVC re-encodings, not the original frames behind
+  the published numbers (gate `phoenix-frame-fidelity`).
+
+**The residual gap is unexplained and untested.** Every metric sits about 0.4–0.6
+below the published value. The leading hypothesis is the lossy frame source, since
+the sign encoder consumes raw pixels, but that is a hypothesis, not a finding. The
+discriminating experiment is to rerun this identical pipeline against the original
+PNG frames and compare. No parameter was adjusted to narrow this gap, and none
+should be.
+
+**A scoring defect was found and fixed along the way.** The first pass scored B@4
+22.35. The cause was in this attempt's scoring step: upstream applies BPE removal
+only inside `evalu.eval_metric`, while the `--mode infer` path writes output
+through `evalu.dump_tanslation` (main.py:538), which does not strip it. Scoring
+that raw file counted `@@ ` continuation markers as wrong tokens on 177 of 642
+lines (429 markers), costing about 5.5 BLEU. `run_inference.py` now applies
+upstream's exact transformation, `line.replace("@@ ", "")`, before scoring. The
+authors' code is unmodified.
 
 ## Results
 
@@ -302,9 +388,9 @@ runs use **T4**. The repository's standard GPU base image is deliberately not us
 
 **Frame source is a real fidelity caveat** (gate `phoenix-frame-fidelity`). The
 authors' released `test.txt` points at
-`features/fullFrame-210x260px/test/<seq>/*.png` — lossless frames, which is what
+`features/fullFrame-210x260px/test/SEQNAME/*.png` — lossless frames, which is what
 their published numbers came from. The shared Volume instead holds
-`videos/test/<seq>.mp4`, **HEVC-encoded, muxed with Lavf 61.7.100**, i.e. a recent
+`videos/test/SEQNAME.mp4`, **HEVC-encoded, muxed with Lavf 61.7.100**, i.e. a recent
 lossy re-encode made by the study; one test sequence is 34 KB. SMKD consumes raw
 pixels, so compression artifacts can shift features and therefore scores by an
 unmeasured amount. No code change is needed to read either form — the authors'
@@ -337,12 +423,22 @@ there if that stage is rerun.
 
 ## Execution evidence
 
-No run has been executed. `reproduction.json.runs` is empty and no artifacts have
-been produced.
-
-| Run ID / agent IDs | Attempt / max | Kind / targets | Platform / hardware | Seed/config | Start/end | Exit / terminal state / reason | Failure class | Stop ceilings | Logs/artifacts |
+| Run ID / agent IDs | Attempt / max | Kind / targets | Platform / hardware | Config | Start/end (UTC) | Exit / terminal / reason | Failure class | Stop ceilings | Outputs |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| none | — | — | — | — | — | — | — | — | — |
+| `artifact-verification-phoenix-sign2text-attempt-1` / `opus-5-claude-code` | 1 / 2 | evaluation-only; no target | Modal `repro-sign`, Sandbox, 1×T4, 8 CPU, 32 GB | beam 8, `decode_alpha` 1.0, `eval_batch_size` 4, `max_img_len` 512 | 11:39:44 → 11:43:53 (249 s) | 0 / `succeeded` / `completed` | none | 6 h wall, 6 GPU-h, CHF 10 | Volume `zhang-2023-sltunet-results`, `runs/artifact-verification-full/` |
+
+Modal app `ap-NdzBowjcaHYf2cX2VcPEIy`, profile `repro-sign`, executed as a Sandbox
+(not a Function — see Environment). Upstream commit
+`b1d1d0e8b3b7275e10cd89229f2632b556df5de9`, released artifact sha256
+`b0e708b7abe5689475905ad11ac578abb02eb0f9bf00b207bbd6d4342afe5152`, base image
+`tensorflow/tensorflow:1.15.5-gpu-py3`. Raw outputs (`trans.txt`,
+`trans.debpe.txt`, `reference.de`, `inputs.txt`, `run.json`) are retained on that
+Volume rather than in Git.
+
+An earlier pass in the same attempt group scored B@4 22.35 and is not retained as
+a separate run, because it measured this attempt's own scoring defect rather than
+the reproduction. The defect, its magnitude and its fix are recorded above and in
+`reproduction.json`.
 
 ## Guesses and deviations
 

@@ -1,5 +1,5 @@
 {
-  "paper_id": "zhang-2023-sltunet",
+  "paper_id": "3bbc8841012fdb5971d1c86dff528edd8590f1b8",
   "agents": [
     {
       "agent_id": "sonnet-5-claude-code",
@@ -25,13 +25,257 @@
     }
   ],
   "assignment": {
-    "kind": "direct_user_request",
+    "kind": "queue_record",
     "source": {
-      "path": null,
-      "sha256": "3e935b739f4a6196515d49ad048d10ef238888e89031eaec14038bc695c893bf",
-      "note": "SHA-256 of the exact assignment string supplied by the user in the Claude Code session on 2026-09-13: 'https://openreview.net/pdf?id=EBS4C77p_5S'. No queue export was provided, so no queue-review fields (confirmation, status, reviewer, code_repos, availability, ethics flags) exist for this assignment."
+      "path": "papers/zhang-2023-sltunet/reproductions-3bbc8841012fdb5971d1c86dff528edd8590f1b8-2026-09-13.json",
+      "sha256": "c72fede7b80c0f1b3b9552e90d874b91bcaa63162bd1f2631c95a41ac613213f",
+      "discovered_at": "2026-09-13",
+      "note": "This queue export appeared in the paper directory after the attempt had already begun from a direct user request carrying only the OpenReview URL. It is the authoritative assignment and supersedes that direct-request provenance, which is preserved below."
     },
-    "requested_scope": "The user supplied only the paper URL with no what_to_reproduce text. Scope was resolved from the paper itself to the SLTUNET system rows of the three main results tables (Tables 4, 5, and 6), which carry the paper's headline claims. The Table 2 ablation ladder and the Table 3 and Table 8 secondary ablations are not targets of this attempt."
+    "ingestion": {
+      "script_accepted": false,
+      "detail": "ingest_candidate.py rejects this export in its published shape, twice: the file is a single JSON object rather than the required top-level array, and the paper record carries a database id 'cvptk5ysnaqk36e' distinct from its paper_id '3bbc8841012fdb5971d1c86dff528edd8590f1b8', which the script requires to match. The record was NOT reshaped to force ingestion, because editing an assignment record to satisfy a validator would fabricate provenance. It is preserved verbatim instead."
+    },
+    "confirmation_status": {
+      "confirmation_field_present": false,
+      "paper_status": "final",
+      "reproduction_status": "in_progress",
+      "finalized_by": "joni.dambre@gmail.com",
+      "status_history": [
+        {
+          "after": "final",
+          "before": "needs_review",
+          "by": "goehring@cl.uzh.ch",
+          "when": "2026-08-11T16:15:48.239Z"
+        }
+      ],
+      "assessment": "AGENTS.md requires confirmation 'confirmed' and status 'final'. This export has no confirmation field at all. The paper record's status is 'final' and its status_history shows a human moving it from 'needs_review' to 'final' on 2026-08-11, which is the substance of confirmation; the enclosing reproduction record's own status is 'in_progress', which describes the reproduction rather than the review. Recorded as an unresolved discrepancy rather than silently treated as confirmed."
+    },
+    "normalized": {
+      "title": "SLTUNET: A Simple Unified Model for Sign Language Translation",
+      "pdf_url": "http://arxiv.org/pdf/2305.01778",
+      "code_repos": [
+        "https://github.com/bzhangGo/sltunet"
+      ],
+      "what_to_reproduce": "Tables 2, 4, 5 and 6",
+      "metric_ids": [
+        "suusky3vnilrvs6",
+        "015vltbetbo3cpj",
+        "1v058qfd1nvvrvy",
+        "q7nnxrx71w67jl9",
+        "68v479eowqiq7f4",
+        "c4gdeckahpnm5gd",
+        "oootm5pocstw8ml",
+        "nyd4v0p9iyuh7i7"
+      ],
+      "dataset_ids": [
+        "wk5mci5wniesf1j",
+        "7m5rugi6d1jlpb6",
+        "t69w4jbjrf60z0o"
+      ],
+      "copied_scores": "yes",
+      "includes_human_evaluation": "no",
+      "potential_ethical_concerns": "no",
+      "compute_requirements": "N/A",
+      "assignees": [
+        "michelle.wastl@uzh.ch"
+      ]
+    },
+    "record": {
+      "assignees": [
+        "michelle.wastl@uzh.ch"
+      ],
+      "collectionId": "pbc_1548343306",
+      "collectionName": "reproductions",
+      "comments": "",
+      "expand": {
+        "paper": {
+          "area_of_slp": [
+            "Translation"
+          ],
+          "code_repos": [
+            "https://github.com/bzhangGo/sltunet"
+          ],
+          "collectionId": "pbc_3632733556",
+          "collectionName": "papers",
+          "comments": "",
+          "compute_requirements": "N/A",
+          "copied_scores": "yes",
+          "datasets": [
+            "wk5mci5wniesf1j",
+            "7m5rugi6d1jlpb6",
+            "t69w4jbjrf60z0o"
+          ],
+          "expand": {
+            "datasets": [
+              {
+                "assignees": [],
+                "available": "yes",
+                "collectionId": "pbc_3710182791",
+                "collectionName": "datasets",
+                "comments": "Extension of PHOENIX-2014 with German translation annotations",
+                "correspondence": "",
+                "id": "wk5mci5wniesf1j",
+                "license": "CC BY-SA 3.0",
+                "name": "PHOENIX-2014-T",
+                "on_modal": "yes",
+                "url": [
+                  "https://www-i6.informatik.rwth-aachen.de/~koller/RWTH-PHOENIX-2014-T/"
+                ]
+              },
+              {
+                "assignees": [],
+                "available": "yes",
+                "collectionId": "pbc_3710182791",
+                "collectionName": "datasets",
+                "comments": "Chinese Sign Language large-scale continuous SLT dataset with spoken language translations and gloss-level annotations on topics around people's daily lives (e.g., travel, shopping, medical care)",
+                "correspondence": "",
+                "id": "7m5rugi6d1jlpb6",
+                "license": "Custom (research only)",
+                "name": "CSL-Daily",
+                "on_modal": "yes",
+                "url": [
+                  "https://ustc-slr.github.io/datasets/2021_csl_daily/"
+                ]
+              },
+              {
+                "assignees": [],
+                "available": "yes",
+                "collectionId": "pbc_3710182791",
+                "collectionName": "datasets",
+                "comments": "German Sign Language naturalistic corpus",
+                "correspondence": "",
+                "id": "t69w4jbjrf60z0o",
+                "license": "CC BY-SA 4.0",
+                "name": "DGS Corpus",
+                "on_modal": "yes",
+                "url": [
+                  "https://www.sign-lang.uni-hamburg.de/dgs-korpus/"
+                ]
+              }
+            ],
+            "metrics": [
+              {
+                "collectionId": "pbc_3017397517",
+                "collectionName": "metrics",
+                "comments": "",
+                "id": "suusky3vnilrvs6",
+                "name": "BLEU",
+                "url": []
+              },
+              {
+                "collectionId": "pbc_3017397517",
+                "collectionName": "metrics",
+                "comments": "",
+                "id": "015vltbetbo3cpj",
+                "name": "BLEU-4",
+                "url": []
+              },
+              {
+                "collectionId": "pbc_3017397517",
+                "collectionName": "metrics",
+                "comments": "",
+                "id": "1v058qfd1nvvrvy",
+                "name": "ROUGE-L",
+                "url": null
+              },
+              {
+                "collectionId": "pbc_3017397517",
+                "collectionName": "metrics",
+                "comments": "Word error rate",
+                "id": "q7nnxrx71w67jl9",
+                "name": "WER",
+                "url": []
+              },
+              {
+                "collectionId": "pbc_3017397517",
+                "collectionName": "metrics",
+                "comments": "",
+                "id": "68v479eowqiq7f4",
+                "name": "BLEU-1",
+                "url": []
+              },
+              {
+                "collectionId": "pbc_3017397517",
+                "collectionName": "metrics",
+                "comments": "",
+                "id": "c4gdeckahpnm5gd",
+                "name": "BLEU-2",
+                "url": []
+              },
+              {
+                "collectionId": "pbc_3017397517",
+                "collectionName": "metrics",
+                "comments": "",
+                "id": "oootm5pocstw8ml",
+                "name": "BLEU-3",
+                "url": []
+              },
+              {
+                "collectionId": "pbc_3017397517",
+                "collectionName": "metrics",
+                "comments": "",
+                "id": "nyd4v0p9iyuh7i7",
+                "name": "chrF",
+                "url": []
+              }
+            ]
+          },
+          "finalized_by": "joni.dambre@gmail.com",
+          "flag_reason": "",
+          "id": "cvptk5ysnaqk36e",
+          "includes_human_evaluation": "no",
+          "main_experiment_has_ranking": "yes",
+          "metrics": [
+            "suusky3vnilrvs6",
+            "015vltbetbo3cpj",
+            "1v058qfd1nvvrvy",
+            "q7nnxrx71w67jl9",
+            "68v479eowqiq7f4",
+            "c4gdeckahpnm5gd",
+            "oootm5pocstw8ml",
+            "nyd4v0p9iyuh7i7"
+          ],
+          "paper_id": "3bbc8841012fdb5971d1c86dff528edd8590f1b8",
+          "pdf_url": "http://arxiv.org/pdf/2305.01778",
+          "peer_reviewed": "yes",
+          "potential_ethical_concerns": "no",
+          "rejection_reason": "",
+          "status": "final",
+          "status_history": [
+            {
+              "after": "final",
+              "before": "needs_review",
+              "by": "goehring@cl.uzh.ch",
+              "when": "2026-08-11T16:15:48.239Z"
+            }
+          ],
+          "sub_area_of_slp": [
+            "Gloss-to-text",
+            "Text-to-gloss",
+            "Video-to-gloss",
+            "Gloss-to-video"
+          ],
+          "textual_conclusion": "SLTUNET adopts shared parameters and modality-specific parameters to achieve its\nbest result under a set of optimization techniques. We show in experiments that SLTUNET achieves\n(near) state-of-the-art performance on traditional benchmarks",
+          "title": "SLTUNET: A Simple Unified Model for Sign Language Translation",
+          "venue": "ICLR",
+          "what_to_reproduce": "Tables 2, 4, 5 and 6",
+          "year": 2023
+        }
+      },
+      "id": "sune1i3wzkbvxn8",
+      "paper": "cvptk5ysnaqk36e",
+      "status": "in_progress",
+      "url": []
+    },
+    "superseded_direct_request": {
+      "kind": "direct_user_request",
+      "source": {
+        "path": null,
+        "sha256": "3e935b739f4a6196515d49ad048d10ef238888e89031eaec14038bc695c893bf",
+        "note": "SHA-256 of the original assignment string supplied in the session: 'https://openreview.net/pdf?id=EBS4C77p_5S'."
+      }
+    }
   },
   "paper": {
     "title": "SLTUNET: A Simple Unified Model for Sign Language Translation",
@@ -80,7 +324,7 @@
     "preference_level": 1,
     "preference_level_basis": "The authors published a complete implementation at a pinnable commit, including training, decoding, and metric code, so the attempt starts at preference level 1. The level has not yet been tested by execution; the TensorFlow 1.15 / Python 3.8 requirement is expected to force container work and may force level 2 patches.",
     "blocker": null,
-    "attempt_state": "In progress and not ready for review. Completed: assignment recorded, paper acquired and hashed, target contract resolved, published code discovered and pinned, Modal workspace preflight passed, and the dataset gate run for all three SLT corpora. PHOENIX-2014T and CSL-Daily are verified present with counts matching paper Table 1 exactly. Not started: MuST-C acquisition, environment build, preflight, training, evaluation. Four gates remain open: slt-data-access (MuST-C absent and its official distribution channel is dead), mustc-enzh-version (the En-Zh release is unidentified and v1.0 has no Chinese), dgs3t-licence (permission, not availability), and smkd-pretraining-scope (uncosted compute)."
+    "attempt_state": "In progress and not ready for review. Completed: assignment recorded, paper acquired and hashed, target contract resolved, published code discovered and pinned, Modal workspace preflight passed, dataset gate run for all three SLT corpora, container built for TensorFlow 1.15 plus PyTorch, and a representative preflight executed the authors' published inference path end to end on real data with real weights, emitting parsed metrics and exit code 0. Running: the full 642-sequence artifact-verification pass. Not started: SMKD pretraining, SLTUNET training, CSL-Daily, DGS3-T. Five gates remain open."
   },
   "datasets": [
     {
@@ -1311,7 +1555,94 @@
       }
     }
   ],
-  "runs": [],
+  "runs": [
+    {
+      "run_id": "artifact-verification-phoenix-sign2text-attempt-1",
+      "agent_ids": [
+        "opus-5-claude-code"
+      ],
+      "kind": "evaluation_only",
+      "purpose": "Verify the authors' released PHOENIX artifact and this attempt's evaluation pipeline by decoding the full test split from their released weights. Not a training reproduction.",
+      "command": ".agents/skills/reproduce-paper/scripts/modal_repro_sign.sh run papers/zhang-2023-sltunet/modal_app.py --limit 0 --tag artifact-verification-full",
+      "inner_command": "python run.py --mode infer --parameters=max_len=256,max_img_len=512,eval_batch_size=4,beam_size=8,remove_bpe=True,decode_alpha=1.0,gpus=[0],eval_task='sign2text', with src/tgt codes ende.bpe, vocab vocab.zero.drop, gloss_path phoenix2014/gloss_dict.npy, sign_cfg baseline.yaml, smkd_model_path signemb_ckpt/average.pt",
+      "working_directory": "/work/sltunet inside the container",
+      "exit_code": 0,
+      "started_at_utc": "2026-09-13T11:39:44Z",
+      "finished_at_utc": "2026-09-13T11:43:53Z",
+      "duration_seconds": 249,
+      "recording": {
+        "mode": "contemporaneous",
+        "source_record_sha256": null,
+        "unknown_fields": []
+      },
+      "attempt": {
+        "group_id": "artifact-verification-phoenix-sign2text",
+        "number": 1,
+        "max_attempts": 2
+      },
+      "stop_policy": {
+        "declared_at_utc": "2026-09-13T11:38:00Z",
+        "max_wall_time_seconds": 21600,
+        "max_gpu_hours": 6.0,
+        "max_cost_chf": 10.0
+      },
+      "terminal": {
+        "state": "succeeded",
+        "reason_code": "completed",
+        "detail": "Decoded all 642 PHOENIX-2014T test sequences from the authors' released checkpoint and emitted parsed BLEU and ChrF with the paper's SacreBLEU signatures.",
+        "failure_class": null,
+        "retry_decision": "not_needed",
+        "gate_ids": []
+      },
+      "compute": {
+        "platform": "modal",
+        "modal_profile": "repro-sign",
+        "modal_app_id": "ap-NdzBowjcaHYf2cX2VcPEIy",
+        "execution": "modal.Sandbox",
+        "gpu": "T4",
+        "gpu_count": 1,
+        "cpu": 8.0,
+        "memory_mb": 32768,
+        "shared_cache": {
+          "modal_volume": "huggingface-cache",
+          "mount_path": "/cache/huggingface",
+          "environment": {
+            "HF_HOME": "/cache/huggingface",
+            "HF_HUB_CACHE": "/cache/huggingface/hub"
+          }
+        },
+        "dataset_mount": "Volume 'datasets' at /datasets",
+        "output_mount": "Volume 'zhang-2023-sltunet-results' at /results"
+      },
+      "inputs": {
+        "upstream_commit": "b1d1d0e8b3b7275e10cd89229f2632b556df5de9",
+        "release_artifact_sha256": "b0e708b7abe5689475905ad11ac578abb02eb0f9bf00b207bbd6d4342afe5152",
+        "base_image": "tensorflow/tensorflow:1.15.5-gpu-py3",
+        "n_sequences": 642,
+        "frame_source": "HEVC re-encodings at /datasets/rwth-phoenix-2014-t/videos/test, not the original PNG frames"
+      },
+      "outputs": {
+        "modal_volume": "zhang-2023-sltunet-results",
+        "paths": [
+          "runs/artifact-verification-full/inputs.txt",
+          "runs/artifact-verification-full/reference.de",
+          "runs/artifact-verification-full/trans.txt",
+          "runs/artifact-verification-full/trans.debpe.txt",
+          "runs/artifact-verification-full/run.json"
+        ]
+      },
+      "observed": {
+        "bleu1": 52.499418786986425,
+        "bleu2": 41.33143789832259,
+        "bleu3": 33.4223073195795,
+        "bleu4": 27.90618401367374,
+        "chrf": 53.42545444804077
+      },
+      "hypothesis_supported": "Yes. The hypothesis was that the released artifact plus the pinned entry point would reproduce the published Table 4 end-to-end row closely. Every metric landed within 0.6 of the published value and one generated sentence matched the paper's Table 10 case study character for character.",
+      "notes": "An earlier pass in this same attempt group scored B@4 22.35 because the raw --mode infer output retains BPE continuation markers that upstream strips only inside evalu.eval_metric. That pass is not retained as a separate run because it measured this attempt's scoring defect rather than the reproduction; the defect, its size and its fix are recorded in environment_plan.scoring_defect_found_and_fixed.",
+      "artifact_ids": []
+    }
+  ],
   "artifacts": [],
   "gates": [
     {
@@ -1372,7 +1703,8 @@
         "Paper section 5.2: replacing Camgoz et al. (2020b) embeddings with the retrained SMKD model gives +1.41 BLEU, and the ResNet34 backbone change a further +0.31 BLEU.",
         "Verified 2026-09-13: phoenix.tar.gz (sha256 b0e708b7abe5689475905ad11ac578abb02eb0f9bf00b207bbd6d4342afe5152) contains signemb_ckpt/average.pt at 519,383,847 bytes and sltunet_ckpt/average-0.data-00000-of-00001 at 588,890,248 bytes.",
         "The released infer.sh wires these together directly: smkd_model_path=signemb_ckpt/average.pt with the SLTUNET checkpoint in output_dir=sltunet_ckpt, decoding eval_task='sign2text'.",
-        "Wrapper listing on 2026-09-13: the volume's PHOENIX features are phoenix14t.pami0.*, the Camgoz et al. (2020b) embeddings, which are not the ones behind the targets."
+        "Wrapper listing on 2026-09-13: the volume's PHOENIX features are phoenix14t.pami0.*, the Camgoz et al. (2020b) embeddings, which are not the ones behind the targets.",
+        "Preflight on 2026-09-13 confirmed path 1 is executable: the released checkpoint restored and decoded without touching SMKD pretraining or MuST-C."
       ]
     },
     {
@@ -1403,6 +1735,39 @@
         "HTTP check 2026-09-13: the original RWTH distribution is live at 41,699,758,035 bytes.",
         "smkd/dataset/dataloader_video.py lines 65-77: the loader globs PNG/JPG when the suffix matches and otherwise opens the path with cv2.VideoCapture, so both sources are supported upstream."
       ]
+    },
+    {
+      "gate_id": "target-scope-table2",
+      "type": "target",
+      "status": "open",
+      "reason": "The queue record's what_to_reproduce is 'Tables 2, 4, 5 and 6'. This attempt's target ledger covers Tables 4, 5 and 6 only and explicitly excluded Table 2 as an ablation ladder, a judgement made before the queue record was available. Table 2 is therefore in requested scope and the 54-target ledger is incomplete. Table 2 is not a normal results table: it is a 15-step optimization ladder on the PHOENIX-2014T dev set with a single B@4 column, including intermediate variants that are reported and then discarded. Reproducing it in full means training roughly two dozen configurations, which is a different order of compute from the rest of the assignment and is the dominant cost of the whole reproduction.",
+      "required_action": "Decide the Table 2 scope before any training is costed: reproduce every row including discarded variants; reproduce only the numbered systems 1 to 15 on the main ladder; reproduce only the endpoints that carry the paper's claims (row 1 Baseline 22.62 and row 15 SLTUNET 27.87, the +5.25 BLEU improvement); or record Table 2 as out of scope with the reviewer's agreement. Each choice changes the compute estimate by a large factor.",
+      "alternatives": [
+        {
+          "alternative_id": "table2-full",
+          "description": "All rows of Table 2, including the unnumbered discarded variants, about 24 trained configurations.",
+          "paper_evidence": "Table 2 lists 15 numbered systems plus 9 unnumbered variants, each with #params and a dev-set B@4.",
+          "decision_needed": "Whether the study will fund roughly two dozen full SLTUNET trainings."
+        },
+        {
+          "alternative_id": "table2-numbered-only",
+          "description": "Only the 15 numbered systems that form the ladder, omitting the unnumbered variants the paper reports and rejects.",
+          "paper_evidence": "The numbered rows 1 to 15 form the cumulative path from Baseline to SLTUNET; the unnumbered rows are one-off comparisons.",
+          "decision_needed": "Whether omitting the rejected variants still satisfies 'Tables 2'."
+        },
+        {
+          "alternative_id": "table2-endpoints",
+          "description": "Only row 1 (Baseline, 22.62) and row 15 (SLTUNET, 27.87), which carry the paper's stated +5.25 BLEU claim.",
+          "paper_evidence": "Section 5.2: 'SLTUNET achieves a BLEU score of 27.87, surpassing Baseline by 5.25 BLEU, a large margin (1 to 15).'",
+          "decision_needed": "Whether the reviewer considers the headline claim sufficient coverage of Table 2."
+        }
+      ],
+      "evidence": [
+        "Queue record expand.paper.what_to_reproduce = 'Tables 2, 4, 5 and 6'.",
+        "Queue record expand.paper.paper_id = 3bbc8841012fdb5971d1c86dff528edd8590f1b8, status 'final', moved from 'needs_review' to 'final' by goehring@cl.uzh.ch on 2026-08-11.",
+        "This attempt's README previously recorded Table 2 as deliberately out of scope, a judgement made without the queue record.",
+        "Table 2 reports dev-set B@4 only, so its rows need training but not the full test-set metric suite."
+      ]
     }
   ],
   "environment_plan": {
@@ -1410,10 +1775,68 @@
     "base_image_conflict": "The repository's standard GPU base image ghcr.io/sign-language-processing/reproduction:latest supplies NVIDIA NGC PyTorch. SLTUNET is TensorFlow 1.15, which needs CUDA 10.0 / cuDNN 7.x and will not run on that image, so a paper-specific Dockerfile is expected. This is an environment adaptation, not a change to the published code, and the exact image has not been chosen or built yet.",
     "video_decoding": "The published SLTUNET training path consumes precomputed SMKD sign features in .h5 files rather than decoding video, so no video decoder is introduced for it. The upstream SMKD feature-extraction step does read frames and is where simple-video-utils would apply if that step is rerun.",
     "planned_first_check": "Evaluation-path preflight using the authors' released PHOENIX artifacts: run the shipped infer.sh against the PHOENIX videos already in the shared Volume, using signemb_ckpt/average.pt and the checkpoint-averaged SLTUNET model, then score with eval/metrics.py against the Table 4 end-to-end test numbers. This needs no MuST-C and no SMKD pretraining, so it is unblocked by the open data gates, and it validates the TensorFlow 1.15 container, the decoding settings, and the metric implementation before any expensive run. Its result is artifact verification, not a reproduction of the authors' training.",
-    "container": "TensorFlow 1.15 and PyTorch must coexist in one process: main.py inference() imports smkd.sign_embedder.SignEmbedding, which is PyTorch, and feeds its output into the TensorFlow graph. The base image is the public tensorflow/tensorflow:1.15.5-gpu-py3 with torch 1.7.1+cu101 and opencv-python-headless added. The NGC tf1 images would allow newer GPUs but nvcr.io returned HTTP 401 for anonymous manifest requests, and obtaining registry credentials is a secrets gate, so it was not pursued. Because the image is CUDA 10, the GPU must be Turing or older; the run uses T4. The repository's standard GPU base image is not used, since it supplies NGC PyTorch rather than TensorFlow 1.15."
+    "container": "TensorFlow 1.15 and PyTorch must coexist in one process: main.py inference() imports smkd.sign_embedder.SignEmbedding, which is PyTorch, and feeds its output into the TensorFlow graph. The base image is the public tensorflow/tensorflow:1.15.5-gpu-py3 with torch 1.7.1+cu101 and opencv-python-headless added. The NGC tf1 images would allow newer GPUs but nvcr.io returned HTTP 401 for anonymous manifest requests, and obtaining registry credentials is a secrets gate, so it was not pursued. Because the image is CUDA 10, the GPU must be Turing or older; the run uses T4. The repository's standard GPU base image is not used, since it supplies NGC PyTorch rather than TensorFlow 1.15.",
+    "undeclared_dependencies": "The repository README declares only python==3.8 and tensorflow==1.15 and ships no requirements file or lockfile. The inference path needs five further packages that are never declared: ctcdecode (smkd/utils/decode.py; a C++ PyTorch extension published on GitHub, not PyPI, pinned here at commit c90ad94a0b19554f80804fb7812f2a1447a34a70 and built from source), pyarrow (smkd/dataset/dataloader_video.py), h5py (smkd/seq_scripts.py and data.py), scipy (smkd/utils/video_augmentation.py) and portalocker (eval/sacrebleu.py). After the second failure these were found by scanning every import in the repository rather than by discovering them one failed run at a time. pandas, sign_language_datasets and tensorflow_datasets are imported only by the preprocessing and DGS3-T scripts and are not installed; jactorch is guarded by a try/except with a vendored fallback and is not installed. Installing missing dependencies is environment work, so the attempt remains at preference level 1 with no patch to the authors' code.",
+    "build_failures_resolved": [
+      "apt-get update exited 100 because the 2019-era base image pins NVIDIA CUDA apt repositories whose signing key NVIDIA rotated in 2022 ('repository is no longer signed'). Resolved by removing /etc/apt/sources.list.d/cuda.list and nvidia-ml.list; the CUDA runtime is already in the image.",
+      "pip could not resolve torch==1.7.1+cu101 because download.pytorch.org/whl/torch_stable.html is a find-links page rather than a PEP 503 index. Resolved by passing it as find_links (-f) instead of --extra-index-url.",
+      "Every container exited with 'Unknown option: --' because Modal's in-container runtime requires Python >= 3.9 while TensorFlow 1.15 requires <= 3.7 and the image ships 3.6. Resolved by running the work in a Modal Sandbox, which executes a command directly and does not host Modal's runtime inside the container.",
+      "modal.Image add_python='3.11' failed with \"ln: failed to create symbolic link '/usr/local/bin/python': File exists\", which also confirmed that /usr/local/bin/python is the image's own TensorFlow interpreter and that add_python would overwrite parts of /usr/local. Abandoned in favour of the Sandbox approach."
+    ],
+    "artifact_staging": "The in-container download of the released artifact from data.statmt.org stalled at 189.5 KiB of 967.1 MiB and did not advance over a 60-second measurement window, leaving a GPU idle. The run was stopped and the already-verified local copy was uploaded into the paper's results Volume at artifacts/phoenix.tar.gz with 'modal volume put'. run_inference.py verifies sha256 b0e708b7abe5689475905ad11ac578abb02eb0f9bf00b207bbd6d4342afe5152 before use and skips the download when the file is present, so the bytes are identical to the authors' release and later runs do not depend on that host.",
+    "scoring_defect_found_and_fixed": "The first full pass scored B@4 22.35 against a published 28.47. The cause was in this attempt's scoring step, not in the model or the data. Upstream applies BPE removal only inside evalu.eval_metric, which strips '@@ ' from hypotheses and references; the --mode infer path used here writes output through evalu.dump_tanslation (main.py line 538), which does not strip it. Scoring that raw file counted BPE continuation markers as wrong tokens on 177 of 642 lines (429 markers), costing about 5.5 BLEU. run_inference.py now reproduces upstream's exact transformation, line.replace('@@ ', ''), before scoring. This is a fix to this attempt's glue code; the authors' code is unmodified and the attempt remains at preference level 1."
   },
   "open_questions": [
     "Whether the study wants the DGS3-T targets pursued at all, given that permission from the University of Hamburg is a prerequisite and may not be obtainable within the study.",
     "Whether reproducing Table 4/5 requires retraining SMKD sign embeddings from video (the expensive path the paper describes) or whether the authors' released checkpoints and any released features make a shorter path defensible; this changes the compute estimate by a large factor and has not been costed."
-  ]
+  ],
+  "conditional_evidence": [
+    {
+      "evidence_id": "artifact-verification-phoenix-sign2text",
+      "what_it_is": "Decoding the PHOENIX-2014T test split with the authors' own released checkpoint-averaged SLTUNET model and released SMKD sign-embedding model, through their pinned inference entry point, scored with their own metric code. This verifies the released artifact and this attempt's evaluation pipeline.",
+      "what_it_is_not": "It is not a reproduction of the authors' training. No SLTUNET or SMKD training was performed, so it cannot close any target, however close the numbers are. It also reads a lossy re-encoding of the sign videos rather than the original frames, which is a second reason it is conditional.",
+      "experiment_id": "phoenix-sign2text",
+      "split": "test",
+      "n_sequences": 642,
+      "deviations": [
+        "Sign video source is the shared Volume's HEVC re-encodings, not the original PNG frames the published numbers used (gate phoenix-frame-fidelity).",
+        "Model weights are the authors' released artifacts rather than weights trained by this attempt."
+      ],
+      "observed": {
+        "bleu1": 52.499418786986425,
+        "bleu2": 41.33143789832259,
+        "bleu3": 33.4223073195795,
+        "bleu4": 27.90618401367374,
+        "chrf": 53.42545444804077
+      },
+      "published_for_comparison": {
+        "bleu1": 52.92,
+        "bleu2": 41.76,
+        "bleu3": 33.99,
+        "bleu4": 28.47,
+        "chrf": 53.78
+      },
+      "differences": {
+        "bleu1": -0.42,
+        "bleu2": -0.43,
+        "bleu3": -0.57,
+        "bleu4": -0.56,
+        "chrf": -0.35
+      },
+      "metric_signatures": [
+        "BLEU+case.mixed+numrefs.1+smooth.exp+tok.13a+version.1.4.2",
+        "chrF2+case.mixed+numchars.6+numrefs.1+space.False+version.1.4.2"
+      ],
+      "signature_check": "Both signatures match the paper's Appendix A.1 exactly, so the metric implementation and version are the ones the paper reports.",
+      "independent_corroboration": "Output line 2 of the test split is character-identical to the SLTUNET generation printed in the paper's own Table 10 case study: 'am donnerstag in küstennähe regen sonst mal sonne mal wolken im wechsel dann am freitag ähnliches wetter'. Reproducing a published generated sentence exactly is strong evidence that the decoding configuration, vocabulary, checkpoint and input ordering are correct.",
+      "residual_gap_hypothesis": "The remaining shortfall of about 0.4 to 0.6 across every metric has not been explained or tested. The leading untested hypothesis is the lossy frame source, since the sign encoder consumes raw pixels. The discriminating experiment is to rerun this identical pipeline on the original PNG frames and compare; that requires acquiring the 41.7 GB RWTH distribution and is held at gate phoenix-frame-fidelity. No parameter was adjusted to narrow this gap and none should be."
+    }
+  ],
+  "paper_slug": "zhang-2023-sltunet",
+  "assignment_flags_investigated": {
+    "copied_scores": "Queue value 'yes'. Investigated against the paper: in Tables 4, 5 and 6 the SLTUNET rows are the authors' own measurements, while the comparison rows (SL-Transf., BN-TIN-Transf.+BT, STMC-Transf., ConSLT, VL-Transfer, PET, STMC-T) are quoted from the cited papers. The paper says so itself in the Table 4 caption: 'results from previous papers might not be directly comparable as they might use different tokenizers and evaluation toolkits.' All 54 current targets are the authors' own rows, so none is a copied baseline.",
+    "includes_human_evaluation": "Queue value 'no'. Consistent with the paper: all reported results are automatic metrics. No ethics or participant gate is opened on this basis.",
+    "potential_ethical_concerns": "Queue value 'no'. Note this does not address the Public DGS Corpus licence, which is a separate restriction tracked at gate dgs3t-licence, nor the fact that the corpus contains identifiable video of named signers.",
+    "compute_requirements": "Queue value 'N/A'. Treated as absent reviewer information, not as evidence that compute is negligible. The paper's own footnote 3 says the authors could not afford a full grid search."
+  }
 }

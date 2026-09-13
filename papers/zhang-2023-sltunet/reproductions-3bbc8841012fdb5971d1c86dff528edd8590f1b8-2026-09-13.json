@@ -1,0 +1,187 @@
+{
+  "assignees": [
+    "michelle.wastl@uzh.ch"
+  ],
+  "collectionId": "pbc_1548343306",
+  "collectionName": "reproductions",
+  "comments": "",
+  "expand": {
+    "paper": {
+      "area_of_slp": [
+        "Translation"
+      ],
+      "code_repos": [
+        "https://github.com/bzhangGo/sltunet"
+      ],
+      "collectionId": "pbc_3632733556",
+      "collectionName": "papers",
+      "comments": "",
+      "compute_requirements": "N/A",
+      "copied_scores": "yes",
+      "datasets": [
+        "wk5mci5wniesf1j",
+        "7m5rugi6d1jlpb6",
+        "t69w4jbjrf60z0o"
+      ],
+      "expand": {
+        "datasets": [
+          {
+            "assignees": [],
+            "available": "yes",
+            "collectionId": "pbc_3710182791",
+            "collectionName": "datasets",
+            "comments": "Extension of PHOENIX-2014 with German translation annotations",
+            "correspondence": "",
+            "id": "wk5mci5wniesf1j",
+            "license": "CC BY-SA 3.0",
+            "name": "PHOENIX-2014-T",
+            "on_modal": "yes",
+            "url": [
+              "https://www-i6.informatik.rwth-aachen.de/~koller/RWTH-PHOENIX-2014-T/"
+            ]
+          },
+          {
+            "assignees": [],
+            "available": "yes",
+            "collectionId": "pbc_3710182791",
+            "collectionName": "datasets",
+            "comments": "Chinese Sign Language large-scale continuous SLT dataset with spoken language translations and gloss-level annotations on topics around people's daily lives (e.g., travel, shopping, medical care)",
+            "correspondence": "",
+            "id": "7m5rugi6d1jlpb6",
+            "license": "Custom (research only)",
+            "name": "CSL-Daily",
+            "on_modal": "yes",
+            "url": [
+              "https://ustc-slr.github.io/datasets/2021_csl_daily/"
+            ]
+          },
+          {
+            "assignees": [],
+            "available": "yes",
+            "collectionId": "pbc_3710182791",
+            "collectionName": "datasets",
+            "comments": "German Sign Language naturalistic corpus",
+            "correspondence": "",
+            "id": "t69w4jbjrf60z0o",
+            "license": "CC BY-SA 4.0",
+            "name": "DGS Corpus",
+            "on_modal": "yes",
+            "url": [
+              "https://www.sign-lang.uni-hamburg.de/dgs-korpus/"
+            ]
+          }
+        ],
+        "metrics": [
+          {
+            "collectionId": "pbc_3017397517",
+            "collectionName": "metrics",
+            "comments": "",
+            "id": "suusky3vnilrvs6",
+            "name": "BLEU",
+            "url": []
+          },
+          {
+            "collectionId": "pbc_3017397517",
+            "collectionName": "metrics",
+            "comments": "",
+            "id": "015vltbetbo3cpj",
+            "name": "BLEU-4",
+            "url": []
+          },
+          {
+            "collectionId": "pbc_3017397517",
+            "collectionName": "metrics",
+            "comments": "",
+            "id": "1v058qfd1nvvrvy",
+            "name": "ROUGE-L",
+            "url": null
+          },
+          {
+            "collectionId": "pbc_3017397517",
+            "collectionName": "metrics",
+            "comments": "Word error rate",
+            "id": "q7nnxrx71w67jl9",
+            "name": "WER",
+            "url": []
+          },
+          {
+            "collectionId": "pbc_3017397517",
+            "collectionName": "metrics",
+            "comments": "",
+            "id": "68v479eowqiq7f4",
+            "name": "BLEU-1",
+            "url": []
+          },
+          {
+            "collectionId": "pbc_3017397517",
+            "collectionName": "metrics",
+            "comments": "",
+            "id": "c4gdeckahpnm5gd",
+            "name": "BLEU-2",
+            "url": []
+          },
+          {
+            "collectionId": "pbc_3017397517",
+            "collectionName": "metrics",
+            "comments": "",
+            "id": "oootm5pocstw8ml",
+            "name": "BLEU-3",
+            "url": []
+          },
+          {
+            "collectionId": "pbc_3017397517",
+            "collectionName": "metrics",
+            "comments": "",
+            "id": "nyd4v0p9iyuh7i7",
+            "name": "chrF",
+            "url": []
+          }
+        ]
+      },
+      "finalized_by": "joni.dambre@gmail.com",
+      "flag_reason": "",
+      "id": "cvptk5ysnaqk36e",
+      "includes_human_evaluation": "no",
+      "main_experiment_has_ranking": "yes",
+      "metrics": [
+        "suusky3vnilrvs6",
+        "015vltbetbo3cpj",
+        "1v058qfd1nvvrvy",
+        "q7nnxrx71w67jl9",
+        "68v479eowqiq7f4",
+        "c4gdeckahpnm5gd",
+        "oootm5pocstw8ml",
+        "nyd4v0p9iyuh7i7"
+      ],
+      "paper_id": "3bbc8841012fdb5971d1c86dff528edd8590f1b8",
+      "pdf_url": "http://arxiv.org/pdf/2305.01778",
+      "peer_reviewed": "yes",
+      "potential_ethical_concerns": "no",
+      "rejection_reason": "",
+      "status": "final",
+      "status_history": [
+        {
+          "after": "final",
+          "before": "needs_review",
+          "by": "goehring@cl.uzh.ch",
+          "when": "2026-08-11T16:15:48.239Z"
+        }
+      ],
+      "sub_area_of_slp": [
+        "Gloss-to-text",
+        "Text-to-gloss",
+        "Video-to-gloss",
+        "Gloss-to-video"
+      ],
+      "textual_conclusion": "SLTUNET adopts shared parameters and modality-specific parameters to achieve its\nbest result under a set of optimization techniques. We show in experiments that SLTUNET achieves\n(near) state-of-the-art performance on traditional benchmarks",
+      "title": "SLTUNET: A Simple Unified Model for Sign Language Translation",
+      "venue": "ICLR",
+      "what_to_reproduce": "Tables 2, 4, 5 and 6",
+      "year": 2023
+    }
+  },
+  "id": "sune1i3wzkbvxn8",
+  "paper": "cvptk5ysnaqk36e",
+  "status": "in_progress",
+  "url": []
+}
