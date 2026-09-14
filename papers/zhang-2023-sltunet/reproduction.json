@@ -1872,6 +1872,57 @@
       "not_validated": "SMKD training throughput and peak memory on A100 were NOT measured. After the model and data loaded, the training subprocess produced no progress output and did not terminate at its 420 second timeout. The run was stopped manually rather than left to burn A100 time to the one hour function timeout.",
       "leading_hypothesis_for_the_hang": "A DataLoader/OpenCV fork deadlock on the modern stack. baseline.yaml sets num_worker: 10, and the same code progressed normally to step 83 under the older image (python 3.6, opencv 4.6, torch 1.7). Modern OpenCV spawns more internal threads by default and forked DataLoader workers can deadlock on its locks. The cheap next test is cv2.setNumThreads(0) and/or num_worker 0 or 2, neither of which changes optimisation semantics since dataloader parallelism does not affect the model.",
       "status": "promising but unproven; the memory ceiling problem on T4 remains unsolved in practice"
+    },
+    "sltunet_training_step": {
+      "measured_at_utc": "2026-09-14",
+      "platform": "Modal Sandbox, repro-sign, 1x T4, TF 1.15 container",
+      "method": "Throughput measurement, not a scientific run. Real SMKD features were extracted for 300 PHOENIX train sequences with the released encoder, combined to the <idx>_<aug> key form that example/sign_feature_cmb.py produces, and paired with real glosses and translations BPE-encoded using the authors released ende.bpe. MT lines reuse the released test.bpe.en/de at the papers 3:1 MT:SLT ratio. run.py --mode train was then invoked with the example/train.sh hyperparameters.",
+      "observed_steps": [
+        {
+          "gstep": 0,
+          "tokens": 18506,
+          "ud_seconds": 70.1,
+          "note": "warmup, excluded"
+        },
+        {
+          "gstep": 1,
+          "tokens": 18802,
+          "ud_seconds": 8.034
+        },
+        {
+          "gstep": 2,
+          "tokens": 16803,
+          "ud_seconds": 7.499
+        },
+        {
+          "gstep": 3,
+          "tokens": 17548,
+          "ud_seconds": 6.388
+        },
+        {
+          "gstep": 4,
+          "tokens": 17915,
+          "ud_seconds": 7.992
+        },
+        {
+          "gstep": 5,
+          "tokens": 18339,
+          "ud_seconds": 8.057
+        },
+        {
+          "gstep": 6,
+          "tokens": 16803,
+          "ud_seconds": 7.547
+        }
+      ],
+      "steady_state": {
+        "mean_ud_seconds": 7.586,
+        "mean_tokens_per_step": 17702,
+        "throughput_tokens_per_second": 2333
+      },
+      "extrapolation_to_full_config": "train.sh sets token_size=1600 with update_cycle=16, so a full optimiser step consumes about 25,600 tokens rather than the ~17,700 reached here; the measurement corpus is too small to fill the accumulation cycle. Scaling by measured throughput gives roughly 11 seconds per full optimiser step on T4. train.sh sets max_training_steps=30000, and GStep increments once per optimiser update, so one configuration is on the order of 330,000 seconds, about 92 GPU-hours on T4.",
+      "consequence": "This invalidates the earlier planning figure of about 5 GPU-hours per SLTUNET configuration by roughly a factor of 18. Table 2 alone, at around 24 configurations, moves from about 120 GPU-hours to roughly 2,200 on T4, and the all-tables total from about 220 to roughly 2,400. Dollar cost stays moderate at T4 rates but serial wall time becomes months, so both parallel execution and moving SLTUNET training off T4 change from optimisations into prerequisites.",
+      "caveats": "Measured on T4 only. Batches reached ~17,700 rather than 25,600 tokens, so the extrapolation assumes throughput scales with token count. Step 0 at 70 s is warmup and is excluded. Whether nvidia-tensorflow on A100 delivers the expected 4-6x has not been tested."
     }
   }
 }
