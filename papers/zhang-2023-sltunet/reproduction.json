@@ -1922,7 +1922,16 @@
       },
       "extrapolation_to_full_config": "train.sh sets token_size=1600 with update_cycle=16, so a full optimiser step consumes about 25,600 tokens rather than the ~17,700 reached here; the measurement corpus is too small to fill the accumulation cycle. Scaling by measured throughput gives roughly 11 seconds per full optimiser step on T4. train.sh sets max_training_steps=30000, and GStep increments once per optimiser update, so one configuration is on the order of 330,000 seconds, about 92 GPU-hours on T4.",
       "consequence": "This invalidates the earlier planning figure of about 5 GPU-hours per SLTUNET configuration by roughly a factor of 18. Table 2 alone, at around 24 configurations, moves from about 120 GPU-hours to roughly 2,200 on T4, and the all-tables total from about 220 to roughly 2,400. Dollar cost stays moderate at T4 rates but serial wall time becomes months, so both parallel execution and moving SLTUNET training off T4 change from optimisations into prerequisites.",
-      "caveats": "Measured on T4 only. Batches reached ~17,700 rather than 25,600 tokens, so the extrapolation assumes throughput scales with token count. Step 0 at 70 s is warmup and is excluded. Whether nvidia-tensorflow on A100 delivers the expected 4-6x has not been tested."
-    }
+      "caveats": "Measured on T4 only. Batches reached ~17,700 rather than 25,600 tokens, so the extrapolation assumes throughput scales with token count. Step 0 at 70 s is warmup and is excluded. Whether nvidia-tensorflow on A100 delivers the expected 4-6x has not been tested.",
+      "gpu_utilisation": {
+        "mean_percent_whole_run": 43.3,
+        "max_percent": 100,
+        "peak_gpu_memory_mib": 8476,
+        "gpu_total_mib": 15360,
+        "interpretation": "The 43.3 percent mean covers the whole 274 second run, of which roughly two minutes was TensorFlow graph construction with the GPU idle. Utilisation reaches 100 percent during stepping, implying roughly 80 percent while actually training. SLTUNET training is therefore largely GPU-bound, unlike the SMKD stage, so a faster accelerator should convert close to proportionally into wall-clock savings. The residual gap is most likely the per-sample stochastic BPE dropout, which runs in Python on CPU for 60 percent of samples.",
+        "memory_headroom": "Peak 8,476 MiB of 15,360 on T4, about 55 percent. SLTUNET training fits comfortably where SMKD training does not, so the two stages have opposite hardware constraints: SMKD needs memory and CPU decode throughput, SLTUNET needs GPU compute."
+      }
+    },
+    "gpu_choice_conclusion": "Measured, not assumed. SMKD feature extraction and training are data-loading bound: 0.25 s per sequence with dataloader workers versus 1.4 to 1.7 s single-worker, a six-fold swing from CPU-side HEVC decode and LANCZOS resize alone, so more CPU cores help there more than a faster GPU, though SMKD training also needs more than a T4 has because it OOMs at the published batch size. SLTUNET training is the opposite: it reaches 100 percent GPU utilisation while stepping and uses only 55 percent of T4 memory, so it is the stage where a faster accelerator pays off nearly proportionally. Since SLTUNET training dominates the total at about 92 GPU-hours per configuration, moving it off T4 via the anonymously available nvidia-tensorflow CUDA 11 wheels is the single highest-value speedup available."
   }
 }
