@@ -320,12 +320,71 @@
     }
   ],
   "status": {
-    "pipeline": null,
+    "pipeline": "blocked_on_compute",
     "numerical_agreement": "not_assessed",
-    "numerical_agreement_basis": "No target has produced a value: no environment has been built and no run has been executed, so there is nothing comparable to assess.",
+    "numerical_agreement_basis": "No in-scope target produced a comparable value, so numerical agreement is not assessed. Every number obtained came from the authors' released checkpoints rather than from training performed here, which under the evidence contract is conditional evidence and cannot close a target however close it is. Those comparisons are preserved in conditional_evidence: on the released artifacts the pipeline lands within 0.15 of the published DGS3-T end-to-end row, within 0.3 of the CSL-Daily end-to-end test row, and 0.35 to 0.57 below every PHOENIX end-to-end metric, the last of which is consistent with that split being read from lossy re-encodings rather than the original frames.",
     "preference_level": 1,
     "preference_level_basis": "The authors published a complete implementation at a pinnable commit, including training, decoding, and metric code, so the attempt starts at preference level 1. The level has not yet been tested by execution; the TensorFlow 1.15 / Python 3.8 requirement is expected to force container work and may force level 2 patches.",
-    "blocker": null,
+    "blocker": {
+      "reason_code": "compute_budget_blocked",
+      "detail": "Producing any target requires training SLTUNET, measured at roughly 92 GPU-hours per configuration before SMKD sign-embedding pretraining, which exceeds the 24 GPU-hour autonomous compute gate and is pending a team decision. This blocks every target identically, independent of dataset or split.",
+      "target_ids": [
+        "phoenix-cascading-dev-rouge",
+        "phoenix-cascading-dev-b4",
+        "phoenix-cascading-test-rouge",
+        "phoenix-cascading-test-b1",
+        "phoenix-cascading-test-b2",
+        "phoenix-cascading-test-b3",
+        "phoenix-cascading-test-b4",
+        "phoenix-cascading-test-sbleu",
+        "phoenix-cascading-test-chrf",
+        "phoenix-sign2text-dev-rouge",
+        "phoenix-sign2text-dev-b4",
+        "phoenix-sign2text-test-rouge",
+        "phoenix-sign2text-test-b1",
+        "phoenix-sign2text-test-b2",
+        "phoenix-sign2text-test-b3",
+        "phoenix-sign2text-test-b4",
+        "phoenix-sign2text-test-sbleu",
+        "phoenix-sign2text-test-chrf",
+        "csldaily-cascading-dev-rouge",
+        "csldaily-cascading-dev-b4",
+        "csldaily-cascading-test-rouge",
+        "csldaily-cascading-test-b1",
+        "csldaily-cascading-test-b2",
+        "csldaily-cascading-test-b3",
+        "csldaily-cascading-test-b4",
+        "csldaily-cascading-test-sbleu",
+        "csldaily-cascading-test-chrf",
+        "csldaily-sign2text-dev-rouge",
+        "csldaily-sign2text-dev-b4",
+        "csldaily-sign2text-test-rouge",
+        "csldaily-sign2text-test-b1",
+        "csldaily-sign2text-test-b2",
+        "csldaily-sign2text-test-b3",
+        "csldaily-sign2text-test-b4",
+        "csldaily-sign2text-test-sbleu",
+        "csldaily-sign2text-test-chrf",
+        "dgs3t-cascading-dev-rouge",
+        "dgs3t-cascading-dev-b4",
+        "dgs3t-cascading-test-rouge",
+        "dgs3t-cascading-test-b1",
+        "dgs3t-cascading-test-b2",
+        "dgs3t-cascading-test-b3",
+        "dgs3t-cascading-test-b4",
+        "dgs3t-cascading-test-sbleu",
+        "dgs3t-cascading-test-chrf",
+        "dgs3t-sign2text-dev-rouge",
+        "dgs3t-sign2text-dev-b4",
+        "dgs3t-sign2text-test-rouge",
+        "dgs3t-sign2text-test-b1",
+        "dgs3t-sign2text-test-b2",
+        "dgs3t-sign2text-test-b3",
+        "dgs3t-sign2text-test-b4",
+        "dgs3t-sign2text-test-sbleu",
+        "dgs3t-sign2text-test-chrf"
+      ]
+    },
     "attempt_state": "In progress and not ready for review. Completed: assignment recorded, paper acquired and hashed, target contract resolved, published code discovered and pinned, Modal workspace preflight passed, dataset gate run for all three SLT corpora, container built for TensorFlow 1.15 plus PyTorch, and a representative preflight executed the authors' published inference path end to end on real data with real weights, emitting parsed metrics and exit code 0. Running: the full 642-sequence artifact-verification pass. Not started: SMKD pretraining, SLTUNET training, CSL-Daily, DGS3-T. Five gates remain open.",
     "scope_decision": "User decision 2026-09-15: reproduce Tables 4, 5 and 6 without the Table 2 ablations. All 54 targets in this ledger are in scope. Table 2 row 15 is additionally obtainable at no extra cost because it is the same trained system as the Table 4 rows, but it is not currently a ledger target; add it only if the study wants that cell reported. The queue record requested \"Tables 2, 4, 5 and 6\", so this is a narrowing of the requested scope and the report must say so."
   },
@@ -681,7 +740,25 @@
       "paper_location": "Table 4, row 'SLTUNET', dev column block (column as printed)",
       "original_value": 49.61,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-phoenix-cascading-dev-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-phoenix-cascading-dev records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "phoenix-cascading-dev-b4",
@@ -692,7 +769,25 @@
       "paper_location": "Table 4, row 'SLTUNET', dev column block (column as printed)",
       "original_value": 25.36,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-phoenix-cascading-dev-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-phoenix-cascading-dev records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "phoenix-cascading-test-rouge",
@@ -703,7 +798,25 @@
       "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
       "original_value": 49.98,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-phoenix-cascading-test-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-phoenix-cascading-test records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "phoenix-cascading-test-b1",
@@ -714,7 +827,25 @@
       "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
       "original_value": 50.42,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-phoenix-cascading-test-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-phoenix-cascading-test records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "phoenix-cascading-test-b2",
@@ -725,7 +856,25 @@
       "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
       "original_value": 39.24,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-phoenix-cascading-test-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-phoenix-cascading-test records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "phoenix-cascading-test-b3",
@@ -736,7 +885,25 @@
       "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
       "original_value": 31.41,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-phoenix-cascading-test-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-phoenix-cascading-test records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "phoenix-cascading-test-b4",
@@ -747,7 +914,25 @@
       "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
       "original_value": 26.0,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-phoenix-cascading-test-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-phoenix-cascading-test records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "phoenix-cascading-test-sbleu",
@@ -758,7 +943,25 @@
       "paper_location": "Table 4, row 'SLTUNET', test column block (sBLEU/ChrF reported in the row bracket)",
       "original_value": 26.0,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-phoenix-cascading-test-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-phoenix-cascading-test records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "phoenix-cascading-test-chrf",
@@ -769,7 +972,25 @@
       "paper_location": "Table 4, row 'SLTUNET', test column block (sBLEU/ChrF reported in the row bracket)",
       "original_value": 51.96,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-phoenix-cascading-test-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-phoenix-cascading-test records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "phoenix-sign2text-dev-rouge",
@@ -780,7 +1001,23 @@
       "paper_location": "Table 4, row 'SLTUNET', dev column block (column as printed)",
       "original_value": 52.23,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-phoenix-sign2text-dev records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "phoenix-sign2text-dev-b4",
@@ -791,7 +1028,23 @@
       "paper_location": "Table 4, row 'SLTUNET', dev column block (column as printed)",
       "original_value": 27.87,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-phoenix-sign2text-dev records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "phoenix-sign2text-test-rouge",
@@ -802,7 +1055,25 @@
       "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
       "original_value": 52.11,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-phoenix-sign2text-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-phoenix-sign2text records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "phoenix-sign2text-test-b1",
@@ -813,7 +1084,25 @@
       "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
       "original_value": 52.92,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-phoenix-sign2text-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-phoenix-sign2text records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "phoenix-sign2text-test-b2",
@@ -824,7 +1113,25 @@
       "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
       "original_value": 41.76,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-phoenix-sign2text-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-phoenix-sign2text records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "phoenix-sign2text-test-b3",
@@ -835,7 +1142,25 @@
       "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
       "original_value": 33.99,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-phoenix-sign2text-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-phoenix-sign2text records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "phoenix-sign2text-test-b4",
@@ -846,7 +1171,25 @@
       "paper_location": "Table 4, row 'SLTUNET', test column block (column as printed)",
       "original_value": 28.47,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-phoenix-sign2text-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-phoenix-sign2text records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "phoenix-sign2text-test-sbleu",
@@ -857,7 +1200,25 @@
       "paper_location": "Table 4, row 'SLTUNET', test column block (sBLEU/ChrF reported in the row bracket)",
       "original_value": 28.47,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-phoenix-sign2text-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-phoenix-sign2text records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "phoenix-sign2text-test-chrf",
@@ -868,7 +1229,25 @@
       "paper_location": "Table 4, row 'SLTUNET', test column block (sBLEU/ChrF reported in the row bracket)",
       "original_value": 53.78,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-phoenix-sign2text-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-phoenix-sign2text records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "csldaily-cascading-dev-rouge",
@@ -879,7 +1258,25 @@
       "paper_location": "Table 5, row 'SLTUNET', dev column block (column as printed)",
       "original_value": 52.89,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-csl-dev-cascade-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-csl-dev-cascade records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "csldaily-cascading-dev-b4",
@@ -890,7 +1287,25 @@
       "paper_location": "Table 5, row 'SLTUNET', dev column block (column as printed)",
       "original_value": 22.95,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-csl-dev-cascade-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-csl-dev-cascade records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "csldaily-cascading-test-rouge",
@@ -901,7 +1316,25 @@
       "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
       "original_value": 53.1,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-csl-cascade-csldaily2-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-csl-cascade-csldaily2 records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "csldaily-cascading-test-b1",
@@ -912,7 +1345,25 @@
       "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
       "original_value": 54.39,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-csl-cascade-csldaily2-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-csl-cascade-csldaily2 records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "csldaily-cascading-test-b2",
@@ -923,7 +1374,25 @@
       "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
       "original_value": 40.28,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-csl-cascade-csldaily2-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-csl-cascade-csldaily2 records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "csldaily-cascading-test-b3",
@@ -934,7 +1403,25 @@
       "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
       "original_value": 30.52,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-csl-cascade-csldaily2-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-csl-cascade-csldaily2 records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "csldaily-cascading-test-b4",
@@ -945,7 +1432,25 @@
       "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
       "original_value": 23.76,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-csl-cascade-csldaily2-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-csl-cascade-csldaily2 records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "csldaily-cascading-test-sbleu",
@@ -956,7 +1461,25 @@
       "paper_location": "Table 5, row 'SLTUNET', test column block (sBLEU/ChrF reported in the row bracket)",
       "original_value": 23.76,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-csl-cascade-csldaily2-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-csl-cascade-csldaily2 records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "csldaily-cascading-test-chrf",
@@ -967,7 +1490,25 @@
       "paper_location": "Table 5, row 'SLTUNET', test column block (sBLEU/ChrF reported in the row bracket)",
       "original_value": 21.09,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-csl-cascade-csldaily2-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-csl-cascade-csldaily2 records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "csldaily-sign2text-dev-rouge",
@@ -978,7 +1519,25 @@
       "paper_location": "Table 5, row 'SLTUNET', dev column block (column as printed)",
       "original_value": 53.58,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-csl-dev-e2e-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-csl-dev-e2e records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "csldaily-sign2text-dev-b4",
@@ -989,7 +1548,25 @@
       "paper_location": "Table 5, row 'SLTUNET', dev column block (column as printed)",
       "original_value": 23.99,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-csl-dev-e2e-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-csl-dev-e2e records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "csldaily-sign2text-test-rouge",
@@ -1000,7 +1577,25 @@
       "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
       "original_value": 54.08,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-csl-test-csldaily2-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-csl-test-csldaily2 records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "csldaily-sign2text-test-b1",
@@ -1011,7 +1606,25 @@
       "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
       "original_value": 54.98,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-csl-test-csldaily2-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-csl-test-csldaily2 records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "csldaily-sign2text-test-b2",
@@ -1022,7 +1635,25 @@
       "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
       "original_value": 41.44,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-csl-test-csldaily2-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-csl-test-csldaily2 records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "csldaily-sign2text-test-b3",
@@ -1033,7 +1664,25 @@
       "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
       "original_value": 31.84,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-csl-test-csldaily2-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-csl-test-csldaily2 records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "csldaily-sign2text-test-b4",
@@ -1044,7 +1693,25 @@
       "paper_location": "Table 5, row 'SLTUNET', test column block (column as printed)",
       "original_value": 25.01,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-csl-test-csldaily2-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-csl-test-csldaily2 records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "csldaily-sign2text-test-sbleu",
@@ -1055,7 +1722,25 @@
       "paper_location": "Table 5, row 'SLTUNET', test column block (sBLEU/ChrF reported in the row bracket)",
       "original_value": 25.01,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-csl-test-csldaily2-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-csl-test-csldaily2 records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "csldaily-sign2text-test-chrf",
@@ -1066,7 +1751,25 @@
       "paper_location": "Table 5, row 'SLTUNET', test column block (sBLEU/ChrF reported in the row bracket)",
       "original_value": 21.99,
       "copied_baseline": false,
-      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers."
+      "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-csl-test-csldaily2-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-csl-test-csldaily2 records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "dgs3t-cascading-dev-rouge",
@@ -1078,7 +1781,23 @@
       "original_value": 26.4,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision. This cell is additionally unreachable today because the authors released no DGS3-T dev list or dev reference, and the raw ELAN German is untokenized while their reference is Moses-tokenized; see open_questions."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "No run covers this cell: the dev split of dgs3t-cascading was not decoded.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "dgs3t-cascading-dev-b4",
@@ -1090,7 +1809,23 @@
       "original_value": 3.49,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision. This cell is additionally unreachable today because the authors released no DGS3-T dev list or dev reference, and the raw ELAN German is untokenized while their reference is Moses-tokenized; see open_questions."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "No run covers this cell: the dev split of dgs3t-cascading was not decoded.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "dgs3t-cascading-test-rouge",
@@ -1102,7 +1837,25 @@
       "original_value": 23.24,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-dgs-test-cascade-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-dgs-test-cascade records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "dgs3t-cascading-test-b1",
@@ -1114,7 +1867,25 @@
       "original_value": 21.0,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-dgs-test-cascade-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-dgs-test-cascade records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "dgs3t-cascading-test-b2",
@@ -1126,7 +1897,25 @@
       "original_value": 8.65,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-dgs-test-cascade-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-dgs-test-cascade records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "dgs3t-cascading-test-b3",
@@ -1138,7 +1927,25 @@
       "original_value": 4.25,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-dgs-test-cascade-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-dgs-test-cascade records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "dgs3t-cascading-test-b4",
@@ -1150,7 +1957,25 @@
       "original_value": 2.29,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-dgs-test-cascade-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-dgs-test-cascade records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "dgs3t-cascading-test-sbleu",
@@ -1162,7 +1987,25 @@
       "original_value": 2.28,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-dgs-test-cascade-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-dgs-test-cascade records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "dgs3t-cascading-test-chrf",
@@ -1174,7 +2017,25 @@
       "original_value": 18.96,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-dgs-test-cascade-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-dgs-test-cascade records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "dgs3t-sign2text-dev-rouge",
@@ -1186,7 +2047,23 @@
       "original_value": 27.95,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision. This cell is additionally unreachable today because the authors released no DGS3-T dev list or dev reference, and the raw ELAN German is untokenized while their reference is Moses-tokenized; see open_questions."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "No run covers this cell: the dev split of dgs3t-sign2text was not decoded.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "dgs3t-sign2text-dev-b4",
@@ -1198,7 +2075,23 @@
       "original_value": 3.94,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision. This cell is additionally unreachable today because the authors released no DGS3-T dev list or dev reference, and the raw ELAN German is untokenized while their reference is Moses-tokenized; see open_questions."
+        },
+        "run_ids": [],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "No run covers this cell: the dev split of dgs3t-sign2text was not decoded.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "dgs3t-sign2text-test-rouge",
@@ -1210,7 +2103,25 @@
       "original_value": 24.53,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-dgs-test-e2e-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-dgs-test-e2e records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "dgs3t-sign2text-test-b1",
@@ -1222,7 +2133,25 @@
       "original_value": 23.11,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-dgs-test-e2e-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-dgs-test-e2e records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "dgs3t-sign2text-test-b2",
@@ -1234,7 +2163,25 @@
       "original_value": 10.05,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-dgs-test-e2e-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-dgs-test-e2e records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "dgs3t-sign2text-test-b3",
@@ -1246,7 +2193,25 @@
       "original_value": 5.13,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-dgs-test-e2e-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-dgs-test-e2e records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "dgs3t-sign2text-test-b4",
@@ -1258,7 +2223,25 @@
       "original_value": 2.81,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-dgs-test-e2e-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-dgs-test-e2e records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "dgs3t-sign2text-test-sbleu",
@@ -1270,7 +2253,25 @@
       "original_value": 2.82,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-dgs-test-e2e-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-dgs-test-e2e records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     },
     {
       "target_id": "dgs3t-sign2text-test-chrf",
@@ -1282,7 +2283,25 @@
       "original_value": 20.56,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution.",
+      "result": {
+        "status": "not_produced",
+        "reason": {
+          "code": "compute_budget_blocked",
+          "detail": "No training was performed. The value this attempt can exhibit for this cell comes from decoding with the authors' released checkpoints, which is conditional evidence about the released artifact and this pipeline, not a reproduction of the training that produced the published number. Training is gated on retraining-decision."
+        },
+        "run_ids": [
+          "artifact-verification-dgs-test-e2e-attempt-1"
+        ],
+        "artifact_ids": [],
+        "gate_ids": [
+          "retraining-decision"
+        ],
+        "evidence": [
+          "conditional_evidence artifact-verification-dgs-test-e2e records this cell's observed value, the published value and their mechanical difference.",
+          "gates.retraining-decision records the measured cost of the training that would be required to produce this target."
+        ]
+      }
     }
   ],
   "runs": [
@@ -1905,6 +2924,184 @@
       "hypothesis_supported": "Yes. Every metric landed within 1.1 of the published value, and on the test split within 0.3, with differences in both directions rather than a systematic shortfall.",
       "notes": "BLEU columns are the character-segmented --tokenize none figures; they agree with sacrebleu's own tok.zh output to three decimals, which is what establishes that the paper's CSL-Daily columns are character-level. The dev list and reference are rebuilt from split_1.txt and csl2020ct_v2.pkl because the authors released neither; the same reconstruction reproduces the released test reference on 1176 of 1176 lines.",
       "artifact_ids": []
+    },
+    {
+      "run_id": "artifact-verification-dgs-test-e2e-attempt-1",
+      "agent_ids": [
+        "opus-5-claude-code"
+      ],
+      "kind": "evaluation_only",
+      "purpose": "Verify the authors' released DGS3-T artifact on the Table 6 end-to-end block, decoding the test split from the sentence-level slices this attempt constructed from the Public DGS Corpus. Not a training reproduction.",
+      "command": ".agents/skills/reproduce-paper/scripts/modal_repro_sign.sh run --detach papers/zhang-2023-sltunet/modal_app.py::main --limit 0 --tag dgs-test-e2e --split test --dataset dgs3t",
+      "working_directory": "/work/sltunet inside the container",
+      "exit_code": 0,
+      "started_at_utc": "2026-09-15T17:20:40Z",
+      "finished_at_utc": "2026-09-15T17:40:04Z",
+      "duration_seconds": 1164,
+      "recording": {
+        "mode": "contemporaneous",
+        "source_record_sha256": null,
+        "unknown_fields": []
+      },
+      "attempt": {
+        "group_id": "artifact-verification-dgs-test-e2e",
+        "number": 1,
+        "max_attempts": 2
+      },
+      "stop_policy": {
+        "declared_at_utc": "2026-09-15T17:15:00Z",
+        "max_wall_time_seconds": 21600,
+        "max_gpu_hours": 6.0,
+        "max_cost_chf": 10.0
+      },
+      "terminal": {
+        "state": "succeeded",
+        "reason_code": "completed",
+        "detail": "Decoded all 1575 DGS3-T test segments and emitted parsed BLEU, ChrF and Rouge-L.",
+        "failure_class": null,
+        "retry_decision": "not_needed",
+        "gate_ids": []
+      },
+      "compute": {
+        "platform": "modal",
+        "modal_profile": "repro-sign",
+        "modal_app_id": "ap-B76bWREIL9npGRTB3nH2JH",
+        "execution": "modal.Sandbox",
+        "gpu": "T4",
+        "gpu_count": 1,
+        "cpu": 8.0,
+        "memory_mb": 32768,
+        "shared_cache": {
+          "modal_volume": "huggingface-cache",
+          "mount_path": "/cache/huggingface",
+          "environment": {
+            "HF_HOME": "/cache/huggingface",
+            "HF_HUB_CACHE": "/cache/huggingface/hub"
+          }
+        },
+        "dataset_mount": "Volume 'datasets' at /datasets",
+        "output_mount": "Volume 'zhang-2023-sltunet-results' at /results"
+      },
+      "inputs": {
+        "upstream_commit": "b1d1d0e8b3b7275e10cd89229f2632b556df5de9",
+        "release_artifact": "dgs3-t.tar.gz",
+        "release_artifact_sha256": "c5ba62428242e34e47de1b8577d2845c4e7ca9f1d6eb9661c3a738cb9bd34db5",
+        "base_image": "tensorflow/tensorflow:1.15.5-gpu-py3",
+        "n_sequences": 1575,
+        "decode_alpha": 1.3,
+        "frame_source": "DGS3-T sentence slices at /datasets/dgs3-t/videos, built by build_dgs3t.py from the Public DGS Corpus document videos with the authors' own ffmpeg parameters"
+      },
+      "outputs": {
+        "modal_volume": "zhang-2023-sltunet-results",
+        "paths": [
+          "runs/dgs-test-e2e/inputs.txt",
+          "runs/dgs-test-e2e/reference.de",
+          "runs/dgs-test-e2e/trans.txt",
+          "runs/dgs-test-e2e/trans.debpe.txt",
+          "runs/dgs-test-e2e/run.json"
+        ]
+      },
+      "observed": {
+        "bleu1": 23.142250932136736,
+        "bleu2": 10.148426506756968,
+        "bleu3": 5.232182651455997,
+        "bleu4": 2.936842223911089,
+        "sbleu": 2.9186566254798048,
+        "chrf": 20.524835887994197,
+        "rouge": 24.639548650100227
+      },
+      "hypothesis_supported": "Yes. Every metric landed within 0.15 of the published value on the end-to-end block, the closest agreement of any table in this attempt, which is consistent with these slices being cut from the same source videos the authors sliced rather than from a re-encoding.",
+      "notes": "B@1-4 come from eval/metrics.py's --tokenize none branch and sBLEU from the tok.13a branch; the paper likewise prints slightly different values in those two columns for DGS3-T (2.81 and 2.82), unlike PHOENIX and CSL-Daily where they coincide. decode_alpha is 1.3 here because the released dgs3-t/infer.sh sets it, overriding the 1.0 in its own param.json.",
+      "artifact_ids": []
+    },
+    {
+      "run_id": "artifact-verification-dgs-test-cascade-attempt-1",
+      "agent_ids": [
+        "opus-5-claude-code"
+      ],
+      "kind": "evaluation_only",
+      "purpose": "Verify the authors' released DGS3-T artifact on the Table 6 cascading block, decoding the test split from the sentence-level slices this attempt constructed from the Public DGS Corpus. Not a training reproduction.",
+      "command": ".agents/skills/reproduce-paper/scripts/modal_repro_sign.sh run --detach papers/zhang-2023-sltunet/modal_app.py::main --limit 0 --tag dgs-test-cascade --split test --dataset dgs3t --mode cascade",
+      "working_directory": "/work/sltunet inside the container",
+      "exit_code": 0,
+      "started_at_utc": "2026-09-15T17:20:38Z",
+      "finished_at_utc": "2026-09-15T17:42:13Z",
+      "duration_seconds": 1295,
+      "recording": {
+        "mode": "contemporaneous",
+        "source_record_sha256": null,
+        "unknown_fields": []
+      },
+      "attempt": {
+        "group_id": "artifact-verification-dgs-test-cascade",
+        "number": 1,
+        "max_attempts": 2
+      },
+      "stop_policy": {
+        "declared_at_utc": "2026-09-15T17:15:00Z",
+        "max_wall_time_seconds": 21600,
+        "max_gpu_hours": 6.0,
+        "max_cost_chf": 10.0
+      },
+      "terminal": {
+        "state": "succeeded",
+        "reason_code": "completed",
+        "detail": "Decoded all 1575 DGS3-T test segments and emitted parsed BLEU, ChrF and Rouge-L.",
+        "failure_class": null,
+        "retry_decision": "not_needed",
+        "gate_ids": []
+      },
+      "compute": {
+        "platform": "modal",
+        "modal_profile": "repro-sign",
+        "modal_app_id": "ap-yRKPGyCFgFUToBu2kpNo4R",
+        "execution": "modal.Sandbox",
+        "gpu": "T4",
+        "gpu_count": 1,
+        "cpu": 8.0,
+        "memory_mb": 32768,
+        "shared_cache": {
+          "modal_volume": "huggingface-cache",
+          "mount_path": "/cache/huggingface",
+          "environment": {
+            "HF_HOME": "/cache/huggingface",
+            "HF_HUB_CACHE": "/cache/huggingface/hub"
+          }
+        },
+        "dataset_mount": "Volume 'datasets' at /datasets",
+        "output_mount": "Volume 'zhang-2023-sltunet-results' at /results"
+      },
+      "inputs": {
+        "upstream_commit": "b1d1d0e8b3b7275e10cd89229f2632b556df5de9",
+        "release_artifact": "dgs3-t.tar.gz",
+        "release_artifact_sha256": "c5ba62428242e34e47de1b8577d2845c4e7ca9f1d6eb9661c3a738cb9bd34db5",
+        "base_image": "tensorflow/tensorflow:1.15.5-gpu-py3",
+        "n_sequences": 1575,
+        "decode_alpha": 1.3,
+        "frame_source": "DGS3-T sentence slices at /datasets/dgs3-t/videos, built by build_dgs3t.py from the Public DGS Corpus document videos with the authors' own ffmpeg parameters"
+      },
+      "outputs": {
+        "modal_volume": "zhang-2023-sltunet-results",
+        "paths": [
+          "runs/dgs-test-cascade/inputs.txt",
+          "runs/dgs-test-cascade/reference.de",
+          "runs/dgs-test-cascade/trans.txt",
+          "runs/dgs-test-cascade/trans.debpe.txt",
+          "runs/dgs-test-cascade/run.json"
+        ]
+      },
+      "observed": {
+        "bleu1": 19.298282057621005,
+        "bleu2": 8.14811645421983,
+        "bleu3": 4.0509533325565545,
+        "bleu4": 2.1901406480702224,
+        "sbleu": 2.1822820999919106,
+        "chrf": 18.29134360405939,
+        "rouge": 23.253257030408548
+      },
+      "hypothesis_supported": "Yes. Every metric landed within 0.15 of the published value on the end-to-end block, the closest agreement of any table in this attempt, which is consistent with these slices being cut from the same source videos the authors sliced rather than from a re-encoding.",
+      "notes": "B@1-4 come from eval/metrics.py's --tokenize none branch and sBLEU from the tok.13a branch; the paper likewise prints slightly different values in those two columns for DGS3-T (2.81 and 2.82), unlike PHOENIX and CSL-Daily where they coincide. decode_alpha is 1.3 here because the released dgs3-t/infer.sh sets it, overriding the 1.0 in its own param.json.",
+      "artifact_ids": []
     }
   ],
   "artifacts": [],
@@ -2036,6 +3233,18 @@
         "Table 2 reports dev-set B@4 only, so its rows need training but not the full test-set metric suite."
       ],
       "resolution": "Decided by the user on 2026-09-15: reproduce without the Table 2 ablations. Scope is therefore Tables 4, 5 and 6 (54 targets). Table 2 row 15 is retained as in scope because it is the same trained system as the Table 4 rows and so costs nothing extra; every other Table 2 row is out of scope. Consequence to keep visible in the report: Table 2 claims are deltas between rows, so none of them is tested by this scope. The queue record asked for \"Tables 2, 4, 5 and 6\", so this is a deliberate narrowing of the requested scope and must be stated as such rather than presented as full coverage."
+    },
+    {
+      "gate_id": "retraining-decision",
+      "type": "compute",
+      "status": "open",
+      "reason": "Every number this attempt has produced comes from the authors' released checkpoint-averaged SLTUNET models and released SMKD sign-embedding models. None of them reproduces the authors' training, so under the study's evidence contract none can close a target however closely it matches. Closing any target requires training SLTUNET, and for a full reproduction also the SMKD sign encoder it consumes.",
+      "required_action": "Decide whether to train. The measured cost is roughly 92 GPU-hours per SLTUNET configuration on the preflight hardware, before SMKD sign-embedding pretraining, which did not fit on the T4 used here. Three tables at two systems each puts a full retraining well beyond the 24 GPU-hour autonomous gate, so it is a team decision. The alternative is to accept the released-checkpoint verification as the deliverable and report every target as not produced, which is the current state.",
+      "evidence": [
+        "compute_preflight in this record: measured SLTUNET training step time and the resulting per-configuration GPU-hour estimate.",
+        "SMKD pretraining ran out of memory on the T4 used for the inference path.",
+        "All nine retained runs are kind=evaluation_only."
+      ]
     }
   ],
   "environment_plan": {
@@ -2055,8 +3264,8 @@
     "scoring_defect_found_and_fixed": "The first full pass scored B@4 22.35 against a published 28.47. The cause was in this attempt's scoring step, not in the model or the data. Upstream applies BPE removal only inside evalu.eval_metric, which strips '@@ ' from hypotheses and references; the --mode infer path used here writes output through evalu.dump_tanslation (main.py line 538), which does not strip it. Scoring that raw file counted BPE continuation markers as wrong tokens on 177 of 642 lines (429 markers), costing about 5.5 BLEU. run_inference.py now reproduces upstream's exact transformation, line.replace('@@ ', ''), before scoring. This is a fix to this attempt's glue code; the authors' code is unmodified and the attempt remains at preference level 1."
   },
   "open_questions": [
-    "Whether the study wants the DGS3-T targets pursued at all, given that permission from the University of Hamburg is a prerequisite and may not be obtainable within the study.",
-    "Whether reproducing Table 4/5 requires retraining SMKD sign embeddings from video (the expensive path the paper describes) or whether the authors' released checkpoints and any released features make a shorter path defensible; this changes the compute estimate by a large factor and has not been costed."
+    "Whether reproducing Table 4/5 requires retraining SMKD sign embeddings from video (the expensive path the paper describes) or whether the authors' released checkpoints and any released features make a shorter path defensible; this changes the compute estimate by a large factor and has not been costed.",
+    "DGS3-T dev is not scored. The authors released a test list and test reference (test.bpe.de) but neither for dev. Dev sentences can be enumerated from the corpus the same way, but their German is the raw ELAN text while the authors' reference is Moses-tokenized and escaped: 1516 of 1575 test sentences match once tokenization is folded out, the rest differing by @-@ hyphen splitting, &quot; escaping and typographic quote normalization. Scoring untokenized references against a model that emits tokenized text would depress the score for reasons unrelated to the reproduction, so the four DGS3-T dev targets are left unproduced. Reproducing the authors' exact preprocessing chain, or obtaining their dev reference, would close them."
   ],
   "conditional_evidence": [
     {
@@ -2371,6 +3580,95 @@
         "chrF2+case.mixed+numchars.6+numrefs.1+space.False+version.1.4.2"
       ],
       "signature_check": "Both signatures match the paper's Appendix A.1. The Rouge-L and B@1-4 columns come from eval/metrics.py's --tokenize none branch applied to character-segmented text; that branch's BLEU agrees with sacrebleu tok.zh to three decimals, confirming the segmentation is the one tok.zh implies."
+    },
+    {
+      "evidence_id": "artifact-verification-dgs-test-e2e",
+      "what_it_is": "Decoding the DGS3-T test split in end-to-end mode with the authors' released checkpoint-averaged SLTUNET model and released SMKD sign-embedding model, over sentence slices this attempt built from the Public DGS Corpus, scored with the authors' own metric code against their released reference.",
+      "what_it_is_not": "It is not a reproduction of the authors' training. No SLTUNET or SMKD training was performed, so it cannot close any target however close the numbers are.",
+      "experiment_id": "dgs3t-sign2text",
+      "split": "test",
+      "n_sequences": 1575,
+      "deviations": [
+        "The DGS3-T dataset is not distributed and was reconstructed for this attempt. The authors' generate_examples_dgs.py reaches the corpus through tfds.load('dgs_corpus'); that lookup was replaced by an iterator over the copy already in the shared Volume. The sentence enumeration, gloss preprocessing and ffmpeg parameters are the authors' own, and the reconstruction reproduces their released test.txt on 1575 of 1575 segment names.",
+        "Model weights are the authors' released artifacts rather than weights trained by this attempt."
+      ],
+      "observed": {
+        "bleu1": 23.142250932136736,
+        "bleu2": 10.148426506756968,
+        "bleu3": 5.232182651455997,
+        "bleu4": 2.936842223911089,
+        "sbleu": 2.9186566254798048,
+        "chrf": 20.524835887994197,
+        "rouge": 24.639548650100227
+      },
+      "published_for_comparison": {
+        "rouge-l-f1": 24.53,
+        "bleu1-tok": 23.11,
+        "bleu2-tok": 10.05,
+        "bleu3-tok": 5.13,
+        "bleu4-tok": 2.81,
+        "sacrebleu-detok": 2.82,
+        "chrf": 20.56
+      },
+      "differences": {
+        "bleu1-tok": 0.03,
+        "bleu2-tok": 0.1,
+        "bleu3-tok": 0.1,
+        "bleu4-tok": 0.13,
+        "chrf": -0.04,
+        "rouge-l-f1": 0.11,
+        "sacrebleu-detok": 0.1
+      },
+      "metric_signatures": [
+        "BLEU+case.mixed+numrefs.1+smooth.exp+tok.13a+version.1.4.2",
+        "chrF2+case.mixed+numchars.6+numrefs.1+space.False+version.1.4.2"
+      ],
+      "signature_check": "Both signatures match the paper's Appendix A.1. B@1-4 and Rouge-L come from the --tokenize none branch, sBLEU and ChrF from the tok.13a branch."
+    },
+    {
+      "evidence_id": "artifact-verification-dgs-test-cascade",
+      "what_it_is": "Decoding the DGS3-T test split in cascading mode with the authors' released checkpoint-averaged SLTUNET model and released SMKD sign-embedding model, over sentence slices this attempt built from the Public DGS Corpus, scored with the authors' own metric code against their released reference.",
+      "what_it_is_not": "It is not a reproduction of the authors' training. No SLTUNET or SMKD training was performed, so it cannot close any target however close the numbers are.",
+      "experiment_id": "dgs3t-cascading",
+      "split": "test",
+      "n_sequences": 1575,
+      "deviations": [
+        "The DGS3-T dataset is not distributed and was reconstructed for this attempt. The authors' generate_examples_dgs.py reaches the corpus through tfds.load('dgs_corpus'); that lookup was replaced by an iterator over the copy already in the shared Volume. The sentence enumeration, gloss preprocessing and ffmpeg parameters are the authors' own, and the reconstruction reproduces their released test.txt on 1575 of 1575 segment names.",
+        "Model weights are the authors' released artifacts rather than weights trained by this attempt.",
+        "The authors publish no cascading entry point; the two-pass chain was constructed for this attempt from the upstream code paths."
+      ],
+      "observed": {
+        "bleu1": 19.298282057621005,
+        "bleu2": 8.14811645421983,
+        "bleu3": 4.0509533325565545,
+        "bleu4": 2.1901406480702224,
+        "sbleu": 2.1822820999919106,
+        "chrf": 18.29134360405939,
+        "rouge": 23.253257030408548
+      },
+      "published_for_comparison": {
+        "rouge-l-f1": 23.24,
+        "bleu1-tok": 21.0,
+        "bleu2-tok": 8.65,
+        "bleu3-tok": 4.25,
+        "bleu4-tok": 2.29,
+        "sacrebleu-detok": 2.28,
+        "chrf": 18.96
+      },
+      "differences": {
+        "bleu1-tok": -1.7,
+        "bleu2-tok": -0.5,
+        "bleu3-tok": -0.2,
+        "bleu4-tok": -0.1,
+        "chrf": -0.67,
+        "rouge-l-f1": 0.01,
+        "sacrebleu-detok": -0.1
+      },
+      "metric_signatures": [
+        "BLEU+case.mixed+numrefs.1+smooth.exp+tok.13a+version.1.4.2",
+        "chrF2+case.mixed+numchars.6+numrefs.1+space.False+version.1.4.2"
+      ],
+      "signature_check": "Both signatures match the paper's Appendix A.1. B@1-4 and Rouge-L come from the --tokenize none branch, sBLEU and ChrF from the tok.13a branch."
     }
   ],
   "paper_slug": "zhang-2023-sltunet",

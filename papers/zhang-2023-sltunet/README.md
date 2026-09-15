@@ -18,29 +18,50 @@ artifact-verification run below is conditional evidence, not a target result
 
 ## Attempt state
 
-This attempt is **open and not ready for review**. The environment is built and
-the authors' published inference path runs end to end, but no training has been
-performed and no target has been produced.
+This attempt is **open and not ready for review**.
+
+**Pipeline status:** `blocked_on_compute`
+
+**Numerical agreement:** `not_assessed`
+
+Every cell of Tables 4, 5 and 6 that the authors released an artifact for has
+now been decoded and scored, on both splits and in both the end-to-end and
+cascading modes, and the numbers land very close to the paper. **None of them
+produces a target.** They all come from the authors' released checkpoints, not
+from training performed here, which under the study's evidence contract is
+conditional evidence and cannot close a target however closely it matches. All
+54 targets are therefore `not_produced` with reason `compute_budget_blocked`,
+gated on `retraining-decision`.
 
 | Stage | State |
 | --- | --- |
 | Assignment recorded | done |
 | Paper acquired and hashed | done |
 | Target contract resolved | done — 54 targets |
-| Sources discovered and pinned | done — code, paper, and the released PHOENIX artifact |
+| Sources discovered and pinned | done — code, paper, and all four released artifacts |
 | Modal workspace preflight | done — profile `repro-sign` verified, both canonical Volumes present |
-| Data gate | PHOENIX-2014T verified, original frames added; CSL-Daily verified; DGS3-T licence cleared; MuST-C absent |
+| Data gate | PHOENIX-2014T verified, original frames added; CSL-Daily verified; DGS3-T built and licence cleared; MuST-C absent |
 | Environment built | done — TF 1.15 + PyTorch container, five undeclared dependencies pinned |
 | Preflight | done — real data, real weights, parsed metrics, exit 0 |
-| Artifact-verification run | done — full 642-sequence test split, exit 0 |
+| Table 4 (PHOENIX-2014T) | decoded — end-to-end and cascading, test and dev |
+| Table 5 (CSL-Daily) | decoded — end-to-end and cascading, test and dev |
+| Table 6 (DGS3-T) | dataset constructed and decoded — end-to-end and cascading, test |
 | SMKD pretraining | not started |
 | SLTUNET training | not started |
-| CSL-Daily / DGS3-T | not started |
 
-Open gates: `slt-data-access` (MuST-C absent, official channel dead),
+Open gates: `retraining-decision` (the one thing standing between this attempt
+and produced targets), `slt-data-access` (MuST-C absent, official channel dead),
 `mustc-enzh-version` (En-Zh release unidentified), `smkd-pretraining-scope`
 (path decision and cost). Resolved: `modal-auth`, `dgs3t-licence`,
 `phoenix-frame-fidelity`, `target-scope-table2`.
+
+Two validator warnings are left standing deliberately rather than papered over.
+The queue export carries no `confirmation` field at all and its
+`reproduction_status` is `in_progress`, so it does not literally meet the
+"confirmed / final" rule; the discrepancy and its status history are recorded in
+`assignment.confirmation_status` for a human to judge. The two MuST-C dataset
+entries have no split files because the dataset was never obtained; it is needed
+only for the MT auxiliary task during training, which is itself gated.
 
 Scope was narrowed by user decision on 2026-09-15 to Tables 4, 5 and 6, dropping
 the Table 2 ablations. The queue record asked for "Tables 2, 4, 5 and 6", so this
@@ -52,7 +73,7 @@ them is tested by this scope.
 | Agent ID | Model and version | Agent application | Contribution | Attribution evidence / unknowns |
 | --- | --- | --- | --- | --- |
 | `sonnet-5-claude-code` | Sonnet 5 (`claude-sonnet-5`) | Claude Code | Resolved the assignment URL to the paper identity, acquired and hashed the PDF, discovered and cloned the published code, began the target contract. Executed no experiment. | Interactive Claude Code session on 2026-09-13 declaring this model name and ID. Harness version is not exposed by the session and is recorded as absent. |
-| `opus-5-claude-code` | Opus 5 (1M context) (`claude-opus-5[1m]`) | Claude Code | Continued the same session after the session model changed mid-attempt: authored `reproduction.json`, the target ledger, the dataset and licence findings, the gates, the container and Modal app, and **executed** the preflight and artifact-verification runs. | Same session on 2026-09-13; the environment declared this model name and ID partway through the attempt. Harness version not exposed. |
+| `opus-5-claude-code` | Opus 5 (1M context) (`claude-opus-5[1m]`) | Claude Code | Continued the same session after the session model changed mid-attempt: authored `reproduction.json`, the target ledger, the dataset and licence findings, the gates, the container and Modal app, **executed** every run in this attempt (preflight, and the Table 4, 5 and 6 artifact-verification runs across PHOENIX, CSL-Daily and DGS3-T), and **constructed** the DGS3-T sentence-level split. | Same session on 2026-09-13, continued 2026-09-15; the environment declared this model name and ID partway through the attempt. Harness version not exposed. |
 
 Every run so far carries `agent_ids: ["opus-5-claude-code"]`. No run was executed
 by `sonnet-5-claude-code`, whose contribution ended before the environment
@@ -238,11 +259,18 @@ authors' code is unmodified.
 
 ## Results
 
-**No target has produced a value.** Everything run so far decodes the authors'
-released weights, which verifies their artifact and this pipeline rather than
-reproducing their training, and it reads lossy re-encoded frames. Both are
-behaviour-changing conditions, so by the terminal contract these are conditional
-evidence regardless of how close the numbers land.
+**No target has produced a value.** Everything below decodes the authors'
+released weights, which verifies their artifacts and this pipeline rather than
+reproducing their training. On PHOENIX and CSL-Daily it additionally reads lossy
+re-encoded video rather than the frame distributions the released lists name;
+the DGS3-T slices are cut from the original corpus videos and do not carry that
+second condition. These are behaviour-changing conditions, so by the terminal
+contract all of this is conditional evidence regardless of how close the numbers
+land.
+
+Across all three tables the published and reproduced values are summarised
+below; the full per-cell records, including raw metric output and run IDs, are
+in `reproduction.json.conditional_evidence`.
 
 ### Exercised: Table 4, end-to-end block (all 9 targets)
 
@@ -268,15 +296,118 @@ the constructed references match the authors' own released `test.bpe.de` on
 The dev B@4 also corresponds to **Table 2 row 15** (27.87), because row 15 is this
 same trained system. Table 2 is otherwise out of the agreed scope.
 
-### Not yet run
+### Exercised: Table 4, cascading block (all 9 targets)
 
-| Target group | Count | State |
-| --- | ---: | --- |
-| Table 4, cascading | 9 | not run — needs a two-pass `sign2gloss` → `gloss2text` setup, not a flag change |
-| Table 5, CSL-Daily (both modes) | 18 | not run — release not downloaded; needs char-level post-processing the authors' eval script does not perform |
-| Table 6, DGS3-T (both modes) | 18 | not run — licence now cleared, but the sentence-level split must be built from documents with the authors' slicing scripts first |
+The authors publish no cascading entry point, so the two-pass chain was built
+from the upstream code paths (see *Guesses and deviations*).
 
-Published values for every unrun target are in `reproduction.json.targets`.
+| Split | Metric | Published | This attempt | Difference |
+| --- | --- | ---: | ---: | ---: |
+| dev | ROUGE | 49.61 | 49.24 | −0.37 |
+| dev | B@4 | 25.36 | 24.81 | −0.55 |
+| test | ROUGE | 49.98 | 49.64 | −0.34 |
+| test | B@1 | 50.42 | 49.03 | −1.39 |
+| test | B@2 | 39.24 | 38.28 | −0.96 |
+| test | B@3 | 31.41 | 30.61 | −0.80 |
+| test | B@4 | 26.00 | 25.26 | −0.74 |
+| test | sBLEU | 26.00 | 25.26 | −0.74 |
+| test | ChrF | 51.96 | 50.90 | −1.06 |
+
+Wider than the end-to-end block and widest on B@1. Both blocks read the same
+lossy frames, but cascading passes that loss through a discrete gloss
+bottleneck, where one corrupted gloss removes content the text pass cannot
+recover. The constructed two-pass chain is a second candidate explanation the
+end-to-end block does not share; the two cannot be separated until the original
+PNG frames are used.
+
+### Exercised: Table 5, CSL-Daily (all 18 targets)
+
+| Split | Mode | Metric | Published | This attempt | Difference |
+| --- | --- | --- | ---: | ---: | ---: |
+| test | end-to-end | ROUGE | 54.08 | 54.35 | +0.27 |
+| test | end-to-end | B@1 | 54.98 | 54.76 | −0.22 |
+| test | end-to-end | B@2 | 41.44 | 41.28 | −0.16 |
+| test | end-to-end | B@3 | 31.84 | 31.72 | −0.12 |
+| test | end-to-end | B@4 | 25.01 | 24.94 | −0.07 |
+| test | end-to-end | sBLEU | 25.01 | 24.94 | −0.07 |
+| test | end-to-end | ChrF | 21.99 | 22.12 | +0.13 |
+| dev | end-to-end | ROUGE | 53.58 | 54.22 | +0.64 |
+| dev | end-to-end | B@4 | 23.99 | 25.08 | +1.09 |
+| test | cascading | ROUGE | 53.10 | 53.58 | +0.48 |
+| test | cascading | B@1 | 54.39 | 53.66 | −0.73 |
+| test | cascading | B@2 | 40.28 | 40.13 | −0.15 |
+| test | cascading | B@3 | 30.52 | 30.55 | +0.03 |
+| test | cascading | B@4 | 23.76 | 23.85 | +0.09 |
+| test | cascading | sBLEU | 23.76 | 23.85 | +0.09 |
+| test | cascading | ChrF | 21.09 | 21.32 | +0.23 |
+| dev | cascading | ROUGE | 52.89 | 52.97 | +0.08 |
+| dev | cascading | B@4 | 22.95 | 23.28 | +0.33 |
+
+Unlike PHOENIX, differences fall in **both directions**, which is what noise
+looks like rather than a systematic input-quality penalty.
+
+Two things had to be resolved here, both from published evidence rather than by
+tuning:
+
+**Which released model.** The authors published two CSL-Daily archives and
+document no difference. They are identical except `sltunet_ckpt/param.json`
+`filter_size`: 2048 in `csldaily.tar.gz`, 4096 in `csldaily2.tar.gz`. The
+paper's final configuration specifies dff=4096, so `csldaily2` was expected —
+and both were run rather than assumed. `csldaily` (2048) is further from the
+published row on every metric (B@4 −0.51, ChrF −0.38, ROUGE −0.72), confirming
+the choice. Recorded in `reproduction.json.artifact_selection`.
+
+**How Chinese is scored.** The paper prints the same number in its B@4 and sBLEU
+columns (25.01/25.01), which is only possible if the tokenized branch saw
+character-segmented text, since sBLEU uses `tok.zh`. Both segmentations were
+computed. Character-segmenting and scoring with `--tokenize none` reproduces
+SacreBLEU's own `tok.zh` BLEU to three decimals (54.761 vs 54.762) and lifts
+ROUGE from 49.54 to 54.35 against a published 54.08; word segmentation is off by
+4.5 ROUGE. So the paper's CSL-Daily columns are character-level, and no
+self-implemented BLEU was needed after all.
+
+The dev rows carry an extra caveat: the authors released no CSL-Daily dev list
+or reference, so both are rebuilt from the official distribution (`split_1.txt`,
+`csl2020ct_v2.pkl`). That reconstruction reproduces the released *test*
+reference on 1176 of 1176 lines exactly, which is what licenses using it for
+dev — but the dev ordering is this attempt's choice. dev B@4 at +1.09 is the
+largest gap in the table.
+
+### Exercised: Table 6, DGS3-T test (14 of 18 targets)
+
+DGS3-T is not distributable; it is a sentence-level slicing of the Public DGS
+Corpus that had to be **constructed** (see *Data provenance*).
+
+| Mode | Metric | Published | This attempt | Difference |
+| --- | --- | ---: | ---: | ---: |
+| end-to-end | ROUGE | 24.53 | 24.64 | +0.11 |
+| end-to-end | B@1 | 23.11 | 23.14 | +0.03 |
+| end-to-end | B@2 | 10.05 | 10.15 | +0.10 |
+| end-to-end | B@3 | 5.13 | 5.23 | +0.10 |
+| end-to-end | B@4 | 2.81 | 2.94 | +0.13 |
+| end-to-end | sBLEU | 2.82 | 2.92 | +0.10 |
+| end-to-end | ChrF | 20.56 | 20.52 | −0.04 |
+| cascading | ROUGE | 23.24 | 23.25 | +0.01 |
+| cascading | B@1 | 21.00 | 19.30 | −1.70 |
+| cascading | B@2 | 8.65 | 8.15 | −0.50 |
+| cascading | B@3 | 4.25 | 4.05 | −0.20 |
+| cascading | B@4 | 2.29 | 2.19 | −0.10 |
+| cascading | sBLEU | 2.28 | 2.18 | −0.10 |
+| cascading | ChrF | 18.96 | 18.29 | −0.67 |
+
+The end-to-end block is the **closest agreement in this attempt** — every metric
+within 0.15. That is consistent with these slices being cut from the same source
+videos the authors sliced, rather than from a re-encoding as on PHOENIX. The
+cascading block again shows the B@1-heavy shortfall seen on PHOENIX.
+
+**The four DGS3-T dev targets are not exercised.** The authors released a test
+list and test reference but neither for dev. Dev sentences can be enumerated the
+same way, but their German is raw ELAN text while the authors' reference is
+Moses-tokenized and escaped; scoring untokenized references against a model that
+emits tokenized text would depress the score for reasons unrelated to the
+reproduction. Recorded in `open_questions`.
+
+Published values for every target are in `reproduction.json.targets`.
 
 ## How to repeat this
 
