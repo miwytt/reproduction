@@ -29,7 +29,7 @@ performed and no target has been produced.
 | Target contract resolved | done — 54 targets |
 | Sources discovered and pinned | done — code, paper, and the released PHOENIX artifact |
 | Modal workspace preflight | done — profile `repro-sign` verified, both canonical Volumes present |
-| Data gate | PHOENIX-2014T and CSL-Daily verified; MuST-C absent; DGS3-T present but permission unresolved |
+| Data gate | PHOENIX-2014T verified, original frames added; CSL-Daily verified; DGS3-T licence cleared; MuST-C absent |
 | Environment built | done — TF 1.15 + PyTorch container, five undeclared dependencies pinned |
 | Preflight | done — real data, real weights, parsed metrics, exit 0 |
 | Artifact-verification run | done — full 642-sequence test split, exit 0 |
@@ -38,9 +38,14 @@ performed and no target has been produced.
 | CSL-Daily / DGS3-T | not started |
 
 Open gates: `slt-data-access` (MuST-C absent, official channel dead),
-`mustc-enzh-version` (En-Zh release unidentified), `dgs3t-licence` (permission, not
-availability), `smkd-pretraining-scope` (path decision and cost),
-`phoenix-frame-fidelity` (lossy frame source). Resolved: `modal-auth`.
+`mustc-enzh-version` (En-Zh release unidentified), `smkd-pretraining-scope`
+(path decision and cost). Resolved: `modal-auth`, `dgs3t-licence`,
+`phoenix-frame-fidelity`, `target-scope-table2`.
+
+Scope was narrowed by user decision on 2026-09-15 to Tables 4, 5 and 6, dropping
+the Table 2 ablations. The queue record asked for "Tables 2, 4, 5 and 6", so this
+is a deliberate narrowing: Table 2's claims are deltas between rows, and none of
+them is tested by this scope.
 
 ## Reproduction agents
 
@@ -49,20 +54,22 @@ availability), `smkd-pretraining-scope` (path decision and cost),
 | `sonnet-5-claude-code` | Sonnet 5 (`claude-sonnet-5`) | Claude Code | Resolved the assignment URL to the paper identity, acquired and hashed the PDF, discovered and cloned the published code, began the target contract. Executed no experiment. | Interactive Claude Code session on 2026-09-13 declaring this model name and ID. Harness version is not exposed by the session and is recorded as absent. |
 | `opus-5-claude-code` | Opus 5 (1M context) (`claude-opus-5[1m]`) | Claude Code | Continued the same session after the session model changed mid-attempt: authored `reproduction.json`, the target ledger, the dataset and licence findings, the gates, the container and Modal app, and **executed** the preflight and artifact-verification runs. | Same session on 2026-09-13; the environment declared this model name and ID partway through the attempt. Harness version not exposed. |
 
-The single retained run,
-`artifact-verification-phoenix-sign2text-attempt-1`, carries
-`agent_ids: ["opus-5-claude-code"]`. No run was executed by `sonnet-5-claude-code`.
+Every run so far carries `agent_ids: ["opus-5-claude-code"]`. No run was executed
+by `sonnet-5-claude-code`, whose contribution ended before the environment
+existed.
 
 ## Scope and target contract
 
-> **Scope is contested and the ledger is incomplete — gate `target-scope-table2`.**
-> The attempt began from a bare paper URL with no queue record, so scope was
-> resolved from the paper. A queue record was later found in this directory and is
-> now the authoritative assignment. Its `what_to_reproduce` is **"Tables 2, 4, 5
-> and 6"** — Table 2 is in scope and the 54-target ledger below does not cover it.
-> Table 2 is a 15-step optimization ladder plus 9 discarded variants, so covering
-> it in full means training roughly two dozen configurations: the dominant cost of
-> the entire reproduction. The scope must be decided before compute is estimated.
+> **Scope decided 2026-09-15 — gate `target-scope-table2` resolved.** The attempt
+> began from a bare paper URL with no queue record, so scope was resolved from the
+> paper. A queue record was later found in this directory and is the authoritative
+> assignment; its `what_to_reproduce` is **"Tables 2, 4, 5 and 6"**. The study
+> decided to reproduce **without the Table 2 ablations**, so scope is Tables 4, 5
+> and 6, the 54 targets below. This is a deliberate narrowing of the requested
+> scope and not full coverage: Table 2's claims are all deltas between rows
+> ("+1.42 BLEU from CTC", "+5.25 over Baseline"), so **none of them is tested
+> here**. Table 2 row 15 is the sole exception, and only incidentally: it is the
+> same trained system as the Table 4 rows, so its dev B@4 comes for free.
 
 The original assignment was a bare paper URL
 (`https://openreview.net/pdf?id=EBS4C77p_5S`) with no `what_to_reproduce` text and
@@ -80,12 +87,10 @@ tables**, which carry the paper's headline claims:
 That is 54 targets. Each is one published number with its own `target_id`,
 experiment, metric definition, split, and paper location.
 
-Judged out of scope at the time: the Table 2 optimization ladder, the Table 3
-single-task/multi-task ablation, and the Table 8 shared-versus-separate module
-ablation. **The queue record overrides that judgement for Table 2**, which it
-names explicitly; the ledger must be extended once the scope question above is
-settled. Tables 3 and 8 remain out of scope, since the queue record does not name
-them.
+Out of scope: the Table 2 optimization ladder (by the study's decision above,
+despite the queue record naming it), plus the Table 3 single-task/multi-task
+ablation and the Table 8 shared-versus-separate module ablation, which the queue
+record does not name.
 
 **Queue record provenance.** `paper_id`
 `3bbc8841012fdb5971d1c86dff528edd8590f1b8`, assigned to michelle.wastl@uzh.ch,
@@ -233,22 +238,45 @@ authors' code is unmodified.
 
 ## Results
 
-No target has produced a value. All 54 targets are listed in
-`reproduction.json.targets` with their published values and paper locations. The
-18 DGS3-T targets already carry a terminal `not_produced` result with reason code
-`data_permission_blocked`; the 36 PHOENIX-2014T and CSL-Daily targets have no
-result yet because the attempt has not reached execution.
+**No target has produced a value.** Everything run so far decodes the authors'
+released weights, which verifies their artifact and this pipeline rather than
+reproducing their training, and it reads lossy re-encoded frames. Both are
+behaviour-changing conditions, so by the terminal contract these are conditional
+evidence regardless of how close the numbers land.
 
-| Target group | Count | Published values | State |
-| --- | --- | --- | --- |
-| PHOENIX-2014T, cascading (Table 4) | 9 | ROUGE 49.61/49.98, B@4 25.36/26.00, B@1–B@3 50.42/39.24/31.41, sBLEU 26.00, ChrF 51.96 | no result yet |
-| PHOENIX-2014T, end-to-end (Table 4) | 9 | ROUGE 52.23/52.11, B@4 27.87/28.47, B@1–B@3 52.92/41.76/33.99, sBLEU 28.47, ChrF 53.78 | no result yet |
-| CSL-Daily, cascading (Table 5) | 9 | ROUGE 52.89/53.10, B@4 22.95/23.76, B@1–B@3 54.39/40.28/30.52, sBLEU 23.76, ChrF 21.09 | no result yet |
-| CSL-Daily, end-to-end (Table 5) | 9 | ROUGE 53.58/54.08, B@4 23.99/25.01, B@1–B@3 54.98/41.44/31.84, sBLEU 25.01, ChrF 21.99 | no result yet |
-| DGS3-T, cascading (Table 6) | 9 | ROUGE 26.40/23.24, B@4 3.49/2.29, B@1–B@3 21.00/8.65/4.25, sBLEU 2.28, ChrF 18.96 | `not_produced` — `data_permission_blocked` |
-| DGS3-T, end-to-end (Table 6) | 9 | ROUGE 27.95/24.53, B@4 3.94/2.81, B@1–B@3 23.11/10.05/5.13, sBLEU 2.82, ChrF 20.56 | `not_produced` — `data_permission_blocked` |
+### Exercised: Table 4, end-to-end block (all 9 targets)
 
-(Dev/test pairs are shown as dev/test where both are reported.)
+| Split | Metric | Published | This attempt | Difference |
+| --- | --- | ---: | ---: | ---: |
+| dev | ROUGE | 52.23 | 51.88 | −0.35 |
+| dev | B@4 | 27.87 | 27.57 | −0.30 |
+| test | ROUGE | 52.11 | 51.68 | −0.43 |
+| test | B@1 | 52.92 | 52.50 | −0.42 |
+| test | B@2 | 41.76 | 41.33 | −0.43 |
+| test | B@3 | 33.99 | 33.42 | −0.57 |
+| test | B@4 | 28.47 | 27.91 | −0.56 |
+| test | sBLEU | 28.47 | 27.91 | −0.56 |
+| test | ChrF | 53.78 | 53.43 | −0.35 |
+
+Every value sits **0.30–0.57 below** published. The uniformity is itself
+informative: a pipeline defect would produce erratic differences across metrics
+and splits, whereas a consistent small offset is what an input-quality or
+nondeterminism effect looks like. Reference construction is excluded as a cause —
+the constructed references match the authors' own released `test.bpe.de` on
+642 of 642 lines.
+
+The dev B@4 also corresponds to **Table 2 row 15** (27.87), because row 15 is this
+same trained system. Table 2 is otherwise out of the agreed scope.
+
+### Not yet run
+
+| Target group | Count | State |
+| --- | ---: | --- |
+| Table 4, cascading | 9 | not run — needs a two-pass `sign2gloss` → `gloss2text` setup, not a flag change |
+| Table 5, CSL-Daily (both modes) | 18 | not run — release not downloaded; needs char-level post-processing the authors' eval script does not perform |
+| Table 6, DGS3-T (both modes) | 18 | not run — licence now cleared, but the sentence-level split must be built from documents with the authors' slicing scripts first |
+
+Published values for every unrun target are in `reproduction.json.targets`.
 
 ## How to repeat this
 
