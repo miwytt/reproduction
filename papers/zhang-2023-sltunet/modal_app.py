@@ -124,11 +124,13 @@ def populate_data(timeout_s: int = 6 * 60 * 60):
 
 
 @app.local_entrypoint()
-def main(limit: int = 0, tag: str = "preflight", timeout_s: int = 6 * 60 * 60):
+def main(limit: int = 0, tag: str = "preflight", frame_source: str = "video",
+         timeout_s: int = 6 * 60 * 60):
     sandbox = modal.Sandbox.create(
         "bash",
         "-lc",
-        f"python /opt/run_inference.py --tag {tag} --limit {limit}",
+        f"python /opt/run_inference.py --tag {tag} --limit {limit} "
+        f"--frame-source {frame_source}",
         app=app,
         image=image,
         gpu=GPU,

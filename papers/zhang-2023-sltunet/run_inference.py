@@ -8,6 +8,7 @@ inference entry point, and scores the output with the repository's own metric co
 from __future__ import print_function
 
 import argparse
+import glob
 import json
 import os
 import subprocess
@@ -57,11 +58,19 @@ def prepare():
     return src, release, head, digest
 
 
-def build_inputs(release, limit):
-    """Map the released PNG-frame test list onto the Volume's MP4s, preserving order.
+def build_inputs(release, limit, frame_source="video"):
+    """Build the decoder's input list, preserving the authors' released test order.
 
-    The authors' loader (smkd/dataset/dataloader_video.py) branches on the path suffix
-    and opens non-PNG paths with cv2.VideoCapture, so only the path list changes.
+    frame_source='png' is the faithful path: the released test.txt already contains the
+    authors' own file list as
+    PHOENIX-2014-T-release-v3/PHOENIX-2014-T/features/fullFrame-210x260px/test/<seq>/*.png,
+    so the only change is prefixing the Volume location of that distribution. Nothing about
+    the list is reconstructed.
+
+    frame_source='video' substitutes the Volume's HEVC re-encodings instead. The authors'
+    loader (smkd/dataset/dataloader_video.py) branches on the path suffix and opens non-PNG
+    paths with cv2.VideoCapture, so that too is a path substitution rather than a patch, but
+    it feeds the encoder lossy pixels.
     """
     with open(release + "/test.txt") as handle:
         released = [line.strip() for line in handle if line.strip()]
@@ -78,18 +87,25 @@ def build_inputs(release, limit):
                 refs[parts[ni]] = parts[ti].strip()
 
     rows, missing_video, missing_ref = [], [], []
-    for name in names:
-        video = "%s/videos/test/%s.mp4" % (PHOENIX, name)
-        if not os.path.exists(video):
+    for name, released_path in zip(names, released):
+        if frame_source == "png":
+            # The authors' own path, rooted at the Volume copy of the distribution.
+            source = "%s/raw/%s" % (PHOENIX, released_path)
+            present = bool(glob.glob(source))
+        else:
+            source = "%s/videos/test/%s.mp4" % (PHOENIX, name)
+            present = os.path.exists(source)
+        if not present:
             missing_video.append(name)
         elif name not in refs:
             missing_ref.append(name)
         else:
-            rows.append((name, video, refs[name]))
+            rows.append((name, source, refs[name]))
 
+    print("frame_source: %s" % frame_source)
     print("released list: %d; mapped: %d" % (len(released), len(rows)))
     if missing_video:
-        print("missing video (%d): %s" % (len(missing_video), missing_video[:5]))
+        print("missing frames (%d): %s" % (len(missing_video), missing_video[:5]))
     if missing_ref:
         print("missing reference (%d): %s" % (len(missing_ref), missing_ref[:5]))
     if limit:
@@ -97,15 +113,53 @@ def build_inputs(release, limit):
     return rows
 
 
+
+def stage_frames(rows):
+    """Copy the needed PNG sequences from the Volume to local disk before decoding.
+
+    Cold reads on the Modal Volume measured 186 ms per file. The test split is roughly
+    96,000 PNGs, so reading them through the dataloader is hours of latency. A parallel
+    bulk copy overlaps that latency once, after which the decoder reads local disk. This
+    changes where the bytes are read from, not what they contain: the files are copied
+    verbatim and the authors' path list is rewritten to point at the copies.
+    """
+    local_root = "/work/frames"
+    sh("mkdir -p %s" % local_root)
+    dirs = sorted({os.path.dirname(src) for _, src, _ in rows})
+    listing = "/work/stage_dirs.txt"
+    with open(listing, "w") as handle:
+        handle.write("\n".join(dirs) + "\n")
+    print("staging %d sequence directories to %s" % (len(dirs), local_root))
+    t0 = time.time()
+    sh("xargs -a %s -P 32 -I{} cp -r {} %s/" % (listing, local_root))
+    print("staged in %.1f s" % (time.time() - t0))
+
+    staged = []
+    for name, src, ref in rows:
+        seq = os.path.basename(os.path.dirname(src))
+        pattern = "%s/%s/%s" % (local_root, seq, os.path.basename(src))
+        n = len(glob.glob(pattern))
+        if n == 0:
+            raise RuntimeError("staging produced no files for %s" % seq)
+        staged.append((name, pattern, ref))
+    total = sum(len(glob.glob(p)) for _, p, _ in staged)
+    print("staged %d sequences, %d frames total" % (len(staged), total))
+    return staged
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--tag", default="full")
     parser.add_argument("--limit", type=int, default=0)
+    parser.add_argument("--frame-source", default="video",
+                        choices=["video", "png"])
     args = parser.parse_args()
 
     started = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     src, release, head, digest = prepare()
-    rows = build_inputs(release, args.limit)
+    rows = build_inputs(release, args.limit, args.frame_source)
+    if args.frame_source == "png":
+        rows = stage_frames(rows)
 
     run_dir = "/results/runs/" + args.tag
     sh("mkdir -p %s" % run_dir)
@@ -171,7 +225,13 @@ def main():
         "release_sha256": digest,
         "n_sequences": len(rows),
         "metrics_output": metrics,
-        "frame_source": "lossy HEVC re-encodings from the shared Volume, not original PNG frames",
+        "frame_source": args.frame_source,
+        "frame_source_detail": (
+            "original lossless PNG frames from the RWTH distribution, using the "
+            "authors' own released test.txt paths"
+            if args.frame_source == "png" else
+            "lossy HEVC re-encodings from the shared Volume, not original PNG frames"
+        ),
     }
     with open(run_dir + "/run.json", "w") as handle:
         json.dump(meta, handle, indent=2)
