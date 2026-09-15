@@ -21,6 +21,7 @@ UPSTREAM_COMMIT = "b1d1d0e8b3b7275e10cd89229f2632b556df5de9"
 RELEASE_BASE = "https://data.statmt.org/bzhang/iclr2023_sltunet"
 PHOENIX = "/datasets/rwth-phoenix-2014-t"
 CSLDAILY = "/datasets/csl-daily"
+DGS3T = "/datasets/dgs3-t"
 RWTH_ARCHIVE = ("https://www-i6.informatik.rwth-aachen.de/ftp/pub/"
                 "rwth-phoenix/2016/phoenix-2014-T.v3.tar.gz")
 
@@ -39,6 +40,7 @@ RELEASES = {
         "gloss_path": "phoenix2014/gloss_dict.npy",
         # infer.sh in the released phoenix archive.
         "eval_batch_size": 4,
+        "decode_alpha": 1.0,
         "tokenize": "13a",
         "filter_size": 4096,
     },
@@ -50,6 +52,7 @@ RELEASES = {
         "gloss_path": "csldaily/gloss_dict.npy",
         # infer.sh in both released csldaily archives uses 2, not phoenix's 4.
         "eval_batch_size": 2,
+        "decode_alpha": 1.0,
         "tokenize": "zh",
         "filter_size": 2048,
     },
@@ -60,7 +63,22 @@ RELEASES = {
         "bpe_codes": "enzh.bpe",
         "gloss_path": "csldaily/gloss_dict.npy",
         "eval_batch_size": 2,
+        "decode_alpha": 1.0,
         "tokenize": "zh",
+        "filter_size": 4096,
+    },
+    "dgs3t": {
+        "archive": "dgs3-t.tar.gz",
+        "sha256": "c5ba62428242e34e47de1b8577d2845c4e7ca9f1d6eb9661c3a738cb9bd34db5",
+        "dataset_root": DGS3T,
+        "bpe_codes": "ende.bpe",
+        "gloss_path": "dgs3-t/gloss_dict.npy",
+        "eval_batch_size": 2,
+        # The released dgs3-t/infer.sh uses 1.3 here, unlike the other two releases, and
+        # unlike the 1.0 recorded in its own param.json. The shell script is the command
+        # the authors actually ran, so it wins.
+        "decode_alpha": 1.3,
+        "tokenize": "13a",
         "filter_size": 4096,
     },
 }
@@ -110,6 +128,47 @@ def prepare(dataset):
         "%s: expected filter_size %d, released param.json has %d"
         % (dataset, cfg["filter_size"], got))
     return src, release, head, digest
+
+
+def build_inputs_dgs3t(release, limit, split):
+    """Build the DGS3-T decoder inputs from the slices built by build_dgs3t.py.
+
+    The released test.txt names dgs3-t/output/videos/test.<document>.<sentence>.mp4, which
+    build_dgs3t.py reproduces exactly: 1575 of 1575 segment names identical, sliced from the
+    Public DGS Corpus already on the Volume with the authors' own enumeration and ffmpeg
+    parameters. References come from the released sltunet_ckpt/test.bpe.de, so the reference
+    text is the authors' own and its tokenization never has to be reconstructed.
+    """
+    if split != "test":
+        raise RuntimeError(
+            "DGS3-T dev is not built; only the released test split is supported")
+
+    with open(release + "/test.txt") as handle:
+        released = [line.strip() for line in handle if line.strip()]
+    with io.open(release + "/sltunet_ckpt/test.bpe.de", encoding="utf-8") as handle:
+        refs = [l.rstrip("\n").replace("@@ ", "") for l in handle]
+    if len(refs) != len(released):
+        raise RuntimeError("released list %d != released references %d"
+                           % (len(released), len(refs)))
+
+    rows, missing = [], []
+    for path, ref in zip(released, refs):
+        name = os.path.basename(path)
+        source = "%s/videos/%s" % (DGS3T, name)
+        if os.path.exists(source):
+            rows.append((name, source, ref))
+        else:
+            missing.append(name)
+
+    print("frame_source: video (DGS3-T slices built from the Public DGS Corpus)")
+    print("released list: %d; mapped: %d" % (len(released), len(rows)))
+    if missing:
+        print("missing slice (%d): %s" % (len(missing), missing[:5]))
+        raise RuntimeError(
+            "%d DGS3-T slices are missing; run build_dgs3t.py first" % len(missing))
+    if limit:
+        rows = rows[:limit]
+    return rows
 
 
 def build_inputs_csldaily(release, limit, split):
@@ -328,7 +387,7 @@ def run_cascade(src, release, run_dir, list_file, ref_file, rows, cfg):
     pass1 = (
         "python run.py --mode infer --parameters="
         "max_len=256,max_img_len=512,eval_batch_size={b},"
-        "beam_size=8,remove_bpe=True,decode_alpha=1.0,gpus=[0],"
+        "beam_size=8,remove_bpe=True,decode_alpha={a},gpus=[0],"
         "eval_task='sign2gloss',"
         'src_codes="{c}/{p}",tgt_codes="{c}/{p}",'
         'src_vocab_file="{c}/vocab.zero.drop",tgt_vocab_file="{c}/vocab.zero.drop",'
@@ -337,7 +396,8 @@ def run_cascade(src, release, run_dir, list_file, ref_file, rows, cfg):
         'sign_cfg="{r}/baseline.yaml",'
         'smkd_model_path="{r}/signemb_ckpt/average.pt",'
     ).format(c=ckpt, g=gloss_out, l=list_file, r=release,
-             p=cfg["bpe_codes"], gl=cfg["gloss_path"], b=cfg["eval_batch_size"])
+             p=cfg["bpe_codes"], gl=cfg["gloss_path"], b=cfg["eval_batch_size"],
+             a=cfg["decode_alpha"])
     rc1 = sh(pass1, cwd=src, check=False)
     if rc1 != 0 or not os.path.exists(gloss_out):
         raise RuntimeError("cascade pass 1 (sign2gloss) failed rc=%d" % rc1)
@@ -364,14 +424,14 @@ def run_cascade(src, release, run_dir, list_file, ref_file, rows, cfg):
     pass2 = (
         "python run.py --mode test --parameters="
         "max_len=256,max_img_len=512,eval_batch_size={b},"
-        "beam_size=8,remove_bpe=True,decode_alpha=1.0,gpus=[0],"
+        "beam_size=8,remove_bpe=True,decode_alpha={a},gpus=[0],"
         "eval_task='gloss2text',img_feature_size=1024,"
         'src_codes="{c}/{p}",tgt_codes="{c}/{p}",'
         'src_vocab_file="{c}/vocab.zero.drop",tgt_vocab_file="{c}/vocab.zero.drop",'
         'output_dir="{c}",test_output="{t}",'
         'img_test_file="{h}",src_test_file="{s}",tgt_test_file="{f}",'
     ).format(c=ckpt, t=trans2, h=dummy_h5, s=src2, f=ref_file,
-             p=cfg["bpe_codes"], b=cfg["eval_batch_size"])
+             p=cfg["bpe_codes"], b=cfg["eval_batch_size"], a=cfg["decode_alpha"])
     rc2 = sh(pass2, cwd=src, check=False)
     return rc2, trans2
 
@@ -472,6 +532,8 @@ def main():
         rows = build_inputs(release, args.limit, args.frame_source, args.split)
         if args.frame_source == "png":
             rows = stage_frames(rows)
+    elif args.dataset == "dgs3t":
+        rows = build_inputs_dgs3t(release, args.limit, args.split)
     else:
         rows = build_inputs_csldaily(release, args.limit, args.split)
 
@@ -479,8 +541,8 @@ def main():
     sh("mkdir -p %s" % run_dir)
     list_file = run_dir + "/inputs.txt"
     # Named by target language; the PHOENIX runs already recorded reference.de.
-    ref_file = run_dir + ("/reference.de" if args.dataset == "phoenix"
-                          else "/reference.zh")
+    ref_file = run_dir + ("/reference.zh" if args.dataset.startswith("csldaily")
+                          else "/reference.de")
     with open(list_file, "w") as handle:
         handle.write("\n".join(r[1] for r in rows) + "\n")
     with open(ref_file, "w") as handle:
@@ -505,7 +567,7 @@ def main():
         cmd = (
             "python run.py --mode infer --parameters="
             "max_len=256,max_img_len=512,eval_batch_size={b},"
-            "beam_size=8,remove_bpe=True,decode_alpha=1.0,"
+            "beam_size=8,remove_bpe=True,decode_alpha={a},"
             "gpus=[0],"
             "eval_task='sign2text',"
             'src_codes="{c}/{p}",tgt_codes="{c}/{p}",'
@@ -519,7 +581,7 @@ def main():
             'smkd_model_path="{r}/signemb_ckpt/average.pt",'
         ).format(c=ckpt, t=trans, l=list_file, r=release,
                  p=cfg["bpe_codes"], g=cfg["gloss_path"],
-                 b=cfg["eval_batch_size"])
+                 b=cfg["eval_batch_size"], a=cfg["decode_alpha"])
         exit_code = sh(cmd, cwd=src, check=False)
     finished = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
@@ -533,7 +595,7 @@ def main():
         metrics_tokenized = score(src, run_dir, trans, ref_file, "none")
         print("=== METRICS (--tokenize none) ===")
         print(metrics_tokenized)
-        if args.dataset != "phoenix":
+        if args.dataset.startswith("csldaily"):
             # See char_segment(): which of the two segmentations the paper used is settled
             # by its own published columns, so both are produced.
             hyp_c = char_segment(run_dir + "/trans.debpe.txt",
