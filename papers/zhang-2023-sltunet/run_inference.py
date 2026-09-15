@@ -20,6 +20,8 @@ UPSTREAM_COMMIT = "b1d1d0e8b3b7275e10cd89229f2632b556df5de9"
 RELEASE_URL = "https://data.statmt.org/bzhang/iclr2023_sltunet/phoenix.tar.gz"
 RELEASE_SHA256 = "b0e708b7abe5689475905ad11ac578abb02eb0f9bf00b207bbd6d4342afe5152"
 PHOENIX = "/datasets/rwth-phoenix-2014-t"
+RWTH_ARCHIVE = ("https://www-i6.informatik.rwth-aachen.de/ftp/pub/"
+                "rwth-phoenix/2016/phoenix-2014-T.v3.tar.gz")
 
 
 def sh(cmd, cwd=None, check=True):
@@ -115,35 +117,61 @@ def build_inputs(release, limit, frame_source="video"):
 
 
 def stage_frames(rows):
-    """Copy the needed PNG sequences from the Volume to local disk before decoding.
+    """Put the needed PNG sequences on container-local disk before decoding.
 
-    Cold reads on the Modal Volume measured 186 ms per file. The test split is roughly
-    96,000 PNGs, so reading them through the dataloader is hours of latency. A parallel
-    bulk copy overlaps that latency once, after which the decoder reads local disk. This
-    changes where the bytes are read from, not what they contain: the files are copied
-    verbatim and the authors' path list is rewritten to point at the copies.
+    Two routes, because the obvious one does not work. Copying from the Volume is
+    pathological: cold reads measured 186 ms per file, and a 32-way parallel cp over the
+    ~96,000 files of the test split made no measurable progress in 1.5 hours, so the FUSE
+    mount evidently degrades under concurrent small reads rather than overlapping them.
+
+    The working route streams the original RWTH archive straight into tar and extracts only
+    the frame tree, which is one sequential network read instead of ~96,000 random ones. The
+    bytes are identical to the Volume copy; this is purely how they are fetched.
+
+    Falls back to copying from the Volume if the archive is unreachable.
     """
     local_root = "/work/frames"
-    sh("mkdir -p %s" % local_root)
-    dirs = sorted({os.path.dirname(src) for _, src, _ in rows})
-    listing = "/work/stage_dirs.txt"
-    with open(listing, "w") as handle:
-        handle.write("\n".join(dirs) + "\n")
-    print("staging %d sequence directories to %s" % (len(dirs), local_root))
-    t0 = time.time()
-    sh("xargs -a %s -P 32 -I{} cp -r {} %s/" % (listing, local_root))
-    print("staged in %.1f s" % (time.time() - t0))
+    marker = local_root + "/.staged"
+    if os.path.exists(marker):
+        print("frames already staged at %s" % local_root)
+    else:
+        sh("mkdir -p %s" % local_root)
+        t0 = time.time()
+        # Only the frame tree, and only the splits this run needs.
+        # 5 components precede <seq>/: release / PHOENIX-2014-T / features /
+        # fullFrame-210x260px / test. Stripping 4 would leave a stray "test/"
+        # level and the staged-path lookup below would find nothing.
+        wildcard = "*/features/fullFrame-210x260px/test/*"
+        # wget, not curl: this image is Ubuntu 18.04 whose curl 7.58 predates
+        # --retry-all-errors, and the flag error made the whole route fail instantly.
+        rc = sh(
+            "wget -q -O- --tries=5 --waitretry=20 %s "
+            "| tar xz -C %s --wildcards --strip-components=5 '%s'"
+            % (RWTH_ARCHIVE, local_root, wildcard), check=False)
+        print("archive stage rc=%d in %.1f s" % (rc, time.time() - t0))
+        if rc != 0:
+            print("archive route failed; falling back to Volume copy")
+            dirs = sorted({os.path.dirname(src) for _, src, _ in rows})
+            listing = "/work/stage_dirs.txt"
+            with open(listing, "w") as handle:
+                handle.write("\n".join(dirs) + "\n")
+            sh("xargs -a %s -P 16 -I{} cp -r {} %s/" % (listing, local_root))
+        open(marker, "w").close()
 
     staged = []
+    missing = []
     for name, src, ref in rows:
         seq = os.path.basename(os.path.dirname(src))
-        pattern = "%s/%s/%s" % (local_root, seq, os.path.basename(src))
-        n = len(glob.glob(pattern))
-        if n == 0:
-            raise RuntimeError("staging produced no files for %s" % seq)
+        pattern = "%s/%s/*.png" % (local_root, seq)
+        if not glob.glob(pattern):
+            missing.append(seq)
+            continue
         staged.append((name, pattern, ref))
     total = sum(len(glob.glob(p)) for _, p, _ in staged)
-    print("staged %d sequences, %d frames total" % (len(staged), total))
+    print("staged %d/%d sequences, %d frames" % (len(staged), len(rows), total))
+    if missing:
+        raise RuntimeError("staging missing %d sequences, e.g. %s"
+                           % (len(missing), missing[:5]))
     return staged
 
 

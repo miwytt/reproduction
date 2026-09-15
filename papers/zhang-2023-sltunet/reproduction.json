@@ -1663,5 +1663,23 @@
       }
     },
     "gpu_choice_conclusion": "Measured, not assumed. SMKD feature extraction and training are data-loading bound: 0.25 s per sequence with dataloader workers versus 1.4 to 1.7 s single-worker, a six-fold swing from CPU-side HEVC decode and LANCZOS resize alone, so more CPU cores help there more than a faster GPU, though SMKD training also needs more than a T4 has because it OOMs at the published batch size. SLTUNET training is the opposite: it reaches 100 percent GPU utilisation while stepping and uses only 55 percent of T4 memory, so it is the stage where a faster accelerator pays off nearly proportionally. Since SLTUNET training dominates the total at about 92 GPU-hours per configuration, moving it off T4 via the anonymously available nvidia-tensorflow CUDA 11 wheels is the single highest-value speedup available."
-  }
+  },
+  "dead_ends": [
+    {
+      "topic": "Running inference on the original PHOENIX PNG frames",
+      "status": "unresolved as of 2026-09-15; the data is in place but no number was produced",
+      "why_it_matters": "This is the discriminating experiment for the unexplained ~0.56 BLEU shortfall seen when decoding from the lossy HEVC re-encodings. The reference construction has already been ruled out (642/642 lines identical to the authors released reference), leaving the frame source as the leading untested hypothesis.",
+      "attempts": [
+        "Direct reads from the shared Volume. Cold small-file reads measured 186 ms each and the test split is roughly 96,000 PNGs. The run was stopped on the assumption it had stalled; that judgement was probably wrong, because the local log buffers and the same misreading happened repeatedly in this session.",
+        "Bulk staging to container-local disk with a 32-way parallel cp. No measurable progress in about 1.5 hours, indicating the FUSE mount degrades under concurrent small reads rather than overlapping their latency.",
+        "Streaming the original RWTH archive straight into tar, which is one sequential read instead of ~96,000 random ones. Failed instantly because the TensorFlow 1.15 image is Ubuntu 18.04 whose curl 7.58 predates --retry-all-errors. The fallback then silently degraded to the slow Volume copy instead of failing loudly, which hid the real error for a long time. Switched to wget.",
+        "A latent off-by-one found by inspection rather than by running: tar --strip-components=4 leaves paths as test/<seq>/<frame>.png while the staged lookup expects <seq>/<frame>.png. Corrected to 5. This would have failed verification even after a successful download."
+      ],
+      "recommended_next_steps": [
+        "Run with --limit 20 first. It exercises the identical staging, loader and scoring path in minutes rather than an hour, and would have caught three of the four failures above immediately.",
+        "If the question is specifically whether lossy frames change the score, a paired PNG-versus-MP4 run on the same subset isolates that effect directly and needs no full-test run. The full 642-sequence PNG pass is only required for a number comparable to the published 28.47.",
+        "Never let the staging fallback run silently: a failed fast path should raise rather than degrade into an hours-long slow path."
+      ]
+    }
+  ]
 }
