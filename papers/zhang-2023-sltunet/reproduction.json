@@ -326,7 +326,8 @@
     "preference_level": 1,
     "preference_level_basis": "The authors published a complete implementation at a pinnable commit, including training, decoding, and metric code, so the attempt starts at preference level 1. The level has not yet been tested by execution; the TensorFlow 1.15 / Python 3.8 requirement is expected to force container work and may force level 2 patches.",
     "blocker": null,
-    "attempt_state": "In progress and not ready for review. Completed: assignment recorded, paper acquired and hashed, target contract resolved, published code discovered and pinned, Modal workspace preflight passed, dataset gate run for all three SLT corpora, container built for TensorFlow 1.15 plus PyTorch, and a representative preflight executed the authors' published inference path end to end on real data with real weights, emitting parsed metrics and exit code 0. Running: the full 642-sequence artifact-verification pass. Not started: SMKD pretraining, SLTUNET training, CSL-Daily, DGS3-T. Five gates remain open."
+    "attempt_state": "In progress and not ready for review. Completed: assignment recorded, paper acquired and hashed, target contract resolved, published code discovered and pinned, Modal workspace preflight passed, dataset gate run for all three SLT corpora, container built for TensorFlow 1.15 plus PyTorch, and a representative preflight executed the authors' published inference path end to end on real data with real weights, emitting parsed metrics and exit code 0. Running: the full 642-sequence artifact-verification pass. Not started: SMKD pretraining, SLTUNET training, CSL-Daily, DGS3-T. Five gates remain open.",
+    "scope_decision": "User decision 2026-09-15: reproduce Tables 4, 5 and 6 without the Table 2 ablations. All 54 targets in this ledger are in scope. Table 2 row 15 is additionally obtainable at no extra cost because it is the same trained system as the Table 4 rows, but it is not currently a ledger target; add it only if the study wants that cell reported. The queue record requested \"Tables 2, 4, 5 and 6\", so this is a narrowing of the requested scope and the report must say so."
   },
   "datasets": [
     {
@@ -1063,23 +1064,7 @@
       "original_value": 26.4,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "result": {
-        "status": "not_produced",
-        "reason": {
-          "code": "data_permission_blocked",
-          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
-        },
-        "run_ids": [],
-        "artifact_ids": [],
-        "gate_ids": [
-          "dgs3t-licence"
-        ],
-        "evidence": [
-          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
-          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
-          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
-        ]
-      }
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
     },
     {
       "target_id": "dgs3t-cascading-dev-b4",
@@ -1091,23 +1076,7 @@
       "original_value": 3.49,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "result": {
-        "status": "not_produced",
-        "reason": {
-          "code": "data_permission_blocked",
-          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
-        },
-        "run_ids": [],
-        "artifact_ids": [],
-        "gate_ids": [
-          "dgs3t-licence"
-        ],
-        "evidence": [
-          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
-          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
-          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
-        ]
-      }
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
     },
     {
       "target_id": "dgs3t-cascading-test-rouge",
@@ -1119,23 +1088,7 @@
       "original_value": 23.24,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "result": {
-        "status": "not_produced",
-        "reason": {
-          "code": "data_permission_blocked",
-          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
-        },
-        "run_ids": [],
-        "artifact_ids": [],
-        "gate_ids": [
-          "dgs3t-licence"
-        ],
-        "evidence": [
-          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
-          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
-          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
-        ]
-      }
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
     },
     {
       "target_id": "dgs3t-cascading-test-b1",
@@ -1147,23 +1100,7 @@
       "original_value": 21.0,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "result": {
-        "status": "not_produced",
-        "reason": {
-          "code": "data_permission_blocked",
-          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
-        },
-        "run_ids": [],
-        "artifact_ids": [],
-        "gate_ids": [
-          "dgs3t-licence"
-        ],
-        "evidence": [
-          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
-          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
-          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
-        ]
-      }
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
     },
     {
       "target_id": "dgs3t-cascading-test-b2",
@@ -1175,23 +1112,7 @@
       "original_value": 8.65,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "result": {
-        "status": "not_produced",
-        "reason": {
-          "code": "data_permission_blocked",
-          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
-        },
-        "run_ids": [],
-        "artifact_ids": [],
-        "gate_ids": [
-          "dgs3t-licence"
-        ],
-        "evidence": [
-          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
-          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
-          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
-        ]
-      }
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
     },
     {
       "target_id": "dgs3t-cascading-test-b3",
@@ -1203,23 +1124,7 @@
       "original_value": 4.25,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "result": {
-        "status": "not_produced",
-        "reason": {
-          "code": "data_permission_blocked",
-          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
-        },
-        "run_ids": [],
-        "artifact_ids": [],
-        "gate_ids": [
-          "dgs3t-licence"
-        ],
-        "evidence": [
-          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
-          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
-          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
-        ]
-      }
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
     },
     {
       "target_id": "dgs3t-cascading-test-b4",
@@ -1231,23 +1136,7 @@
       "original_value": 2.29,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "result": {
-        "status": "not_produced",
-        "reason": {
-          "code": "data_permission_blocked",
-          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
-        },
-        "run_ids": [],
-        "artifact_ids": [],
-        "gate_ids": [
-          "dgs3t-licence"
-        ],
-        "evidence": [
-          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
-          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
-          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
-        ]
-      }
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
     },
     {
       "target_id": "dgs3t-cascading-test-sbleu",
@@ -1259,23 +1148,7 @@
       "original_value": 2.28,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "result": {
-        "status": "not_produced",
-        "reason": {
-          "code": "data_permission_blocked",
-          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
-        },
-        "run_ids": [],
-        "artifact_ids": [],
-        "gate_ids": [
-          "dgs3t-licence"
-        ],
-        "evidence": [
-          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
-          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
-          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
-        ]
-      }
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
     },
     {
       "target_id": "dgs3t-cascading-test-chrf",
@@ -1287,23 +1160,7 @@
       "original_value": 18.96,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "result": {
-        "status": "not_produced",
-        "reason": {
-          "code": "data_permission_blocked",
-          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
-        },
-        "run_ids": [],
-        "artifact_ids": [],
-        "gate_ids": [
-          "dgs3t-licence"
-        ],
-        "evidence": [
-          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
-          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
-          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
-        ]
-      }
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
     },
     {
       "target_id": "dgs3t-sign2text-dev-rouge",
@@ -1315,23 +1172,7 @@
       "original_value": 27.95,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "result": {
-        "status": "not_produced",
-        "reason": {
-          "code": "data_permission_blocked",
-          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
-        },
-        "run_ids": [],
-        "artifact_ids": [],
-        "gate_ids": [
-          "dgs3t-licence"
-        ],
-        "evidence": [
-          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
-          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
-          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
-        ]
-      }
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
     },
     {
       "target_id": "dgs3t-sign2text-dev-b4",
@@ -1343,23 +1184,7 @@
       "original_value": 3.94,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "result": {
-        "status": "not_produced",
-        "reason": {
-          "code": "data_permission_blocked",
-          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
-        },
-        "run_ids": [],
-        "artifact_ids": [],
-        "gate_ids": [
-          "dgs3t-licence"
-        ],
-        "evidence": [
-          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
-          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
-          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
-        ]
-      }
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
     },
     {
       "target_id": "dgs3t-sign2text-test-rouge",
@@ -1371,23 +1196,7 @@
       "original_value": 24.53,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "result": {
-        "status": "not_produced",
-        "reason": {
-          "code": "data_permission_blocked",
-          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
-        },
-        "run_ids": [],
-        "artifact_ids": [],
-        "gate_ids": [
-          "dgs3t-licence"
-        ],
-        "evidence": [
-          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
-          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
-          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
-        ]
-      }
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
     },
     {
       "target_id": "dgs3t-sign2text-test-b1",
@@ -1399,23 +1208,7 @@
       "original_value": 23.11,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "result": {
-        "status": "not_produced",
-        "reason": {
-          "code": "data_permission_blocked",
-          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
-        },
-        "run_ids": [],
-        "artifact_ids": [],
-        "gate_ids": [
-          "dgs3t-licence"
-        ],
-        "evidence": [
-          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
-          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
-          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
-        ]
-      }
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
     },
     {
       "target_id": "dgs3t-sign2text-test-b2",
@@ -1427,23 +1220,7 @@
       "original_value": 10.05,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "result": {
-        "status": "not_produced",
-        "reason": {
-          "code": "data_permission_blocked",
-          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
-        },
-        "run_ids": [],
-        "artifact_ids": [],
-        "gate_ids": [
-          "dgs3t-licence"
-        ],
-        "evidence": [
-          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
-          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
-          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
-        ]
-      }
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
     },
     {
       "target_id": "dgs3t-sign2text-test-b3",
@@ -1455,23 +1232,7 @@
       "original_value": 5.13,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "result": {
-        "status": "not_produced",
-        "reason": {
-          "code": "data_permission_blocked",
-          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
-        },
-        "run_ids": [],
-        "artifact_ids": [],
-        "gate_ids": [
-          "dgs3t-licence"
-        ],
-        "evidence": [
-          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
-          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
-          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
-        ]
-      }
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
     },
     {
       "target_id": "dgs3t-sign2text-test-b4",
@@ -1483,23 +1244,7 @@
       "original_value": 2.81,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "result": {
-        "status": "not_produced",
-        "reason": {
-          "code": "data_permission_blocked",
-          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
-        },
-        "run_ids": [],
-        "artifact_ids": [],
-        "gate_ids": [
-          "dgs3t-licence"
-        ],
-        "evidence": [
-          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
-          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
-          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
-        ]
-      }
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
     },
     {
       "target_id": "dgs3t-sign2text-test-sbleu",
@@ -1511,23 +1256,7 @@
       "original_value": 2.82,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "result": {
-        "status": "not_produced",
-        "reason": {
-          "code": "data_permission_blocked",
-          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
-        },
-        "run_ids": [],
-        "artifact_ids": [],
-        "gate_ids": [
-          "dgs3t-licence"
-        ],
-        "evidence": [
-          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
-          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
-          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
-        ]
-      }
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
     },
     {
       "target_id": "dgs3t-sign2text-test-chrf",
@@ -1539,23 +1268,7 @@
       "original_value": 20.56,
       "copied_baseline": false,
       "copied_baseline_basis": "The row reports the authors' own system, not a score copied from earlier work; only the comparison rows above it are attributed to other papers.",
-      "result": {
-        "status": "not_produced",
-        "reason": {
-          "code": "data_permission_blocked",
-          "detail": "The Public DGS Corpus licence forbids computational research without express permission from the University of Hamburg, so DGS3-T cannot be built, stored on project cloud infrastructure, or trained on until that permission is granted."
-        },
-        "run_ids": [],
-        "artifact_ids": [],
-        "gate_ids": [
-          "dgs3t-licence"
-        ],
-        "evidence": [
-          "Paper 'DATA LICENSING' section: 'The license of the Public DGS Corpus does not allow any computational research except if express permission is given by the University of Hamburg.'",
-          "Published repository README, section 'DGS3-T Licensing', repeats the same restriction.",
-          "Licence text: https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html"
-        ]
-      }
+      "scope_note": "Previously terminal not_produced under data_permission_blocked. The DGS licence gate was reported resolved on 2026-09-15, so this target is back in scope and awaits execution."
     }
   ],
   "runs": [
@@ -1664,7 +1377,7 @@
     {
       "gate_id": "dgs3t-licence",
       "type": "data",
-      "status": "open",
+      "status": "resolved",
       "reason": "The DGS3-T data and the authors' exact split are already present in the study's shared approved Volume as 'dgs-corpus/', including split.3.0.0-uzh-document.json (version 3.0.0, 384/10/10 documents, matching Appendix A.2 and bearing the authors' institution tag). Availability is therefore not the obstacle. The Public DGS Corpus licence still forbids computational research without express permission from the University of Hamburg, and this attempt has no record of whether the study holds such permission, what it covers, or whether it extends to training models and publishing translation outputs. Proceeding on the assumption that presence implies permission would be working around a restriction.",
       "required_action": "Team S confirms in writing whether the study holds University of Hamburg permission for computational use of Public DGS Corpus release 3, and whether that permission covers training models on Modal and reporting generated translations. If it does, the 18 Table 6 targets can be re-scoped from not_produced to runnable. If it does not, they stay terminal. Note the corpus contains identifiable video of 330 named signers, so the reporting and retention terms attached to any permission need reading too.",
       "evidence": [
@@ -1673,7 +1386,8 @@
         "https://www.sign-lang.uni-hamburg.de/meinedgs/ling/license_en.html",
         "Wrapper volume listing on 2026-09-13: dgs-corpus/ contains videos/, dgs.json, download.py, index.py, and split.3.0.0-uzh-document.json.",
         "The split manifest declares dgs_corpus_version '3.0.0' and 384 train / 10 dev / 10 test documents, matching the paper's Appendix A.2 protocol."
-      ]
+      ],
+      "resolution": "Reported resolved by the user (michelle.wastl@uzh.ch) on 2026-09-15: approval obtained to use the Public DGS Corpus for this reproduction. This record preserves the report, not the underlying grant: the attempt has not seen the permission document, its scope, or its conditions. Before DGS3-T outputs are published, the terms should be attached here, in particular whether they cover training on cloud infrastructure and the reporting of generated translations, given the corpus contains identifiable video of 330 named signers."
     },
     {
       "gate_id": "slt-data-access",
@@ -1728,7 +1442,7 @@
     {
       "gate_id": "phoenix-frame-fidelity",
       "type": "protocol",
-      "status": "open",
+      "status": "resolved",
       "reason": "The PHOENIX-2014T copy in the shared Volume is a lossy HEVC re-encoding, not the original PNG frame distribution the authors used. Reported scores come from the original pixels. Running against the re-encoded videos is a documented deviation whose effect on the metric is unknown, because the sign encoder consumes raw pixels. A number produced this way is conditional evidence about the pipeline, not a clean comparison against the published value.",
       "required_action": "Decide whether to acquire the original 41.7 GB PHOENIX-2014T v3 distribution and populate the frames alongside the existing entry, or to accept the re-encoded videos as a recorded deviation. Acquiring the original is the faithful option and the source is live; it is a shared-infrastructure decision because of its size. A cheap middle step is to run the inference path on both sources for the same sequences and report the metric difference, which converts this unknown into a measured quantity.",
       "evidence": [
@@ -1738,12 +1452,13 @@
         "HTTP check 2026-09-13: the original RWTH distribution is live at 41,699,758,035 bytes.",
         "smkd/dataset/dataloader_video.py lines 65-77: the loader globs PNG/JPG when the suffix matches and otherwise opens the path with cv2.VideoCapture, so both sources are supported upstream."
       ],
-      "blocked_diagnostic": "Attempted 2026-09-13 and could not be run faithfully. The plan was to score the released SMKD model on Sign2Gloss and compare against the published dev WER of 18.90 (paper section 5.2), isolating frame quality from translation. SMKD WER evaluation goes through smkd/evaluation/slr_eval/wer_calculation.evaluate, which requires the official PHOENIX ground-truth file {evaluation_prefix}-{mode}.stm even on its python path. No .stm ships in the sltunet repository, none exists in the shared Volume (the rwth-phoenix-2014 entry holds only raw/phoenix2014-release with annotations and features, no evaluation directory), and RWTH publishes no features-free archive for PHOENIX-2014T, only the full 41.7 GB phoenix-2014-T.v3.tar.gz. Building a substitute stm from the annotation CSV orth column was rejected: evaluation/slr_eval/preprocess.sh applies heavy PHOENIX-specific gloss normalisation to hypotheses, and whether the official reference carries the same normalisation is unknown, so a self-built reference would shift WER by an unquantified amount and the comparison against 18.90 would be uninterpretable. Consequence: the cheap diagnostic and the actual fix require the same download, so this gate and the WER check collapse into one decision."
+      "blocked_diagnostic": "Attempted 2026-09-13 and could not be run faithfully. The plan was to score the released SMKD model on Sign2Gloss and compare against the published dev WER of 18.90 (paper section 5.2), isolating frame quality from translation. SMKD WER evaluation goes through smkd/evaluation/slr_eval/wer_calculation.evaluate, which requires the official PHOENIX ground-truth file {evaluation_prefix}-{mode}.stm even on its python path. No .stm ships in the sltunet repository, none exists in the shared Volume (the rwth-phoenix-2014 entry holds only raw/phoenix2014-release with annotations and features, no evaluation directory), and RWTH publishes no features-free archive for PHOENIX-2014T, only the full 41.7 GB phoenix-2014-T.v3.tar.gz. Building a substitute stm from the annotation CSV orth column was rejected: evaluation/slr_eval/preprocess.sh applies heavy PHOENIX-specific gloss normalisation to hypotheses, and whether the official reference carries the same normalisation is unknown, so a self-built reference would shift WER by an unquantified amount and the comparison against 18.90 would be uninterpretable. Consequence: the cheap diagnostic and the actual fix require the same download, so this gate and the WER check collapse into one decision.",
+      "resolution": "Reported resolved by the user on 2026-09-15: approval to add the uncompressed PHOENIX distribution. Acting on it by ADDING the original RWTH tree under rwth-phoenix-2014-t/raw/ rather than replacing the existing lossy videos, because other papers in this repository may depend on the current entries. The original also supplies PHOENIX-2014-T-groundtruth-{dev,test}.stm, which unblocks the SMKD WER diagnostic that was previously impossible."
     },
     {
       "gate_id": "target-scope-table2",
       "type": "target",
-      "status": "open",
+      "status": "resolved",
       "reason": "The queue record's what_to_reproduce is 'Tables 2, 4, 5 and 6'. This attempt's target ledger covers Tables 4, 5 and 6 only and explicitly excluded Table 2 as an ablation ladder, a judgement made before the queue record was available. Table 2 is therefore in requested scope and the 54-target ledger is incomplete. Table 2 is not a normal results table: it is a 15-step optimization ladder on the PHOENIX-2014T dev set with a single B@4 column, including intermediate variants that are reported and then discarded. Reproducing it in full means training roughly two dozen configurations, which is a different order of compute from the rest of the assignment and is the dominant cost of the whole reproduction.",
       "required_action": "Decide the Table 2 scope before any training is costed: reproduce every row including discarded variants; reproduce only the numbered systems 1 to 15 on the main ladder; reproduce only the endpoints that carry the paper's claims (row 1 Baseline 22.62 and row 15 SLTUNET 27.87, the +5.25 BLEU improvement); or record Table 2 as out of scope with the reviewer's agreement. Each choice changes the compute estimate by a large factor.",
       "alternatives": [
@@ -1771,7 +1486,8 @@
         "Queue record expand.paper.paper_id = 3bbc8841012fdb5971d1c86dff528edd8590f1b8, status 'final', moved from 'needs_review' to 'final' by goehring@cl.uzh.ch on 2026-08-11.",
         "This attempt's README previously recorded Table 2 as deliberately out of scope, a judgement made without the queue record.",
         "Table 2 reports dev-set B@4 only, so its rows need training but not the full test-set metric suite."
-      ]
+      ],
+      "resolution": "Decided by the user on 2026-09-15: reproduce without the Table 2 ablations. Scope is therefore Tables 4, 5 and 6 (54 targets). Table 2 row 15 is retained as in scope because it is the same trained system as the Table 4 rows and so costs nothing extra; every other Table 2 row is out of scope. Consequence to keep visible in the report: Table 2 claims are deltas between rows, so none of them is tested by this scope. The queue record asked for \"Tables 2, 4, 5 and 6\", so this is a deliberate narrowing of the requested scope and must be stated as such rather than presented as full coverage."
     }
   ],
   "environment_plan": {

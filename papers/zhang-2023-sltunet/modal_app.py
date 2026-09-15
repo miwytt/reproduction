@@ -85,6 +85,44 @@ hf_cache = modal.Volume.from_name("huggingface-cache")
 results = modal.Volume.from_name(f"{PAPER_ID}-results", create_if_missing=True)
 
 
+data_image = (
+    modal.Image.debian_slim(python_version="3.11")
+    .apt_install("curl", "tar", "gzip", "findutils")
+    .add_local_file(
+        str(Path(__file__).parent / "data.sh"), "/opt/data.sh", copy=True
+    )
+)
+
+
+@app.local_entrypoint()
+def populate_data(timeout_s: int = 6 * 60 * 60):
+    """Add the original PHOENIX-2014T v3 distribution to the shared datasets Volume.
+
+    The datasets Volume is mounted READ-WRITE here and nowhere else; every experiment
+    mounts it read-only. data.sh is idempotent and only ever adds under
+    rwth-phoenix-2014-t/raw/, leaving the existing annotations, features and videos
+    untouched, because other papers may depend on them.
+    """
+    sandbox = modal.Sandbox.create(
+        "bash", "-lc", "bash /opt/data.sh",
+        app=app,
+        image=data_image,
+        cpu=4.0,
+        memory=8192,
+        timeout=timeout_s,
+        volumes={"/datasets": datasets},
+    )
+    print(f"sandbox: {sandbox.object_id}", flush=True)
+    for line in sandbox.stdout:
+        print(line, end="", flush=True)
+    stderr = sandbox.stderr.read()
+    sandbox.wait()
+    if stderr.strip():
+        print("=== STDERR (tail) ===")
+        print(stderr[-4000:])
+    print(f"returncode={sandbox.returncode}")
+
+
 @app.local_entrypoint()
 def main(limit: int = 0, tag: str = "preflight", timeout_s: int = 6 * 60 * 60):
     sandbox = modal.Sandbox.create(
