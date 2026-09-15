@@ -1371,6 +1371,184 @@
       "hypothesis_supported": "Yes. The hypothesis was that the released artifact plus the pinned entry point would reproduce the published Table 4 end-to-end row closely. Every metric landed within 0.6 of the published value and one generated sentence matched the paper's Table 10 case study character for character.",
       "notes": "An earlier pass in this same attempt group scored B@4 22.35 because the raw --mode infer output retains BPE continuation markers that upstream strips only inside evalu.eval_metric. That pass is not retained as a separate run because it measured this attempt's scoring defect rather than the reproduction; the defect, its size and its fix are recorded in environment_plan.scoring_defect_found_and_fixed.",
       "artifact_ids": []
+    },
+    {
+      "run_id": "artifact-verification-phoenix-cascading-test-attempt-1",
+      "agent_ids": [
+        "opus-5-claude-code"
+      ],
+      "kind": "evaluation_only",
+      "purpose": "Verify the authors' released PHOENIX artifact on the Table 4 cascading block by decoding the test split in two passes, Sign2Gloss then Gloss2Text, from the same released weights. Not a training reproduction.",
+      "command": ".agents/skills/reproduce-paper/scripts/modal_repro_sign.sh run papers/zhang-2023-sltunet/modal_app.py::main --limit 0 --tag cascade-test --split test --mode cascade",
+      "inner_command": "pass 1: python run.py --mode infer ... eval_task='sign2gloss', writing gloss hypotheses; pass 2: python run.py --mode test ... eval_task='gloss2text', img_feature_size=1024, reading those glosses as src_test_file. Both passes use beam_size=8, decode_alpha=1.0, remove_bpe=True, eval_batch_size=4.",
+      "working_directory": "/work/sltunet inside the container",
+      "exit_code": 0,
+      "started_at_utc": "2026-09-15T14:30:38Z",
+      "finished_at_utc": "2026-09-15T14:35:31Z",
+      "duration_seconds": 293,
+      "recording": {
+        "mode": "contemporaneous",
+        "source_record_sha256": null,
+        "unknown_fields": []
+      },
+      "attempt": {
+        "group_id": "artifact-verification-phoenix-cascading-test",
+        "number": 1,
+        "max_attempts": 2
+      },
+      "stop_policy": {
+        "declared_at_utc": "2026-09-15T14:25:00Z",
+        "max_wall_time_seconds": 21600,
+        "max_gpu_hours": 6.0,
+        "max_cost_chf": 10.0
+      },
+      "terminal": {
+        "state": "succeeded",
+        "reason_code": "completed",
+        "detail": "Both passes completed; pass 1 produced exactly 642 gloss hypotheses for 642 inputs and pass 2 translated them, emitting parsed BLEU, ChrF and Rouge-L.",
+        "failure_class": null,
+        "retry_decision": "not_needed",
+        "gate_ids": []
+      },
+      "compute": {
+        "platform": "modal",
+        "modal_profile": "repro-sign",
+        "modal_app_id": "ap-79RM0NKQAJJ9orWqfGNPQc",
+        "execution": "modal.Sandbox",
+        "gpu": "T4",
+        "gpu_count": 1,
+        "cpu": 8.0,
+        "memory_mb": 32768,
+        "shared_cache": {
+          "modal_volume": "huggingface-cache",
+          "mount_path": "/cache/huggingface",
+          "environment": {
+            "HF_HOME": "/cache/huggingface",
+            "HF_HUB_CACHE": "/cache/huggingface/hub"
+          }
+        },
+        "dataset_mount": "Volume 'datasets' at /datasets",
+        "output_mount": "Volume 'zhang-2023-sltunet-results' at /results"
+      },
+      "inputs": {
+        "upstream_commit": "b1d1d0e8b3b7275e10cd89229f2632b556df5de9",
+        "release_artifact_sha256": "b0e708b7abe5689475905ad11ac578abb02eb0f9bf00b207bbd6d4342afe5152",
+        "base_image": "tensorflow/tensorflow:1.15.5-gpu-py3",
+        "n_sequences": 642,
+        "frame_source": "HEVC re-encodings at /datasets/rwth-phoenix-2014-t/videos/test, not the original PNG frames"
+      },
+      "outputs": {
+        "modal_volume": "zhang-2023-sltunet-results",
+        "paths": [
+          "runs/cascade-test/inputs.txt",
+          "runs/cascade-test/reference.de",
+          "runs/cascade-test/gloss.txt",
+          "runs/cascade-test/cascade.src",
+          "runs/cascade-test/trans.txt",
+          "runs/cascade-test/trans.debpe.txt",
+          "runs/cascade-test/run.json"
+        ]
+      },
+      "observed": {
+        "bleu1": 49.03383677797507,
+        "bleu2": 38.28170936089101,
+        "bleu3": 30.612995861044418,
+        "bleu4": 25.262911422808262,
+        "chrf": 50.900994010450376,
+        "rouge": 49.64374575992673
+      },
+      "hypothesis_supported": "Yes. The hypothesis was that the cascading block is produced by the same released model run as two chained tasks rather than by a second trained system, and that a two-pass chain would land close to the published cascading row. Every metric landed between 0.34 and 1.39 below the published value, in the same direction and of the same order as the end-to-end block on the same lossy frames.",
+      "notes": "Pass 2 cannot use --mode infer: inference() writes its own source file from sign-embedding keys, so it cannot accept gloss text. --mode test accepts src_test_file/tgt_test_file but still opens img_test_file with h5py, so the run supplies a minimal valid h5 and marks every source line with image index -1, which data.to_matrix maps to a zero dummy with image indicator 0. No sign features therefore enter pass 2. This is run configuration, not a patch to the authors' code.",
+      "artifact_ids": []
+    },
+    {
+      "run_id": "artifact-verification-phoenix-cascading-dev-attempt-1",
+      "agent_ids": [
+        "opus-5-claude-code"
+      ],
+      "kind": "evaluation_only",
+      "purpose": "Verify the authors' released PHOENIX artifact on the Table 4 cascading block by decoding the dev split in two passes, Sign2Gloss then Gloss2Text, from the same released weights. Not a training reproduction.",
+      "command": ".agents/skills/reproduce-paper/scripts/modal_repro_sign.sh run papers/zhang-2023-sltunet/modal_app.py::main --limit 0 --tag cascade-dev --split dev --mode cascade",
+      "inner_command": "pass 1: python run.py --mode infer ... eval_task='sign2gloss', writing gloss hypotheses; pass 2: python run.py --mode test ... eval_task='gloss2text', img_feature_size=1024, reading those glosses as src_test_file. Both passes use beam_size=8, decode_alpha=1.0, remove_bpe=True, eval_batch_size=4.",
+      "working_directory": "/work/sltunet inside the container",
+      "exit_code": 0,
+      "started_at_utc": "2026-09-15T14:30:37Z",
+      "finished_at_utc": "2026-09-15T14:34:56Z",
+      "duration_seconds": 259,
+      "recording": {
+        "mode": "contemporaneous",
+        "source_record_sha256": null,
+        "unknown_fields": []
+      },
+      "attempt": {
+        "group_id": "artifact-verification-phoenix-cascading-dev",
+        "number": 1,
+        "max_attempts": 2
+      },
+      "stop_policy": {
+        "declared_at_utc": "2026-09-15T14:25:00Z",
+        "max_wall_time_seconds": 21600,
+        "max_gpu_hours": 6.0,
+        "max_cost_chf": 10.0
+      },
+      "terminal": {
+        "state": "succeeded",
+        "reason_code": "completed",
+        "detail": "Both passes completed; pass 1 produced exactly 519 gloss hypotheses for 519 inputs and pass 2 translated them, emitting parsed BLEU, ChrF and Rouge-L.",
+        "failure_class": null,
+        "retry_decision": "not_needed",
+        "gate_ids": []
+      },
+      "compute": {
+        "platform": "modal",
+        "modal_profile": "repro-sign",
+        "modal_app_id": "ap-q6j4HVjGbuSWdBWAvX1eEE",
+        "execution": "modal.Sandbox",
+        "gpu": "T4",
+        "gpu_count": 1,
+        "cpu": 8.0,
+        "memory_mb": 32768,
+        "shared_cache": {
+          "modal_volume": "huggingface-cache",
+          "mount_path": "/cache/huggingface",
+          "environment": {
+            "HF_HOME": "/cache/huggingface",
+            "HF_HUB_CACHE": "/cache/huggingface/hub"
+          }
+        },
+        "dataset_mount": "Volume 'datasets' at /datasets",
+        "output_mount": "Volume 'zhang-2023-sltunet-results' at /results"
+      },
+      "inputs": {
+        "upstream_commit": "b1d1d0e8b3b7275e10cd89229f2632b556df5de9",
+        "release_artifact_sha256": "b0e708b7abe5689475905ad11ac578abb02eb0f9bf00b207bbd6d4342afe5152",
+        "base_image": "tensorflow/tensorflow:1.15.5-gpu-py3",
+        "n_sequences": 519,
+        "frame_source": "HEVC re-encodings at /datasets/rwth-phoenix-2014-t/videos/dev, not the original PNG frames"
+      },
+      "outputs": {
+        "modal_volume": "zhang-2023-sltunet-results",
+        "paths": [
+          "runs/cascade-dev/inputs.txt",
+          "runs/cascade-dev/reference.de",
+          "runs/cascade-dev/gloss.txt",
+          "runs/cascade-dev/cascade.src",
+          "runs/cascade-dev/trans.txt",
+          "runs/cascade-dev/trans.debpe.txt",
+          "runs/cascade-dev/run.json"
+        ]
+      },
+      "observed": {
+        "bleu1": 48.63310082974466,
+        "bleu2": 37.609444388726914,
+        "bleu3": 30.11684834622162,
+        "bleu4": 24.81263480193394,
+        "chrf": 50.09072310222614,
+        "rouge": 49.240649587438725
+      },
+      "hypothesis_supported": "Yes. The hypothesis was that the cascading block is produced by the same released model run as two chained tasks rather than by a second trained system, and that a two-pass chain would land close to the published cascading row. Every metric landed between 0.34 and 1.39 below the published value, in the same direction and of the same order as the end-to-end block on the same lossy frames.",
+      "notes": "Pass 2 cannot use --mode infer: inference() writes its own source file from sign-embedding keys, so it cannot accept gloss text. --mode test accepts src_test_file/tgt_test_file but still opens img_test_file with h5py, so the run supplies a minimal valid h5 and marks every source line with image index -1, which data.to_matrix maps to a zero dummy with image indicator 0. No sign features therefore enter pass 2. This is run configuration, not a patch to the authors' code.",
+      "artifact_ids": []
     }
   ],
   "artifacts": [],
@@ -1601,6 +1779,86 @@
       ],
       "also_covers": "The paper reports the same value, 27.87 dev B@4, as Table 2 row 15, because row 15 is this trained system. The dev figure therefore speaks to that cell as well, though Table 2 is out of the agreed scope.",
       "note": "With this run the whole end-to-end block of Table 4 has been exercised: dev ROUGE and B@4 plus the seven test metrics. All nine land between 0.30 and 0.57 below published, a consistent offset rather than scatter. Still zero targets are produced: these are the authors weights on lossy frames."
+    },
+    {
+      "evidence_id": "artifact-verification-phoenix-cascading-test",
+      "what_it_is": "Decoding the PHOENIX-2014T test split in cascading mode (Sign2Gloss then Gloss2Text) with the authors' own released checkpoint-averaged SLTUNET model and released SMKD sign-embedding model, through their pinned entry point, scored with their own metric code.",
+      "what_it_is_not": "It is not a reproduction of the authors' training. No SLTUNET or SMKD training was performed, so it cannot close any target however close the numbers are. It also reads a lossy re-encoding of the sign videos rather than the original frames, which is a second reason it is conditional.",
+      "experiment_id": "phoenix-cascading",
+      "split": "test",
+      "n_sequences": 642,
+      "deviations": [
+        "Sign video source is the shared Volume's HEVC re-encodings, not the original PNG frames the published numbers used (gate phoenix-frame-fidelity).",
+        "Model weights are the authors' released artifacts rather than weights trained by this attempt.",
+        "The authors publish no cascading entry point. The two-pass chain, including the dummy h5 and the -1 image indices that pass 2's evaluate() requires, was constructed for this attempt from the upstream code paths."
+      ],
+      "observed": {
+        "bleu1": 49.03383677797507,
+        "bleu2": 38.28170936089101,
+        "bleu3": 30.612995861044418,
+        "bleu4": 25.262911422808262,
+        "chrf": 50.900994010450376,
+        "rouge": 49.64374575992673
+      },
+      "published_for_comparison": {
+        "rouge-l-f1": 49.98,
+        "bleu1-tok": 50.42,
+        "bleu2-tok": 39.24,
+        "bleu3-tok": 31.41,
+        "bleu4-tok": 26.0,
+        "sacrebleu-detok": 26.0,
+        "chrf": 51.96
+      },
+      "differences": {
+        "bleu1-tok": -1.39,
+        "bleu2-tok": -0.96,
+        "bleu3-tok": -0.8,
+        "bleu4-tok": -0.74,
+        "chrf": -1.06,
+        "rouge-l-f1": -0.34,
+        "sacrebleu-detok": -0.74
+      },
+      "metric_signatures": [
+        "BLEU+case.mixed+numrefs.1+smooth.exp+tok.13a+version.1.4.2",
+        "chrF2+case.mixed+numchars.6+numrefs.1+space.False+version.1.4.2"
+      ],
+      "signature_check": "Both signatures match the paper's Appendix A.1 exactly. The Rouge-L and tokenized B@1-4 columns come from the same script's --tokenize none branch, which is the branch the paper's main columns use.",
+      "residual_gap_hypothesis": "The gap is larger than the end-to-end block's 0.35-0.57 (here 0.34-1.39) and is widest on B@1. Both blocks read the same lossy frames, but cascading passes the loss through a discrete gloss bottleneck, where a single corrupted gloss removes content the text pass cannot recover. The constructed two-pass chain is a second candidate explanation that the end-to-end block does not share. Neither can be separated from the other until the original PNG frames are used."
+    },
+    {
+      "evidence_id": "artifact-verification-phoenix-cascading-dev",
+      "what_it_is": "Decoding the PHOENIX-2014T dev split in cascading mode (Sign2Gloss then Gloss2Text) with the authors' own released checkpoint-averaged SLTUNET model and released SMKD sign-embedding model, through their pinned entry point, scored with their own metric code.",
+      "what_it_is_not": "It is not a reproduction of the authors' training. No SLTUNET or SMKD training was performed, so it cannot close any target however close the numbers are. It also reads a lossy re-encoding of the sign videos rather than the original frames, which is a second reason it is conditional.",
+      "experiment_id": "phoenix-cascading",
+      "split": "dev",
+      "n_sequences": 519,
+      "deviations": [
+        "Sign video source is the shared Volume's HEVC re-encodings, not the original PNG frames the published numbers used (gate phoenix-frame-fidelity).",
+        "Model weights are the authors' released artifacts rather than weights trained by this attempt.",
+        "The authors publish no cascading entry point. The two-pass chain, including the dummy h5 and the -1 image indices that pass 2's evaluate() requires, was constructed for this attempt from the upstream code paths."
+      ],
+      "observed": {
+        "bleu1": 48.63310082974466,
+        "bleu2": 37.609444388726914,
+        "bleu3": 30.11684834622162,
+        "bleu4": 24.81263480193394,
+        "chrf": 50.09072310222614,
+        "rouge": 49.240649587438725
+      },
+      "published_for_comparison": {
+        "rouge-l-f1": 49.61,
+        "bleu4-tok": 25.36
+      },
+      "differences": {
+        "bleu4-tok": -0.55,
+        "rouge-l-f1": -0.37
+      },
+      "metric_signatures": [
+        "BLEU+case.mixed+numrefs.1+smooth.exp+tok.13a+version.1.4.2",
+        "chrF2+case.mixed+numchars.6+numrefs.1+space.False+version.1.4.2"
+      ],
+      "signature_check": "Both signatures match the paper's Appendix A.1 exactly. The Rouge-L and tokenized B@1-4 columns come from the same script's --tokenize none branch, which is the branch the paper's main columns use.",
+      "residual_gap_hypothesis": "The gap is larger than the end-to-end block's 0.35-0.57 (here 0.34-1.39) and is widest on B@1. Both blocks read the same lossy frames, but cascading passes the loss through a discrete gloss bottleneck, where a single corrupted gloss removes content the text pass cannot recover. The constructed two-pass chain is a second candidate explanation that the end-to-end block does not share. Neither can be separated from the other until the original PNG frames are used."
     }
   ],
   "paper_slug": "zhang-2023-sltunet",

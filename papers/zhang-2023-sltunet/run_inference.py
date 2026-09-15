@@ -191,13 +191,112 @@ def stage_frames(rows):
     return staged
 
 
+
+def run_cascade(src, release, run_dir, list_file, ref_file, rows):
+    """Cascading mode: Sign2Gloss then Gloss2Text, as Table 4's cascading block.
+
+    The paper produces both blocks from one trained model. Pass 1 decodes glosses from
+    the sign video and can use --mode infer, which is the image path. Pass 2 translates
+    those glosses to text and needs features["source"], which --mode infer cannot supply:
+    inference() writes its own source file containing only sign-embedding keys. So pass 2
+    goes through --mode test, whose evaluate() takes src_test_file/tgt_test_file.
+
+    evaluate() still opens img_test_file with h5py even when every sample is text-only, so
+    a minimal valid h5 is created for it. Every source line carries image index -1, which
+    data.to_matrix maps to a zero dummy and an image indicator of 0, so no sign features
+    enter pass 2.
+    """
+    ckpt = release + "/sltunet_ckpt"
+    gloss_out = run_dir + "/gloss.txt"
+
+    pass1 = (
+        "python run.py --mode infer --parameters="
+        "max_len=256,max_img_len=512,eval_batch_size=4,"
+        "beam_size=8,remove_bpe=True,decode_alpha=1.0,gpus=[0],"
+        "eval_task='sign2gloss',"
+        'src_codes="{c}/ende.bpe",tgt_codes="{c}/ende.bpe",'
+        'src_vocab_file="{c}/vocab.zero.drop",tgt_vocab_file="{c}/vocab.zero.drop",'
+        'output_dir="{c}",test_output="{g}",img_test_file="{l}",'
+        'gloss_path="{r}/phoenix2014/gloss_dict.npy",'
+        'sign_cfg="{r}/baseline.yaml",'
+        'smkd_model_path="{r}/signemb_ckpt/average.pt",'
+    ).format(c=ckpt, g=gloss_out, l=list_file, r=release)
+    rc1 = sh(pass1, cwd=src, check=False)
+    if rc1 != 0 or not os.path.exists(gloss_out):
+        raise RuntimeError("cascade pass 1 (sign2gloss) failed rc=%d" % rc1)
+
+    with open(gloss_out) as handle:
+        glosses = [l.rstrip("\n") for l in handle]
+    print("pass 1 produced %d gloss hypotheses for %d inputs" % (len(glosses), len(rows)))
+    if len(glosses) != len(rows):
+        raise RuntimeError("gloss count %d != input count %d" % (len(glosses), len(rows)))
+
+    # Source for pass 2: image index -1 marks a text-only sample; the tokens are pass 1's
+    # gloss hypotheses, left in BPE form because that is the vocabulary the model expects.
+    src2 = run_dir + "/cascade.src"
+    with open(src2, "w") as handle:
+        handle.write("\n".join("-1 " + g.strip() for g in glosses) + "\n")
+
+    dummy_h5 = run_dir + "/dummy.h5"
+    import h5py
+    import numpy as np
+    with h5py.File(dummy_h5, "w") as hf:
+        hf.create_dataset("0", data=np.zeros((1, 1024), dtype=np.float32))
+
+    trans2 = run_dir + "/trans.txt"
+    pass2 = (
+        "python run.py --mode test --parameters="
+        "max_len=256,max_img_len=512,eval_batch_size=4,"
+        "beam_size=8,remove_bpe=True,decode_alpha=1.0,gpus=[0],"
+        "eval_task='gloss2text',img_feature_size=1024,"
+        'src_codes="{c}/ende.bpe",tgt_codes="{c}/ende.bpe",'
+        'src_vocab_file="{c}/vocab.zero.drop",tgt_vocab_file="{c}/vocab.zero.drop",'
+        'output_dir="{c}",test_output="{t}",'
+        'img_test_file="{h}",src_test_file="{s}",tgt_test_file="{f}",'
+    ).format(c=ckpt, t=trans2, h=dummy_h5, s=src2, f=ref_file)
+    rc2 = sh(pass2, cwd=src, check=False)
+    return rc2, trans2
+
+
+def score(src, run_dir, trans, ref_file, tokenize):
+    """Score one run directory with the authors' metric code.
+
+    Table 4 needs both branches of eval/metrics.py. The default (--tokenize 13a) gives the
+    SacreBLEU sBLEU and ChrF columns; --tokenize none gives the tokenized B@1-4 and Rouge-L
+    columns, which is the "default result" branch upstream and the one the paper's main
+    columns use. Scoring twice costs nothing and removes a manual follow-up step.
+
+    Upstream strips BPE inside evalu.eval_metric, but --mode infer writes translations
+    through evalu.dump_tanslation, which does not. Reproduce that transformation exactly
+    here; it is idempotent, so applying it to already-clean --mode test output is harmless.
+    """
+    scored = run_dir + "/trans.debpe.txt"
+    with open(trans) as handle:
+        raw = handle.read()
+    with open(scored, "w") as handle:
+        handle.write(raw.replace("@@ ", ""))
+
+    proc = subprocess.Popen(
+        "python eval/metrics.py -t slt --tokenize %s -hyp %s -ref %s"
+        % (tokenize, scored, ref_file),
+        shell=True, cwd=src, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+    )
+    return proc.communicate()[0].decode("utf-8", "replace")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--tag", default="full")
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--split", default="test", choices=["test", "dev"])
+    parser.add_argument("--mode", default="e2e", choices=["e2e", "cascade"])
     parser.add_argument("--frame-source", default="video",
                         choices=["video", "png"])
+    # 13a for German (PHOENIX, DGS3-T); zh for Chinese (CSL-Daily), matching the
+    # signatures printed in the paper.
+    parser.add_argument("--tokenize", default="13a")
+    parser.add_argument("--rescore", action="store_true",
+                        help="score an existing run directory without re-running inference")
     args = parser.parse_args()
 
     started = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
@@ -217,52 +316,52 @@ def main():
 
     ckpt = release + "/sltunet_ckpt"
     trans = run_dir + "/trans.txt"
-    # The authors' pinned entry point with their released configuration (infer.sh /
-    # param.json); only paths are substituted.
-    cmd = (
-        "python run.py --mode infer --parameters="
-        "max_len=256,max_img_len=512,eval_batch_size=4,"
-        "beam_size=8,remove_bpe=True,decode_alpha=1.0,"
-        "gpus=[0],"
-        "eval_task='sign2text',"
-        'src_codes="{c}/ende.bpe",tgt_codes="{c}/ende.bpe",'
-        'src_vocab_file="{c}/vocab.zero.drop",'
-        'tgt_vocab_file="{c}/vocab.zero.drop",'
-        'output_dir="{c}",'
-        'test_output="{t}",'
-        'img_test_file="{l}",'
-        'gloss_path="{r}/phoenix2014/gloss_dict.npy",'
-        'sign_cfg="{r}/baseline.yaml",'
-        'smkd_model_path="{r}/signemb_ckpt/average.pt",'
-    ).format(c=ckpt, t=trans, l=list_file, r=release)
-
-    exit_code = sh(cmd, cwd=src, check=False)
+    if args.rescore:
+        # Only re-scores what an earlier run already decoded, so the existing trans.txt and
+        # reference must both be there; decoding is skipped entirely.
+        if not os.path.exists(trans):
+            raise RuntimeError("--rescore: no translations at %s" % trans)
+        cmd = "rescore-only over existing %s" % trans
+        exit_code = 0
+    elif args.mode == "cascade":
+        cmd = "cascade: run.py --mode infer eval_task=sign2gloss, then run.py --mode test eval_task=gloss2text"
+        exit_code, trans = run_cascade(src, release, run_dir, list_file, ref_file, rows)
+    else:
+        # The authors' pinned entry point with their released configuration (infer.sh /
+        # param.json); only paths are substituted.
+        cmd = (
+            "python run.py --mode infer --parameters="
+            "max_len=256,max_img_len=512,eval_batch_size=4,"
+            "beam_size=8,remove_bpe=True,decode_alpha=1.0,"
+            "gpus=[0],"
+            "eval_task='sign2text',"
+            'src_codes="{c}/ende.bpe",tgt_codes="{c}/ende.bpe",'
+            'src_vocab_file="{c}/vocab.zero.drop",'
+            'tgt_vocab_file="{c}/vocab.zero.drop",'
+            'output_dir="{c}",'
+            'test_output="{t}",'
+            'img_test_file="{l}",'
+            'gloss_path="{r}/phoenix2014/gloss_dict.npy",'
+            'sign_cfg="{r}/baseline.yaml",'
+            'smkd_model_path="{r}/signemb_ckpt/average.pt",'
+        ).format(c=ckpt, t=trans, l=list_file, r=release)
+        exit_code = sh(cmd, cwd=src, check=False)
     finished = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
     metrics = ""
-    scored = run_dir + "/trans.debpe.txt"
+    metrics_tokenized = ""
     if os.path.exists(trans):
-        # --mode infer writes translations through evalu.dump_tanslation, which does not
-        # apply remove_bpe; upstream only strips BPE inside evalu.eval_metric, which this
-        # path never calls. Scoring the raw file counts "@@ " markers as wrong tokens
-        # (177 of 642 lines on the test split, worth about 5.5 BLEU). Reproduce upstream's
-        # own transformation exactly: evalu.eval_metric does line.replace("@@ ", "") on
-        # both hypotheses and references before scoring.
-        with open(trans) as handle:
-            raw = handle.read()
-        with open(scored, "w") as handle:
-            handle.write(raw.replace("@@ ", ""))
-        proc = subprocess.Popen(
-            "python eval/metrics.py -t slt -hyp %s -ref %s" % (scored, ref_file),
-            shell=True, cwd=src, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-        )
-        metrics = proc.communicate()[0].decode("utf-8", "replace")
-        print("=== METRICS ===")
+        metrics = score(src, run_dir, trans, ref_file, args.tokenize)
+        print("=== METRICS (--tokenize %s) ===" % args.tokenize)
         print(metrics)
+        metrics_tokenized = score(src, run_dir, trans, ref_file, "none")
+        print("=== METRICS (--tokenize none) ===")
+        print(metrics_tokenized)
 
     meta = {
         "tag": args.tag,
         "split": args.split,
+        "mode": args.mode,
         "command": cmd,
         "exit_code": exit_code,
         "started_at_utc": started,
@@ -270,7 +369,9 @@ def main():
         "upstream_commit": head,
         "release_sha256": digest,
         "n_sequences": len(rows),
+        "tokenize": args.tokenize,
         "metrics_output": metrics,
+        "metrics_output_tokenize_none": metrics_tokenized,
         "frame_source": args.frame_source,
         "frame_source_detail": (
             "original lossless PNG frames from the RWTH distribution, using the "

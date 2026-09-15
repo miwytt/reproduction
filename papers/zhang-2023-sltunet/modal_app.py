@@ -125,12 +125,14 @@ def populate_data(timeout_s: int = 6 * 60 * 60):
 
 @app.local_entrypoint()
 def main(limit: int = 0, tag: str = "preflight", frame_source: str = "video",
-         split: str = "test", timeout_s: int = 6 * 60 * 60):
+         split: str = "test", mode: str = "e2e", tokenize: str = "13a",
+         rescore: bool = False, timeout_s: int = 6 * 60 * 60):
     sandbox = modal.Sandbox.create(
         "bash",
         "-lc",
         f"python /opt/run_inference.py --tag {tag} --limit {limit} "
-        f"--frame-source {frame_source} --split {split}",
+        f"--frame-source {frame_source} --split {split} --mode {mode} "
+        f"--tokenize {tokenize}{' --rescore' if rescore else ''}",
         app=app,
         image=image,
         gpu=GPU,
