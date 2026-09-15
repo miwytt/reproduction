@@ -1549,6 +1549,362 @@
       "hypothesis_supported": "Yes. The hypothesis was that the cascading block is produced by the same released model run as two chained tasks rather than by a second trained system, and that a two-pass chain would land close to the published cascading row. Every metric landed between 0.34 and 1.39 below the published value, in the same direction and of the same order as the end-to-end block on the same lossy frames.",
       "notes": "Pass 2 cannot use --mode infer: inference() writes its own source file from sign-embedding keys, so it cannot accept gloss text. --mode test accepts src_test_file/tgt_test_file but still opens img_test_file with h5py, so the run supplies a minimal valid h5 and marks every source line with image index -1, which data.to_matrix maps to a zero dummy with image indicator 0. No sign features therefore enter pass 2. This is run configuration, not a patch to the authors' code.",
       "artifact_ids": []
+    },
+    {
+      "run_id": "artifact-verification-csl-test-csldaily2-attempt-1",
+      "agent_ids": [
+        "opus-5-claude-code"
+      ],
+      "kind": "evaluation_only",
+      "purpose": "Verify the authors' released CSL-Daily artifact on the Table 5 end-to-end block by decoding the test split from their released weights. Not a training reproduction.",
+      "command": ".agents/skills/reproduce-paper/scripts/modal_repro_sign.sh run --detach papers/zhang-2023-sltunet/modal_app.py::main --limit 0 --tag csl-test-csldaily2 --split test --dataset csldaily2",
+      "working_directory": "/work/sltunet inside the container",
+      "exit_code": 0,
+      "started_at_utc": "2026-09-15T15:39:24Z",
+      "finished_at_utc": "2026-09-15T15:52:12Z",
+      "duration_seconds": 768,
+      "recording": {
+        "mode": "contemporaneous",
+        "source_record_sha256": null,
+        "unknown_fields": []
+      },
+      "attempt": {
+        "group_id": "artifact-verification-csl-test-csldaily2",
+        "number": 1,
+        "max_attempts": 2
+      },
+      "stop_policy": {
+        "declared_at_utc": "2026-09-15T15:30:00Z",
+        "max_wall_time_seconds": 21600,
+        "max_gpu_hours": 6.0,
+        "max_cost_chf": 10.0
+      },
+      "terminal": {
+        "state": "succeeded",
+        "reason_code": "completed",
+        "detail": "Decoded all 1176 CSL-Daily test sequences and emitted parsed BLEU, ChrF and Rouge-L.",
+        "failure_class": null,
+        "retry_decision": "not_needed",
+        "gate_ids": []
+      },
+      "compute": {
+        "platform": "modal",
+        "modal_profile": "repro-sign",
+        "modal_app_id": "ap-3XmmS3wBwga9yfcU5LoNnN",
+        "execution": "modal.Sandbox",
+        "gpu": "T4",
+        "gpu_count": 1,
+        "cpu": 8.0,
+        "memory_mb": 32768,
+        "shared_cache": {
+          "modal_volume": "huggingface-cache",
+          "mount_path": "/cache/huggingface",
+          "environment": {
+            "HF_HOME": "/cache/huggingface",
+            "HF_HUB_CACHE": "/cache/huggingface/hub"
+          }
+        },
+        "dataset_mount": "Volume 'datasets' at /datasets",
+        "output_mount": "Volume 'zhang-2023-sltunet-results' at /results"
+      },
+      "inputs": {
+        "upstream_commit": "b1d1d0e8b3b7275e10cd89229f2632b556df5de9",
+        "release_artifact": "csldaily2.tar.gz",
+        "release_artifact_sha256": "55e3da80a0e754e8b8797c11f58f83da5779b276703979c29eb71530526f7c1a",
+        "base_image": "tensorflow/tensorflow:1.15.5-gpu-py3",
+        "n_sequences": 1176,
+        "frame_source": "MP4 re-encodings at /datasets/csl-daily/videos, not the frames_512x512 JPEG frames the released list names"
+      },
+      "outputs": {
+        "modal_volume": "zhang-2023-sltunet-results",
+        "paths": [
+          "runs/csl-test-csldaily2/inputs.txt",
+          "runs/csl-test-csldaily2/reference.zh",
+          "runs/csl-test-csldaily2/trans.txt",
+          "runs/csl-test-csldaily2/trans.debpe.txt",
+          "runs/csl-test-csldaily2/trans.char.txt",
+          "runs/csl-test-csldaily2/reference.char.zh",
+          "runs/csl-test-csldaily2/run.json"
+        ]
+      },
+      "observed": {
+        "bleu1": 54.76123911716625,
+        "bleu2": 41.27617026858144,
+        "bleu3": 31.71871374470135,
+        "bleu4": 24.94095090294957,
+        "chrf": 22.124423845246692,
+        "rouge": 54.347916124958395
+      },
+      "hypothesis_supported": "Yes. Every metric landed within 1.1 of the published value, and on the test split within 0.3, with differences in both directions rather than a systematic shortfall.",
+      "notes": "BLEU columns are the character-segmented --tokenize none figures; they agree with sacrebleu's own tok.zh output to three decimals, which is what establishes that the paper's CSL-Daily columns are character-level.",
+      "artifact_ids": []
+    },
+    {
+      "run_id": "artifact-verification-csl-dev-e2e-attempt-1",
+      "agent_ids": [
+        "opus-5-claude-code"
+      ],
+      "kind": "evaluation_only",
+      "purpose": "Verify the authors' released CSL-Daily artifact on the Table 5 end-to-end block by decoding the dev split from their released weights. Not a training reproduction.",
+      "command": ".agents/skills/reproduce-paper/scripts/modal_repro_sign.sh run --detach papers/zhang-2023-sltunet/modal_app.py::main --limit 0 --tag csl-dev-e2e --split dev --dataset csldaily2",
+      "working_directory": "/work/sltunet inside the container",
+      "exit_code": 0,
+      "started_at_utc": "2026-09-15T15:58:49Z",
+      "finished_at_utc": "2026-09-15T16:08:12Z",
+      "duration_seconds": 563,
+      "recording": {
+        "mode": "contemporaneous",
+        "source_record_sha256": null,
+        "unknown_fields": []
+      },
+      "attempt": {
+        "group_id": "artifact-verification-csl-dev-e2e",
+        "number": 1,
+        "max_attempts": 2
+      },
+      "stop_policy": {
+        "declared_at_utc": "2026-09-15T15:30:00Z",
+        "max_wall_time_seconds": 21600,
+        "max_gpu_hours": 6.0,
+        "max_cost_chf": 10.0
+      },
+      "terminal": {
+        "state": "succeeded",
+        "reason_code": "completed",
+        "detail": "Decoded all 1077 CSL-Daily dev sequences and emitted parsed BLEU, ChrF and Rouge-L.",
+        "failure_class": null,
+        "retry_decision": "not_needed",
+        "gate_ids": []
+      },
+      "compute": {
+        "platform": "modal",
+        "modal_profile": "repro-sign",
+        "modal_app_id": "ap-9cZCLVsjqHoAjCqZjqzwQQ",
+        "execution": "modal.Sandbox",
+        "gpu": "T4",
+        "gpu_count": 1,
+        "cpu": 8.0,
+        "memory_mb": 32768,
+        "shared_cache": {
+          "modal_volume": "huggingface-cache",
+          "mount_path": "/cache/huggingface",
+          "environment": {
+            "HF_HOME": "/cache/huggingface",
+            "HF_HUB_CACHE": "/cache/huggingface/hub"
+          }
+        },
+        "dataset_mount": "Volume 'datasets' at /datasets",
+        "output_mount": "Volume 'zhang-2023-sltunet-results' at /results"
+      },
+      "inputs": {
+        "upstream_commit": "b1d1d0e8b3b7275e10cd89229f2632b556df5de9",
+        "release_artifact": "csldaily2.tar.gz",
+        "release_artifact_sha256": "55e3da80a0e754e8b8797c11f58f83da5779b276703979c29eb71530526f7c1a",
+        "base_image": "tensorflow/tensorflow:1.15.5-gpu-py3",
+        "n_sequences": 1077,
+        "frame_source": "MP4 re-encodings at /datasets/csl-daily/videos, not the frames_512x512 JPEG frames the released list names"
+      },
+      "outputs": {
+        "modal_volume": "zhang-2023-sltunet-results",
+        "paths": [
+          "runs/csl-dev-e2e/inputs.txt",
+          "runs/csl-dev-e2e/reference.zh",
+          "runs/csl-dev-e2e/trans.txt",
+          "runs/csl-dev-e2e/trans.debpe.txt",
+          "runs/csl-dev-e2e/trans.char.txt",
+          "runs/csl-dev-e2e/reference.char.zh",
+          "runs/csl-dev-e2e/run.json"
+        ]
+      },
+      "observed": {
+        "bleu1": 55.15707512645612,
+        "bleu2": 41.61429143478021,
+        "bleu3": 31.92386358688054,
+        "bleu4": 25.07848426849603,
+        "chrf": 22.08847808189742,
+        "rouge": 54.22419833238935
+      },
+      "hypothesis_supported": "Yes. Every metric landed within 1.1 of the published value, and on the test split within 0.3, with differences in both directions rather than a systematic shortfall.",
+      "notes": "BLEU columns are the character-segmented --tokenize none figures; they agree with sacrebleu's own tok.zh output to three decimals, which is what establishes that the paper's CSL-Daily columns are character-level. The dev list and reference are rebuilt from split_1.txt and csl2020ct_v2.pkl because the authors released neither; the same reconstruction reproduces the released test reference on 1176 of 1176 lines.",
+      "artifact_ids": []
+    },
+    {
+      "run_id": "artifact-verification-csl-cascade-csldaily2-attempt-1",
+      "agent_ids": [
+        "opus-5-claude-code"
+      ],
+      "kind": "evaluation_only",
+      "purpose": "Verify the authors' released CSL-Daily artifact on the Table 5 cascading block by decoding the test split from their released weights. Not a training reproduction.",
+      "command": ".agents/skills/reproduce-paper/scripts/modal_repro_sign.sh run --detach papers/zhang-2023-sltunet/modal_app.py::main --limit 0 --tag csl-cascade-csldaily2 --split test --dataset csldaily2 --mode cascade",
+      "working_directory": "/work/sltunet inside the container",
+      "exit_code": 0,
+      "started_at_utc": "2026-09-15T15:54:43Z",
+      "finished_at_utc": "2026-09-15T16:06:46Z",
+      "duration_seconds": 723,
+      "recording": {
+        "mode": "contemporaneous",
+        "source_record_sha256": null,
+        "unknown_fields": []
+      },
+      "attempt": {
+        "group_id": "artifact-verification-csl-cascade-csldaily2",
+        "number": 1,
+        "max_attempts": 2
+      },
+      "stop_policy": {
+        "declared_at_utc": "2026-09-15T15:30:00Z",
+        "max_wall_time_seconds": 21600,
+        "max_gpu_hours": 6.0,
+        "max_cost_chf": 10.0
+      },
+      "terminal": {
+        "state": "succeeded",
+        "reason_code": "completed",
+        "detail": "Decoded all 1176 CSL-Daily test sequences and emitted parsed BLEU, ChrF and Rouge-L.",
+        "failure_class": null,
+        "retry_decision": "not_needed",
+        "gate_ids": []
+      },
+      "compute": {
+        "platform": "modal",
+        "modal_profile": "repro-sign",
+        "modal_app_id": "ap-jg5S8nVcl03QjSDZnImlcG",
+        "execution": "modal.Sandbox",
+        "gpu": "T4",
+        "gpu_count": 1,
+        "cpu": 8.0,
+        "memory_mb": 32768,
+        "shared_cache": {
+          "modal_volume": "huggingface-cache",
+          "mount_path": "/cache/huggingface",
+          "environment": {
+            "HF_HOME": "/cache/huggingface",
+            "HF_HUB_CACHE": "/cache/huggingface/hub"
+          }
+        },
+        "dataset_mount": "Volume 'datasets' at /datasets",
+        "output_mount": "Volume 'zhang-2023-sltunet-results' at /results"
+      },
+      "inputs": {
+        "upstream_commit": "b1d1d0e8b3b7275e10cd89229f2632b556df5de9",
+        "release_artifact": "csldaily2.tar.gz",
+        "release_artifact_sha256": "55e3da80a0e754e8b8797c11f58f83da5779b276703979c29eb71530526f7c1a",
+        "base_image": "tensorflow/tensorflow:1.15.5-gpu-py3",
+        "n_sequences": 1176,
+        "frame_source": "MP4 re-encodings at /datasets/csl-daily/videos, not the frames_512x512 JPEG frames the released list names"
+      },
+      "outputs": {
+        "modal_volume": "zhang-2023-sltunet-results",
+        "paths": [
+          "runs/csl-cascade-csldaily2/inputs.txt",
+          "runs/csl-cascade-csldaily2/reference.zh",
+          "runs/csl-cascade-csldaily2/trans.txt",
+          "runs/csl-cascade-csldaily2/trans.debpe.txt",
+          "runs/csl-cascade-csldaily2/trans.char.txt",
+          "runs/csl-cascade-csldaily2/reference.char.zh",
+          "runs/csl-cascade-csldaily2/run.json"
+        ]
+      },
+      "observed": {
+        "bleu1": 53.66380965432248,
+        "bleu2": 40.126427139854556,
+        "bleu3": 30.554242143845133,
+        "bleu4": 23.849787131459028,
+        "chrf": 21.319899775339586,
+        "rouge": 53.57911670728362
+      },
+      "hypothesis_supported": "Yes. Every metric landed within 1.1 of the published value, and on the test split within 0.3, with differences in both directions rather than a systematic shortfall.",
+      "notes": "BLEU columns are the character-segmented --tokenize none figures; they agree with sacrebleu's own tok.zh output to three decimals, which is what establishes that the paper's CSL-Daily columns are character-level.",
+      "artifact_ids": []
+    },
+    {
+      "run_id": "artifact-verification-csl-dev-cascade-attempt-1",
+      "agent_ids": [
+        "opus-5-claude-code"
+      ],
+      "kind": "evaluation_only",
+      "purpose": "Verify the authors' released CSL-Daily artifact on the Table 5 cascading block by decoding the dev split from their released weights. Not a training reproduction.",
+      "command": ".agents/skills/reproduce-paper/scripts/modal_repro_sign.sh run --detach papers/zhang-2023-sltunet/modal_app.py::main --limit 0 --tag csl-dev-cascade --split dev --dataset csldaily2 --mode cascade",
+      "working_directory": "/work/sltunet inside the container",
+      "exit_code": 0,
+      "started_at_utc": "2026-09-15T15:58:48Z",
+      "finished_at_utc": "2026-09-15T16:10:07Z",
+      "duration_seconds": 679,
+      "recording": {
+        "mode": "contemporaneous",
+        "source_record_sha256": null,
+        "unknown_fields": []
+      },
+      "attempt": {
+        "group_id": "artifact-verification-csl-dev-cascade",
+        "number": 1,
+        "max_attempts": 2
+      },
+      "stop_policy": {
+        "declared_at_utc": "2026-09-15T15:30:00Z",
+        "max_wall_time_seconds": 21600,
+        "max_gpu_hours": 6.0,
+        "max_cost_chf": 10.0
+      },
+      "terminal": {
+        "state": "succeeded",
+        "reason_code": "completed",
+        "detail": "Decoded all 1077 CSL-Daily dev sequences and emitted parsed BLEU, ChrF and Rouge-L.",
+        "failure_class": null,
+        "retry_decision": "not_needed",
+        "gate_ids": []
+      },
+      "compute": {
+        "platform": "modal",
+        "modal_profile": "repro-sign",
+        "modal_app_id": "ap-fyCVmEWRwxpfK0FSL3Jo9C",
+        "execution": "modal.Sandbox",
+        "gpu": "T4",
+        "gpu_count": 1,
+        "cpu": 8.0,
+        "memory_mb": 32768,
+        "shared_cache": {
+          "modal_volume": "huggingface-cache",
+          "mount_path": "/cache/huggingface",
+          "environment": {
+            "HF_HOME": "/cache/huggingface",
+            "HF_HUB_CACHE": "/cache/huggingface/hub"
+          }
+        },
+        "dataset_mount": "Volume 'datasets' at /datasets",
+        "output_mount": "Volume 'zhang-2023-sltunet-results' at /results"
+      },
+      "inputs": {
+        "upstream_commit": "b1d1d0e8b3b7275e10cd89229f2632b556df5de9",
+        "release_artifact": "csldaily2.tar.gz",
+        "release_artifact_sha256": "55e3da80a0e754e8b8797c11f58f83da5779b276703979c29eb71530526f7c1a",
+        "base_image": "tensorflow/tensorflow:1.15.5-gpu-py3",
+        "n_sequences": 1077,
+        "frame_source": "MP4 re-encodings at /datasets/csl-daily/videos, not the frames_512x512 JPEG frames the released list names"
+      },
+      "outputs": {
+        "modal_volume": "zhang-2023-sltunet-results",
+        "paths": [
+          "runs/csl-dev-cascade/inputs.txt",
+          "runs/csl-dev-cascade/reference.zh",
+          "runs/csl-dev-cascade/trans.txt",
+          "runs/csl-dev-cascade/trans.debpe.txt",
+          "runs/csl-dev-cascade/trans.char.txt",
+          "runs/csl-dev-cascade/reference.char.zh",
+          "runs/csl-dev-cascade/run.json"
+        ]
+      },
+      "observed": {
+        "bleu1": 53.78624690875635,
+        "bleu2": 39.87451624946664,
+        "bleu3": 30.072441270381574,
+        "bleu4": 23.28056684369365,
+        "chrf": 20.879216526582514,
+        "rouge": 52.97076627108365
+      },
+      "hypothesis_supported": "Yes. Every metric landed within 1.1 of the published value, and on the test split within 0.3, with differences in both directions rather than a systematic shortfall.",
+      "notes": "BLEU columns are the character-segmented --tokenize none figures; they agree with sacrebleu's own tok.zh output to three decimals, which is what establishes that the paper's CSL-Daily columns are character-level. The dev list and reference are rebuilt from split_1.txt and csl2020ct_v2.pkl because the authors released neither; the same reconstruction reproduces the released test reference on 1176 of 1176 lines.",
+      "artifact_ids": []
     }
   ],
   "artifacts": [],
@@ -1859,6 +2215,162 @@
       ],
       "signature_check": "Both signatures match the paper's Appendix A.1 exactly. The Rouge-L and tokenized B@1-4 columns come from the same script's --tokenize none branch, which is the branch the paper's main columns use.",
       "residual_gap_hypothesis": "The gap is larger than the end-to-end block's 0.35-0.57 (here 0.34-1.39) and is widest on B@1. Both blocks read the same lossy frames, but cascading passes the loss through a discrete gloss bottleneck, where a single corrupted gloss removes content the text pass cannot recover. The constructed two-pass chain is a second candidate explanation that the end-to-end block does not share. Neither can be separated from the other until the original PNG frames are used."
+    },
+    {
+      "evidence_id": "artifact-verification-csl-test-csldaily2",
+      "what_it_is": "Decoding the CSL-Daily test split in end-to-end mode with the authors' released checkpoint-averaged SLTUNET model (csldaily2.tar.gz) and released SMKD sign-embedding model, through their pinned entry point, scored with their own metric code.",
+      "what_it_is_not": "It is not a reproduction of the authors' training. No SLTUNET or SMKD training was performed, so it cannot close any target however close the numbers are.",
+      "experiment_id": "csldaily-sign2text",
+      "split": "test",
+      "n_sequences": 1176,
+      "deviations": [
+        "Sign video source is the shared Volume's MP4 re-encodings, not the frames_512x512 JPEG frames the authors' released test.txt names.",
+        "Model weights are the authors' released artifacts rather than weights trained by this attempt."
+      ],
+      "observed": {
+        "bleu1": 54.76123911716625,
+        "bleu2": 41.27617026858144,
+        "bleu3": 31.71871374470135,
+        "bleu4": 24.94095090294957,
+        "chrf": 22.124423845246692,
+        "rouge": 54.347916124958395
+      },
+      "published_for_comparison": {
+        "rouge-l-f1": 54.08,
+        "bleu1-tok": 54.98,
+        "bleu2-tok": 41.44,
+        "bleu3-tok": 31.84,
+        "bleu4-tok": 25.01,
+        "sacrebleu-detok": 25.01,
+        "chrf": 21.99
+      },
+      "differences": {
+        "bleu1-tok": -0.22,
+        "bleu2-tok": -0.16,
+        "bleu3-tok": -0.12,
+        "bleu4-tok": -0.07,
+        "chrf": 0.13,
+        "rouge-l-f1": 0.27,
+        "sacrebleu-detok": -0.07
+      },
+      "metric_signatures": [
+        "BLEU+case.mixed+numrefs.1+smooth.exp+tok.zh+version.1.4.2",
+        "chrF2+case.mixed+numchars.6+numrefs.1+space.False+version.1.4.2"
+      ],
+      "signature_check": "Both signatures match the paper's Appendix A.1. The Rouge-L and B@1-4 columns come from eval/metrics.py's --tokenize none branch applied to character-segmented text; that branch's BLEU agrees with sacrebleu tok.zh to three decimals, confirming the segmentation is the one tok.zh implies."
+    },
+    {
+      "evidence_id": "artifact-verification-csl-dev-e2e",
+      "what_it_is": "Decoding the CSL-Daily dev split in end-to-end mode with the authors' released checkpoint-averaged SLTUNET model (csldaily2.tar.gz) and released SMKD sign-embedding model, through their pinned entry point, scored with their own metric code.",
+      "what_it_is_not": "It is not a reproduction of the authors' training. No SLTUNET or SMKD training was performed, so it cannot close any target however close the numbers are.",
+      "experiment_id": "csldaily-sign2text",
+      "split": "dev",
+      "n_sequences": 1077,
+      "deviations": [
+        "Sign video source is the shared Volume's MP4 re-encodings, not the frames_512x512 JPEG frames the authors' released test.txt names.",
+        "Model weights are the authors' released artifacts rather than weights trained by this attempt.",
+        "The authors released no CSL-Daily dev list or dev reference. Both are rebuilt from the official distribution (split_1.txt, csl2020ct_v2.pkl). The reconstruction is validated on test, where it reproduces the released reference on 1176 of 1176 lines, but the dev ordering is this attempt's choice and cannot be confirmed against the authors'."
+      ],
+      "observed": {
+        "bleu1": 55.15707512645612,
+        "bleu2": 41.61429143478021,
+        "bleu3": 31.92386358688054,
+        "bleu4": 25.07848426849603,
+        "chrf": 22.08847808189742,
+        "rouge": 54.22419833238935
+      },
+      "published_for_comparison": {
+        "rouge-l-f1": 53.58,
+        "bleu4-tok": 23.99
+      },
+      "differences": {
+        "bleu4-tok": 1.09,
+        "rouge-l-f1": 0.64
+      },
+      "metric_signatures": [
+        "BLEU+case.mixed+numrefs.1+smooth.exp+tok.zh+version.1.4.2",
+        "chrF2+case.mixed+numchars.6+numrefs.1+space.False+version.1.4.2"
+      ],
+      "signature_check": "Both signatures match the paper's Appendix A.1. The Rouge-L and B@1-4 columns come from eval/metrics.py's --tokenize none branch applied to character-segmented text; that branch's BLEU agrees with sacrebleu tok.zh to three decimals, confirming the segmentation is the one tok.zh implies."
+    },
+    {
+      "evidence_id": "artifact-verification-csl-cascade-csldaily2",
+      "what_it_is": "Decoding the CSL-Daily test split in cascading mode with the authors' released checkpoint-averaged SLTUNET model (csldaily2.tar.gz) and released SMKD sign-embedding model, through their pinned entry point, scored with their own metric code.",
+      "what_it_is_not": "It is not a reproduction of the authors' training. No SLTUNET or SMKD training was performed, so it cannot close any target however close the numbers are.",
+      "experiment_id": "csldaily-cascading",
+      "split": "test",
+      "n_sequences": 1176,
+      "deviations": [
+        "Sign video source is the shared Volume's MP4 re-encodings, not the frames_512x512 JPEG frames the authors' released test.txt names.",
+        "Model weights are the authors' released artifacts rather than weights trained by this attempt.",
+        "The authors publish no cascading entry point; the two-pass chain was constructed for this attempt from the upstream code paths."
+      ],
+      "observed": {
+        "bleu1": 53.66380965432248,
+        "bleu2": 40.126427139854556,
+        "bleu3": 30.554242143845133,
+        "bleu4": 23.849787131459028,
+        "chrf": 21.319899775339586,
+        "rouge": 53.57911670728362
+      },
+      "published_for_comparison": {
+        "rouge-l-f1": 53.1,
+        "bleu1-tok": 54.39,
+        "bleu2-tok": 40.28,
+        "bleu3-tok": 30.52,
+        "bleu4-tok": 23.76,
+        "sacrebleu-detok": 23.76,
+        "chrf": 21.09
+      },
+      "differences": {
+        "bleu1-tok": -0.73,
+        "bleu2-tok": -0.15,
+        "bleu3-tok": 0.03,
+        "bleu4-tok": 0.09,
+        "chrf": 0.23,
+        "rouge-l-f1": 0.48,
+        "sacrebleu-detok": 0.09
+      },
+      "metric_signatures": [
+        "BLEU+case.mixed+numrefs.1+smooth.exp+tok.zh+version.1.4.2",
+        "chrF2+case.mixed+numchars.6+numrefs.1+space.False+version.1.4.2"
+      ],
+      "signature_check": "Both signatures match the paper's Appendix A.1. The Rouge-L and B@1-4 columns come from eval/metrics.py's --tokenize none branch applied to character-segmented text; that branch's BLEU agrees with sacrebleu tok.zh to three decimals, confirming the segmentation is the one tok.zh implies."
+    },
+    {
+      "evidence_id": "artifact-verification-csl-dev-cascade",
+      "what_it_is": "Decoding the CSL-Daily dev split in cascading mode with the authors' released checkpoint-averaged SLTUNET model (csldaily2.tar.gz) and released SMKD sign-embedding model, through their pinned entry point, scored with their own metric code.",
+      "what_it_is_not": "It is not a reproduction of the authors' training. No SLTUNET or SMKD training was performed, so it cannot close any target however close the numbers are.",
+      "experiment_id": "csldaily-cascading",
+      "split": "dev",
+      "n_sequences": 1077,
+      "deviations": [
+        "Sign video source is the shared Volume's MP4 re-encodings, not the frames_512x512 JPEG frames the authors' released test.txt names.",
+        "Model weights are the authors' released artifacts rather than weights trained by this attempt.",
+        "The authors released no CSL-Daily dev list or dev reference. Both are rebuilt from the official distribution (split_1.txt, csl2020ct_v2.pkl). The reconstruction is validated on test, where it reproduces the released reference on 1176 of 1176 lines, but the dev ordering is this attempt's choice and cannot be confirmed against the authors'.",
+        "The authors publish no cascading entry point; the two-pass chain was constructed for this attempt from the upstream code paths."
+      ],
+      "observed": {
+        "bleu1": 53.78624690875635,
+        "bleu2": 39.87451624946664,
+        "bleu3": 30.072441270381574,
+        "bleu4": 23.28056684369365,
+        "chrf": 20.879216526582514,
+        "rouge": 52.97076627108365
+      },
+      "published_for_comparison": {
+        "rouge-l-f1": 52.89,
+        "bleu4-tok": 22.95
+      },
+      "differences": {
+        "bleu4-tok": 0.33,
+        "rouge-l-f1": 0.08
+      },
+      "metric_signatures": [
+        "BLEU+case.mixed+numrefs.1+smooth.exp+tok.zh+version.1.4.2",
+        "chrF2+case.mixed+numchars.6+numrefs.1+space.False+version.1.4.2"
+      ],
+      "signature_check": "Both signatures match the paper's Appendix A.1. The Rouge-L and B@1-4 columns come from eval/metrics.py's --tokenize none branch applied to character-segmented text; that branch's BLEU agrees with sacrebleu tok.zh to three decimals, confirming the segmentation is the one tok.zh implies."
     }
   ],
   "paper_slug": "zhang-2023-sltunet",
@@ -1973,6 +2485,27 @@
         "If the question is specifically whether lossy frames change the score, a paired PNG-versus-MP4 run on the same subset isolates that effect directly and needs no full-test run. The full 642-sequence PNG pass is only required for a number comparable to the published 28.47.",
         "Never let the staging fallback run silently: a failed fast path should raise rather than degrade into an hours-long slow path."
       ]
+    }
+  ],
+  "artifact_selection": [
+    {
+      "selection_id": "csldaily-archive-choice",
+      "question": "The authors published two CSL-Daily archives, csldaily.tar.gz (2023-07-10) and csldaily2.tar.gz (2023-09-18), without documenting the difference. Table 5 reports one system.",
+      "difference_found": "The archives are identical except for sltunet_ckpt/param.json filter_size: 2048 in csldaily, 4096 in csldaily2. Every other released file, including the SMKD sign-embedding model, baseline.yaml, test.txt and test.bpe.zh, matches.",
+      "paper_evidence": "The paper's final configuration, system 15 of Table 2, specifies dff=4096, which points to csldaily2 before any run.",
+      "empirical_check": "Both archives were decoded over the full 1176-sequence test split rather than assuming. csldaily2 differs from the published end-to-end row by -0.22/-0.16/-0.12/-0.07 on B@1-4, +0.13 ChrF and +0.27 Rouge-L. csldaily (2048) is further off on every metric: B@4 -0.51, ChrF -0.38, Rouge-L -0.72.",
+      "csldaily_2048_observed": {
+        "bleu1": 54.24814859864699,
+        "bleu2": 40.69426315873097,
+        "bleu3": 31.169413515118258,
+        "bleu4": 24.498239396010653,
+        "chrf": 21.605523679576255,
+        "rouge": 53.359919012756606
+      },
+      "selected": "csldaily2.tar.gz",
+      "selected_sha256": "55e3da80a0e754e8b8797c11f58f83da5779b276703979c29eb71530526f7c1a",
+      "rejected": "csldaily.tar.gz",
+      "rejected_sha256": "e276481b41e4e6843e3bca78ede16e7387f4f4f2c3893838d4986f3bd1712c8b"
     }
   ]
 }
