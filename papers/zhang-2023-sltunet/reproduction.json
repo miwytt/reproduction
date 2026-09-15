@@ -1571,6 +1571,36 @@
       "eval_path_note": "The authors canonical evaluation path is example/test.sh, i.e. run.py --mode test, which scores internally through evalu.eval_metric and strips BPE from hypotheses and references in one step. That path consumes precomputed SMKD features as test.h5, which the shared Volume does not hold, so this attempt used run.py --mode infer, the path the authors released infer.sh uses to decode from raw video, followed by their own eval/metrics.py. Both decode and metric code are the authors; only the join between them is this attempt, which is where the BPE defect arose.",
       "metric_branch_note": "eval/metrics.py has two output branches and --tokenize defaults to 13a, so the first scoring pass took the SacreBLEU branch and emitted only sBLEU and ChrF. It never computed the tokenized BLEU or ROUGE that the paper tabulates. Re-scoring the same hypothesis and reference files with --tokenize none supplied both. Two results: ROUGE is 51.68 against a published 52.11, and the tokenized BLEU came back bit-identical to the SacreBLEU figures (52.499418786986425 and so on). That identity empirically confirms the papers Appendix A.1 claim that the two coincide on PHOENIX because its text is pre-tokenized with punctuation removed, so the earlier B@1 to B@3 comparison against the tokenized columns was valid; it had been an untested assumption until now.",
       "coverage": "This covers the seven metrics of the Table 4 end-to-end TEST row only. The dev split, the cascading block, all of Table 5 and all of Table 6 remain unrun."
+    },
+    {
+      "evidence_id": "artifact-verification-phoenix-sign2text-dev",
+      "what_it_is": "Same released artifact and pipeline, run on the PHOENIX-2014T dev split (519 sequences, exit 0).",
+      "experiment_id": "phoenix-sign2text",
+      "split": "dev",
+      "n_sequences": 519,
+      "observed": {
+        "rouge": 51.879427896540165,
+        "bleu4": 27.572979324471792,
+        "bleu1": 51.86510220177593,
+        "bleu2": 40.749442895109986,
+        "bleu3": 33.01118030332091,
+        "chrf": 52.80998774027725
+      },
+      "published_for_comparison": {
+        "rouge": 52.23,
+        "bleu4": 27.87
+      },
+      "differences": {
+        "rouge": -0.35,
+        "bleu4": -0.3
+      },
+      "deviations": [
+        "Lossy HEVC frames, as for the test split.",
+        "Authors released weights, so this is artifact verification and not a training reproduction.",
+        "No released input list exists for dev, so ordering follows the annotation CSV; references come from the same file, so alignment is guaranteed."
+      ],
+      "also_covers": "The paper reports the same value, 27.87 dev B@4, as Table 2 row 15, because row 15 is this trained system. The dev figure therefore speaks to that cell as well, though Table 2 is out of the agreed scope.",
+      "note": "With this run the whole end-to-end block of Table 4 has been exercised: dev ROUGE and B@4 plus the seven test metrics. All nine land between 0.30 and 0.57 below published, a consistent offset rather than scatter. Still zero targets are produced: these are the authors weights on lossy frames."
     }
   ],
   "paper_slug": "zhang-2023-sltunet",

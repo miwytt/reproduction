@@ -60,7 +60,7 @@ def prepare():
     return src, release, head, digest
 
 
-def build_inputs(release, limit, frame_source="video"):
+def build_inputs(release, limit, frame_source="video", split="test"):
     """Build the decoder's input list, preserving the authors' released test order.
 
     frame_source='png' is the faithful path: the released test.txt already contains the
@@ -74,12 +74,28 @@ def build_inputs(release, limit, frame_source="video"):
     paths with cv2.VideoCapture, so that too is a path substitution rather than a patch, but
     it feeds the encoder lossy pixels.
     """
-    with open(release + "/test.txt") as handle:
-        released = [line.strip() for line in handle if line.strip()]
-    names = [line.rsplit("/", 1)[0].rsplit("/", 1)[-1] for line in released]
+    ann = "%s/annotations/PHOENIX-2014-T.%s.corpus.csv" % (PHOENIX, split)
+    if split == "test":
+        # Use the authors' own released ordering for the split they published it for.
+        with open(release + "/test.txt") as handle:
+            released = [line.strip() for line in handle if line.strip()]
+        names = [l.rsplit("/", 1)[0].rsplit("/", 1)[-1] for l in released]
+    else:
+        # No released list exists for dev; take the annotation CSV order. References come
+        # from the same file, so hypothesis/reference alignment is guaranteed either way.
+        names, released = [], []
+        with open(ann) as handle:
+            hdr = handle.readline().rstrip("\n").split("|")
+            ni = hdr.index("name")
+            for line in handle:
+                parts = line.rstrip("\n").split("|")
+                if len(parts) > ni:
+                    names.append(parts[ni])
+                    released.append(
+                        "PHOENIX-2014-T-release-v3/PHOENIX-2014-T/features/"
+                        "fullFrame-210x260px/%s/%s/*.png" % (split, parts[ni]))
 
     refs = {}
-    ann = PHOENIX + "/annotations/PHOENIX-2014-T.test.corpus.csv"
     with open(ann) as handle:
         header = handle.readline().rstrip("\n").split("|")
         ni, ti = header.index("name"), header.index("translation")
@@ -95,7 +111,7 @@ def build_inputs(release, limit, frame_source="video"):
             source = "%s/raw/%s" % (PHOENIX, released_path)
             present = bool(glob.glob(source))
         else:
-            source = "%s/videos/test/%s.mp4" % (PHOENIX, name)
+            source = "%s/videos/%s/%s.mp4" % (PHOENIX, split, name)
             present = os.path.exists(source)
         if not present:
             missing_video.append(name)
@@ -179,13 +195,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--tag", default="full")
     parser.add_argument("--limit", type=int, default=0)
+    parser.add_argument("--split", default="test", choices=["test", "dev"])
     parser.add_argument("--frame-source", default="video",
                         choices=["video", "png"])
     args = parser.parse_args()
 
     started = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     src, release, head, digest = prepare()
-    rows = build_inputs(release, args.limit, args.frame_source)
+    rows = build_inputs(release, args.limit, args.frame_source, args.split)
     if args.frame_source == "png":
         rows = stage_frames(rows)
 
@@ -245,6 +262,7 @@ def main():
 
     meta = {
         "tag": args.tag,
+        "split": args.split,
         "command": cmd,
         "exit_code": exit_code,
         "started_at_utc": started,
