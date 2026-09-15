@@ -1541,21 +1541,24 @@
         "bleu2": 41.33143789832259,
         "bleu3": 33.4223073195795,
         "bleu4": 27.90618401367374,
-        "chrf": 53.42545444804077
+        "chrf": 53.42545444804077,
+        "rouge": 51.67924628496979
       },
       "published_for_comparison": {
         "bleu1": 52.92,
         "bleu2": 41.76,
         "bleu3": 33.99,
         "bleu4": 28.47,
-        "chrf": 53.78
+        "chrf": 53.78,
+        "rouge": 52.11
       },
       "differences": {
         "bleu1": -0.42,
         "bleu2": -0.43,
         "bleu3": -0.57,
         "bleu4": -0.56,
-        "chrf": -0.35
+        "chrf": -0.35,
+        "rouge": -0.43
       },
       "metric_signatures": [
         "BLEU+case.mixed+numrefs.1+smooth.exp+tok.13a+version.1.4.2",
@@ -1563,9 +1566,11 @@
       ],
       "signature_check": "Both signatures match the paper's Appendix A.1 exactly, so the metric implementation and version are the ones the paper reports.",
       "independent_corroboration": "Output line 2 of the test split is character-identical to the SLTUNET generation printed in the paper's own Table 10 case study: 'am donnerstag in küstennähe regen sonst mal sonne mal wolken im wechsel dann am freitag ähnliches wetter'. Reproducing a published generated sentence exactly is strong evidence that the decoding configuration, vocabulary, checkpoint and input ordering are correct.",
-      "residual_gap_hypothesis": "The remaining shortfall of about 0.4 to 0.6 across every metric is unexplained. The reference construction has been ruled out by direct comparison against the authors released reference (642/642 identical lines). The leading remaining hypothesis is the lossy frame source, since the sign encoder consumes raw pixels; hardware and library nondeterminism is a second, smaller candidate. The discriminating experiment is to rerun this identical pipeline on the original PNG frames and compare, held at gate phoenix-frame-fidelity. No parameter was adjusted to narrow this gap and none should be.",
+      "residual_gap_hypothesis": "Every one of the seven metrics now sits between 0.35 and 0.57 below the published value. The uniformity matters: a pipeline defect would tend to produce erratic differences across metrics, whereas a consistent small offset is what an input-quality or nondeterminism effect looks like. Reference construction is already excluded by direct comparison against the authors released reference (642 of 642 identical lines). The leading untested hypothesis remains the lossy frame source; the original frames are now in the Volume but the run against them has not succeeded.",
       "reference_provenance_check": "The references used for scoring were built from the PHOENIX annotation CSV rather than from a released reference file. On 2026-09-13 they were compared line by line against the authors own sltunet_ckpt/test.bpe.de from the released tarball, with BPE removed as evalu.eval_metric does: 642 of 642 lines are character-identical. The reference construction is therefore eliminated as a source of the residual gap.",
-      "eval_path_note": "The authors canonical evaluation path is example/test.sh, i.e. run.py --mode test, which scores internally through evalu.eval_metric and strips BPE from hypotheses and references in one step. That path consumes precomputed SMKD features as test.h5, which the shared Volume does not hold, so this attempt used run.py --mode infer, the path the authors released infer.sh uses to decode from raw video, followed by their own eval/metrics.py. Both decode and metric code are the authors; only the join between them is this attempt, which is where the BPE defect arose."
+      "eval_path_note": "The authors canonical evaluation path is example/test.sh, i.e. run.py --mode test, which scores internally through evalu.eval_metric and strips BPE from hypotheses and references in one step. That path consumes precomputed SMKD features as test.h5, which the shared Volume does not hold, so this attempt used run.py --mode infer, the path the authors released infer.sh uses to decode from raw video, followed by their own eval/metrics.py. Both decode and metric code are the authors; only the join between them is this attempt, which is where the BPE defect arose.",
+      "metric_branch_note": "eval/metrics.py has two output branches and --tokenize defaults to 13a, so the first scoring pass took the SacreBLEU branch and emitted only sBLEU and ChrF. It never computed the tokenized BLEU or ROUGE that the paper tabulates. Re-scoring the same hypothesis and reference files with --tokenize none supplied both. Two results: ROUGE is 51.68 against a published 52.11, and the tokenized BLEU came back bit-identical to the SacreBLEU figures (52.499418786986425 and so on). That identity empirically confirms the papers Appendix A.1 claim that the two coincide on PHOENIX because its text is pre-tokenized with punctuation removed, so the earlier B@1 to B@3 comparison against the tokenized columns was valid; it had been an untested assumption until now.",
+      "coverage": "This covers the seven metrics of the Table 4 end-to-end TEST row only. The dev split, the cascading block, all of Table 5 and all of Table 6 remain unrun."
     }
   ],
   "paper_slug": "zhang-2023-sltunet",
