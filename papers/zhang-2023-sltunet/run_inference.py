@@ -9,6 +9,7 @@ from __future__ import print_function
 
 import argparse
 import glob
+import io
 import json
 import os
 import subprocess
@@ -17,11 +18,52 @@ import time
 
 UPSTREAM = "https://github.com/bzhangGo/sltunet.git"
 UPSTREAM_COMMIT = "b1d1d0e8b3b7275e10cd89229f2632b556df5de9"
-RELEASE_URL = "https://data.statmt.org/bzhang/iclr2023_sltunet/phoenix.tar.gz"
-RELEASE_SHA256 = "b0e708b7abe5689475905ad11ac578abb02eb0f9bf00b207bbd6d4342afe5152"
+RELEASE_BASE = "https://data.statmt.org/bzhang/iclr2023_sltunet"
 PHOENIX = "/datasets/rwth-phoenix-2014-t"
+CSLDAILY = "/datasets/csl-daily"
 RWTH_ARCHIVE = ("https://www-i6.informatik.rwth-aachen.de/ftp/pub/"
                 "rwth-phoenix/2016/phoenix-2014-T.v3.tar.gz")
+
+# One entry per released artifact. The authors published two CSL-Daily archives that differ
+# only in the SLTUNET filter_size recorded in sltunet_ckpt/param.json: csldaily is 2048 and
+# csldaily2 is 4096. The paper's final configuration (system 15 of Table 2) specifies
+# dff=4096, so csldaily2 is the configuration Table 5 reports and csldaily is a
+# smaller-FFN variant; both are run so the record shows which one the published row matches
+# rather than asserting it. Values other than filter_size are byte-identical between them.
+RELEASES = {
+    "phoenix": {
+        "archive": "phoenix.tar.gz",
+        "sha256": "b0e708b7abe5689475905ad11ac578abb02eb0f9bf00b207bbd6d4342afe5152",
+        "dataset_root": PHOENIX,
+        "bpe_codes": "ende.bpe",
+        "gloss_path": "phoenix2014/gloss_dict.npy",
+        # infer.sh in the released phoenix archive.
+        "eval_batch_size": 4,
+        "tokenize": "13a",
+        "filter_size": 4096,
+    },
+    "csldaily": {
+        "archive": "csldaily.tar.gz",
+        "sha256": "e276481b41e4e6843e3bca78ede16e7387f4f4f2c3893838d4986f3bd1712c8b",
+        "dataset_root": CSLDAILY,
+        "bpe_codes": "enzh.bpe",
+        "gloss_path": "csldaily/gloss_dict.npy",
+        # infer.sh in both released csldaily archives uses 2, not phoenix's 4.
+        "eval_batch_size": 2,
+        "tokenize": "zh",
+        "filter_size": 2048,
+    },
+    "csldaily2": {
+        "archive": "csldaily2.tar.gz",
+        "sha256": "55e3da80a0e754e8b8797c11f58f83da5779b276703979c29eb71530526f7c1a",
+        "dataset_root": CSLDAILY,
+        "bpe_codes": "enzh.bpe",
+        "gloss_path": "csldaily/gloss_dict.npy",
+        "eval_batch_size": 2,
+        "tokenize": "zh",
+        "filter_size": 4096,
+    },
+}
 
 
 def sh(cmd, cwd=None, check=True):
@@ -33,7 +75,8 @@ def sh(cmd, cwd=None, check=True):
     return code
 
 
-def prepare():
+def prepare(dataset):
+    cfg = RELEASES[dataset]
     src = "/work/sltunet"
     if not os.path.exists(src):
         sh("mkdir -p /work")
@@ -44,20 +87,93 @@ def prepare():
     ).decode().strip()
     assert head == UPSTREAM_COMMIT, "upstream commit mismatch: %s" % head
 
-    tarball = "/results/artifacts/phoenix.tar.gz"
+    tarball = "/results/artifacts/" + cfg["archive"]
     sh("mkdir -p /results/artifacts")
     if not os.path.exists(tarball):
-        sh("wget -q -O %s %s" % (tarball, RELEASE_URL))
+        sh("wget -q -O %s %s/%s" % (tarball, RELEASE_BASE, cfg["archive"]))
     digest = subprocess.check_output(
         "sha256sum %s" % tarball, shell=True
     ).decode().split()[0]
-    assert digest == RELEASE_SHA256, "release sha256 mismatch: %s" % digest
+    assert digest == cfg["sha256"], "release sha256 mismatch: %s" % digest
 
-    release = "/work/release"
+    # Per dataset, so the two CSL-Daily archives never overwrite each other.
+    release = "/work/release-" + dataset
     if not os.path.exists(release):
         sh("mkdir -p %s" % release)
         sh("tar xzf %s -C %s" % (tarball, release))
+
+    # The two CSL-Daily archives are distinguished only by this value; assert it so a
+    # mislabelled run cannot silently report the other configuration's score.
+    with open(release + "/sltunet_ckpt/param.json") as handle:
+        got = json.load(handle)["filter_size"]
+    assert got == cfg["filter_size"], (
+        "%s: expected filter_size %d, released param.json has %d"
+        % (dataset, cfg["filter_size"], got))
     return src, release, head, digest
+
+
+def build_inputs_csldaily(release, limit, split):
+    """Build the CSL-Daily decoder inputs, preserving the authors' released test order.
+
+    References come from the released sltunet_ckpt/test.bpe.zh rather than being rebuilt
+    from sentence_label/csl2020ct_v2.pkl. That file is the authors' own reference for the
+    exact list in test.txt, so hypothesis/reference alignment is guaranteed and no
+    reconstruction step can introduce a discrepancy. BPE markers are stripped the same way
+    upstream's evalu.eval_metric strips them.
+
+    The released list points at csl-daily/sentence/frames_512x512/<name>/*.jpg. The Volume
+    holds the same sequences as MP4, so as on PHOENIX this substitutes the path and lets the
+    authors' loader take its non-PNG branch; the pixels are lossy re-encodings.
+    """
+    if split == "test":
+        with open(release + "/test.txt") as handle:
+            released = [line.strip() for line in handle if line.strip()]
+        names = [l.rsplit("/", 1)[0].rsplit("/", 1)[-1] for l in released]
+
+        with open(release + "/sltunet_ckpt/test.bpe.zh") as handle:
+            refs = [l.rstrip("\n").replace("@@ ", "") for l in handle]
+        if len(refs) != len(names):
+            raise RuntimeError("released list %d != released references %d"
+                               % (len(names), len(refs)))
+    else:
+        # The authors released no dev list or dev reference, so both are rebuilt from the
+        # official distribution: split_1.txt for membership and csl2020ct_v2.pkl for the
+        # sentences. Joining that file's label_word field with single spaces reproduces the
+        # released test reference on 1176 of 1176 lines exactly, so the same reconstruction
+        # is used for dev. (label_char does not: it reproduces 1 of 1176, because the
+        # released reference is word-segmented.)
+        import pickle
+        label = CSLDAILY + "/sentence_label"
+        with open(label + "/csl2020ct_v2.pkl", "rb") as handle:
+            info = pickle.load(handle)["info"]
+        by_name = dict((r["name"], r) for r in info)
+
+        names = []
+        with open(label + "/split_1.txt") as handle:
+            handle.readline()
+            for line in handle:
+                parts = line.strip().split("|")
+                if len(parts) == 2 and parts[1] == split:
+                    names.append(parts[0])
+        names.sort()
+        refs = [" ".join(by_name[n]["label_word"]) for n in names]
+        released = names
+
+    rows, missing = [], []
+    for name, ref in zip(names, refs):
+        source = "%s/videos/%s.mp4" % (CSLDAILY, name)
+        if os.path.exists(source):
+            rows.append((name, source, ref))
+        else:
+            missing.append(name)
+
+    print("frame_source: video (CSL-Daily MP4 re-encodings)")
+    print("released list: %d; mapped: %d" % (len(released), len(rows)))
+    if missing:
+        print("missing video (%d): %s" % (len(missing), missing[:5]))
+    if limit:
+        rows = rows[:limit]
+    return rows
 
 
 def build_inputs(release, limit, frame_source="video", split="test"):
@@ -192,7 +308,7 @@ def stage_frames(rows):
 
 
 
-def run_cascade(src, release, run_dir, list_file, ref_file, rows):
+def run_cascade(src, release, run_dir, list_file, ref_file, rows, cfg):
     """Cascading mode: Sign2Gloss then Gloss2Text, as Table 4's cascading block.
 
     The paper produces both blocks from one trained model. Pass 1 decodes glosses from
@@ -211,16 +327,17 @@ def run_cascade(src, release, run_dir, list_file, ref_file, rows):
 
     pass1 = (
         "python run.py --mode infer --parameters="
-        "max_len=256,max_img_len=512,eval_batch_size=4,"
+        "max_len=256,max_img_len=512,eval_batch_size={b},"
         "beam_size=8,remove_bpe=True,decode_alpha=1.0,gpus=[0],"
         "eval_task='sign2gloss',"
-        'src_codes="{c}/ende.bpe",tgt_codes="{c}/ende.bpe",'
+        'src_codes="{c}/{p}",tgt_codes="{c}/{p}",'
         'src_vocab_file="{c}/vocab.zero.drop",tgt_vocab_file="{c}/vocab.zero.drop",'
         'output_dir="{c}",test_output="{g}",img_test_file="{l}",'
-        'gloss_path="{r}/phoenix2014/gloss_dict.npy",'
+        'gloss_path="{r}/{gl}",'
         'sign_cfg="{r}/baseline.yaml",'
         'smkd_model_path="{r}/signemb_ckpt/average.pt",'
-    ).format(c=ckpt, g=gloss_out, l=list_file, r=release)
+    ).format(c=ckpt, g=gloss_out, l=list_file, r=release,
+             p=cfg["bpe_codes"], gl=cfg["gloss_path"], b=cfg["eval_batch_size"])
     rc1 = sh(pass1, cwd=src, check=False)
     if rc1 != 0 or not os.path.exists(gloss_out):
         raise RuntimeError("cascade pass 1 (sign2gloss) failed rc=%d" % rc1)
@@ -246,16 +363,61 @@ def run_cascade(src, release, run_dir, list_file, ref_file, rows):
     trans2 = run_dir + "/trans.txt"
     pass2 = (
         "python run.py --mode test --parameters="
-        "max_len=256,max_img_len=512,eval_batch_size=4,"
+        "max_len=256,max_img_len=512,eval_batch_size={b},"
         "beam_size=8,remove_bpe=True,decode_alpha=1.0,gpus=[0],"
         "eval_task='gloss2text',img_feature_size=1024,"
-        'src_codes="{c}/ende.bpe",tgt_codes="{c}/ende.bpe",'
+        'src_codes="{c}/{p}",tgt_codes="{c}/{p}",'
         'src_vocab_file="{c}/vocab.zero.drop",tgt_vocab_file="{c}/vocab.zero.drop",'
         'output_dir="{c}",test_output="{t}",'
         'img_test_file="{h}",src_test_file="{s}",tgt_test_file="{f}",'
-    ).format(c=ckpt, t=trans2, h=dummy_h5, s=src2, f=ref_file)
+    ).format(c=ckpt, t=trans2, h=dummy_h5, s=src2, f=ref_file,
+             p=cfg["bpe_codes"], b=cfg["eval_batch_size"])
     rc2 = sh(pass2, cwd=src, check=False)
     return rc2, trans2
+
+
+def char_segment(path, out_path):
+    """Rewrite one file with every CJK character as its own whitespace-separated token.
+
+    Needed only for CSL-Daily. The authors' released references are word-segmented
+    ("他 今年 四 岁 。"), but the paper prints the same number in its tokenized-B@4 and
+    sBLEU columns (25.01/25.01 end-to-end, 23.76/23.76 cascading), exactly as it does for
+    PHOENIX. sBLEU uses tok.zh, which segments Chinese into characters, so the two columns
+    can only coincide if the text scored by the --tokenize none branch was already
+    character-segmented. Both segmentations are therefore scored and reported, and the
+    published values identify which one the authors used; nothing here is chosen to move a
+    score toward the paper.
+
+    Non-CJK runs (digits, Latin, punctuation) are kept whole so that tokens like "2019" are
+    not split, matching what tok.zh does.
+    """
+    def is_cjk(ch):
+        return "一" <= ch <= "鿿" or "㐀" <= ch <= "䶿"
+
+    with io.open(path, encoding="utf-8") as handle:
+        lines = handle.read().splitlines()
+    out = []
+    for line in lines:
+        toks = []
+        buf = ""
+        for ch in line:
+            if ch.isspace():
+                if buf:
+                    toks.append(buf)
+                    buf = ""
+            elif is_cjk(ch):
+                if buf:
+                    toks.append(buf)
+                    buf = ""
+                toks.append(ch)
+            else:
+                buf += ch
+        if buf:
+            toks.append(buf)
+        out.append(" ".join(toks))
+    with io.open(out_path, "w", encoding="utf-8") as handle:
+        handle.write("\n".join(out) + "\n")
+    return out_path
 
 
 def score(src, run_dir, trans, ref_file, tokenize):
@@ -294,21 +456,31 @@ def main():
                         choices=["video", "png"])
     # 13a for German (PHOENIX, DGS3-T); zh for Chinese (CSL-Daily), matching the
     # signatures printed in the paper.
-    parser.add_argument("--tokenize", default="13a")
+    parser.add_argument("--tokenize", default=None,
+                        help="defaults to the released artifact's language (13a or zh)")
+    parser.add_argument("--dataset", default="phoenix", choices=sorted(RELEASES))
     parser.add_argument("--rescore", action="store_true",
                         help="score an existing run directory without re-running inference")
     args = parser.parse_args()
+    cfg = RELEASES[args.dataset]
+    if args.tokenize is None:
+        args.tokenize = cfg["tokenize"]
 
     started = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    src, release, head, digest = prepare()
-    rows = build_inputs(release, args.limit, args.frame_source, args.split)
-    if args.frame_source == "png":
-        rows = stage_frames(rows)
+    src, release, head, digest = prepare(args.dataset)
+    if args.dataset == "phoenix":
+        rows = build_inputs(release, args.limit, args.frame_source, args.split)
+        if args.frame_source == "png":
+            rows = stage_frames(rows)
+    else:
+        rows = build_inputs_csldaily(release, args.limit, args.split)
 
     run_dir = "/results/runs/" + args.tag
     sh("mkdir -p %s" % run_dir)
     list_file = run_dir + "/inputs.txt"
-    ref_file = run_dir + "/reference.de"
+    # Named by target language; the PHOENIX runs already recorded reference.de.
+    ref_file = run_dir + ("/reference.de" if args.dataset == "phoenix"
+                          else "/reference.zh")
     with open(list_file, "w") as handle:
         handle.write("\n".join(r[1] for r in rows) + "\n")
     with open(ref_file, "w") as handle:
@@ -325,31 +497,35 @@ def main():
         exit_code = 0
     elif args.mode == "cascade":
         cmd = "cascade: run.py --mode infer eval_task=sign2gloss, then run.py --mode test eval_task=gloss2text"
-        exit_code, trans = run_cascade(src, release, run_dir, list_file, ref_file, rows)
+        exit_code, trans = run_cascade(src, release, run_dir, list_file, ref_file,
+                                       rows, cfg)
     else:
         # The authors' pinned entry point with their released configuration (infer.sh /
         # param.json); only paths are substituted.
         cmd = (
             "python run.py --mode infer --parameters="
-            "max_len=256,max_img_len=512,eval_batch_size=4,"
+            "max_len=256,max_img_len=512,eval_batch_size={b},"
             "beam_size=8,remove_bpe=True,decode_alpha=1.0,"
             "gpus=[0],"
             "eval_task='sign2text',"
-            'src_codes="{c}/ende.bpe",tgt_codes="{c}/ende.bpe",'
+            'src_codes="{c}/{p}",tgt_codes="{c}/{p}",'
             'src_vocab_file="{c}/vocab.zero.drop",'
             'tgt_vocab_file="{c}/vocab.zero.drop",'
             'output_dir="{c}",'
             'test_output="{t}",'
             'img_test_file="{l}",'
-            'gloss_path="{r}/phoenix2014/gloss_dict.npy",'
+            'gloss_path="{r}/{g}",'
             'sign_cfg="{r}/baseline.yaml",'
             'smkd_model_path="{r}/signemb_ckpt/average.pt",'
-        ).format(c=ckpt, t=trans, l=list_file, r=release)
+        ).format(c=ckpt, t=trans, l=list_file, r=release,
+                 p=cfg["bpe_codes"], g=cfg["gloss_path"],
+                 b=cfg["eval_batch_size"])
         exit_code = sh(cmd, cwd=src, check=False)
     finished = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
     metrics = ""
     metrics_tokenized = ""
+    metrics_char = ""
     if os.path.exists(trans):
         metrics = score(src, run_dir, trans, ref_file, args.tokenize)
         print("=== METRICS (--tokenize %s) ===" % args.tokenize)
@@ -357,9 +533,26 @@ def main():
         metrics_tokenized = score(src, run_dir, trans, ref_file, "none")
         print("=== METRICS (--tokenize none) ===")
         print(metrics_tokenized)
+        if args.dataset != "phoenix":
+            # See char_segment(): which of the two segmentations the paper used is settled
+            # by its own published columns, so both are produced.
+            hyp_c = char_segment(run_dir + "/trans.debpe.txt",
+                                 run_dir + "/trans.char.txt")
+            ref_c = char_segment(ref_file, run_dir + "/reference.char.zh")
+            proc = subprocess.Popen(
+                "python eval/metrics.py -t slt --tokenize none -hyp %s -ref %s"
+                % (hyp_c, ref_c),
+                shell=True, cwd=src, stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT)
+            metrics_char = proc.communicate()[0].decode("utf-8", "replace")
+            print("=== METRICS (--tokenize none, character-segmented) ===")
+            print(metrics_char)
 
     meta = {
         "tag": args.tag,
+        "dataset": args.dataset,
+        "release_archive": cfg["archive"],
+        "filter_size": cfg["filter_size"],
         "split": args.split,
         "mode": args.mode,
         "command": cmd,
@@ -372,6 +565,7 @@ def main():
         "tokenize": args.tokenize,
         "metrics_output": metrics,
         "metrics_output_tokenize_none": metrics_tokenized,
+        "metrics_output_char_segmented": metrics_char,
         "frame_source": args.frame_source,
         "frame_source_detail": (
             "original lossless PNG frames from the RWTH distribution, using the "
