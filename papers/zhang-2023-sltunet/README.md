@@ -114,8 +114,8 @@ ablation and the Table 8 shared-versus-separate module ablation, which the queue
 record does not name.
 
 **Queue record provenance.** `paper_id`
-`3bbc8841012fdb5971d1c86dff528edd8590f1b8`, assigned to michelle.wastl@uzh.ch,
-paper status `final` (moved from `needs_review` by goehring@cl.uzh.ch on
+`3bbc8841012fdb5971d1c86dff528edd8590f1b8`, assigned to [assigned reproducer],
+paper status `final` (moved from `needs_review` by [queue reviewer] on
 2026-08-11). Two contract mismatches are recorded rather than papered over: the
 export has **no `confirmation` field at all**, and
 `ingest_candidate.py` rejects it in its published shape — it is a single JSON

@@ -40,12 +40,12 @@
       "confirmation_field_present": false,
       "paper_status": "final",
       "reproduction_status": "in_progress",
-      "finalized_by": "joni.dambre@gmail.com",
+      "finalized_by": "[queue reviewer]",
       "status_history": [
         {
           "after": "final",
           "before": "needs_review",
-          "by": "goehring@cl.uzh.ch",
+          "by": "[queue reviewer]",
           "when": "2026-08-11T16:15:48.239Z"
         }
       ],
@@ -78,12 +78,12 @@
       "potential_ethical_concerns": "no",
       "compute_requirements": "N/A",
       "assignees": [
-        "michelle.wastl@uzh.ch"
+        "[assigned reproducer]"
       ]
     },
     "record": {
       "assignees": [
-        "michelle.wastl@uzh.ch"
+        "[assigned reproducer]"
       ],
       "collectionId": "pbc_1548343306",
       "collectionName": "reproductions",
@@ -221,7 +221,7 @@
               }
             ]
           },
-          "finalized_by": "joni.dambre@gmail.com",
+          "finalized_by": "[queue reviewer]",
           "flag_reason": "",
           "id": "cvptk5ysnaqk36e",
           "includes_human_evaluation": "no",
@@ -246,7 +246,7 @@
             {
               "after": "final",
               "before": "needs_review",
-              "by": "goehring@cl.uzh.ch",
+              "by": "[queue reviewer]",
               "when": "2026-08-11T16:15:48.239Z"
             }
           ],
@@ -3132,7 +3132,7 @@
         "Wrapper volume listing on 2026-09-13: dgs-corpus/ contains videos/, dgs.json, download.py, index.py, and split.3.0.0-uzh-document.json.",
         "The split manifest declares dgs_corpus_version '3.0.0' and 384 train / 10 dev / 10 test documents, matching the paper's Appendix A.2 protocol."
       ],
-      "resolution": "Reported resolved by the user (michelle.wastl@uzh.ch) on 2026-09-15: approval obtained to use the Public DGS Corpus for this reproduction. This record preserves the report, not the underlying grant: the attempt has not seen the permission document, its scope, or its conditions. Before DGS3-T outputs are published, the terms should be attached here, in particular whether they cover training on cloud infrastructure and the reporting of generated translations, given the corpus contains identifiable video of 330 named signers."
+      "resolution": "Reported resolved by the assigned reproducer on 2026-09-15: approval obtained to use the Public DGS Corpus for this reproduction. This record preserves the report, not the underlying grant: the attempt has not seen the permission document, its scope, or its conditions. Before DGS3-T outputs are published, the terms should be attached here, in particular whether they cover training on cloud infrastructure and the reporting of generated translations, given the corpus contains identifiable video of 330 named signers."
     },
     {
       "gate_id": "slt-data-access",
@@ -3228,7 +3228,7 @@
       ],
       "evidence": [
         "Queue record expand.paper.what_to_reproduce = 'Tables 2, 4, 5 and 6'.",
-        "Queue record expand.paper.paper_id = 3bbc8841012fdb5971d1c86dff528edd8590f1b8, status 'final', moved from 'needs_review' to 'final' by goehring@cl.uzh.ch on 2026-08-11.",
+        "Queue record expand.paper.paper_id = 3bbc8841012fdb5971d1c86dff528edd8590f1b8, status 'final', moved from 'needs_review' to 'final' by [queue reviewer] on 2026-08-11.",
         "This attempt's README previously recorded Table 2 as deliberately out of scope, a judgement made without the queue record.",
         "Table 2 reports dev-set B@4 only, so its rows need training but not the full test-set metric suite."
       ],
